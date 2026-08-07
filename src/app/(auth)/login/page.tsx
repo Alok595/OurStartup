@@ -28,7 +28,7 @@
  * ----------------------------------------------------------------------------
  */
 
-import { useRef, useState } from "react";
+import { useRef, useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
@@ -40,7 +40,7 @@ const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"], vari
 const body = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
 const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-mono" });
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
@@ -495,5 +495,17 @@ function MissionScene() {
         </motion.g>
       </svg>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-[var(--bg)]">
+        <Loader2 size={32} className="animate-spin text-[var(--accent)]" />
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }

@@ -604,11 +604,11 @@ function MobileSvg({ accent }: { accent: string }) {
 }
 
 function AiSvg({ accent }: { accent: string }) {
-  const input = [[46, 70], [46, 100], [46, 130]];
-  const hidden = [[130, 46], [130, 82], [130, 118], [130, 154]];
-  const output = [[214, 78], [214, 122]];
+  const input: [number, number][] = [[46, 70], [46, 100], [46, 130]];
+  const hidden: [number, number][] = [[130, 46], [130, 82], [130, 118], [130, 154]];
+  const output: [number, number][] = [[214, 78], [214, 122]];
 
-  const edges: [number, number][][] = [];
+  const edges: [[number, number], [number, number]][] = [];
   input.forEach((a) => hidden.forEach((b) => edges.push([a, b])));
   hidden.forEach((a) => output.forEach((b) => edges.push([a, b])));
 

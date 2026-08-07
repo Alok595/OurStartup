@@ -18,6 +18,7 @@ type Project = {
   description: string;
   color: string;
   liveUrl?: string;
+  heroImage?: string;
 };
 
 import { useEffect, useState } from "react";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useMotionTemplate } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useMotionTemplate, MotionValue } from "framer-motion";
 import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import { Star, X, Check, Loader2 } from "lucide-react";
 
@@ -262,7 +262,7 @@ export default function WorkstationSection() {
   );
 }
 
-function WorkstationScene({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
+function WorkstationScene({ mouseX, mouseY }: { mouseX: MotionValue<number>; mouseY: MotionValue<number> }) {
   const [revealed, setRevealed] = useState(false);
 
   const smoothX = useSpring(mouseX, { stiffness: 40, damping: 20 });

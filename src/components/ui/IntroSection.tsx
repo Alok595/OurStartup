@@ -159,7 +159,7 @@ function TaggedWord({
   cap: Capability;
   index: number;
   active: string | null;
-  setActive: (id: string | null) => void;
+  setActive: React.Dispatch<React.SetStateAction<string | null>>;
 }) {
   const isOpen = active === cap.id;
 
