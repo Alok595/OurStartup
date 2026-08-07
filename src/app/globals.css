@@ -1,26 +1,84 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:where(.dark, .dark *));
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #050505;
+    --foreground: #ffffff;
+    
+    /* Global tokens for Navbar & UI */
+    --bg: #F9F7F2;
+    --ink: #14171F;
+    --sub: #656976;
+    --line: #E2DDD0;
+    --accent: #D9600A;
+  }
+  .dark {
+    --bg: #0A0C10;
+    --ink: #EDEAE2;
+    --sub: #8892A6;
+    --line: #242A35;
+    --accent: #FF8A3D;
   }
 }
 
+.mac-bg {
+  background: radial-gradient(circle at 15% 50%, #e0f2fe, transparent 25%),
+    radial-gradient(circle at 85% 30%, #f3e8ff, transparent 35%);
+  background-color: #f8fafc;
+  background-attachment: fixed;
+}
+
+.dark .mac-bg {
+  background: radial-gradient(circle at 15% 50%, #3b82f640, transparent 25%),
+    radial-gradient(circle at 85% 30%, #a855f740, transparent 35%);
+  background-color: #050505;
+  background-attachment: fixed;
+}
+
 body {
-  background: var(--background);
   color: var(--foreground);
+  background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Lenis Recommended Styles */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* Custom Scrollbar for premium feel */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
