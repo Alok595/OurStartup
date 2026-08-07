@@ -28,7 +28,7 @@
  * ----------------------------------------------------------------------------
  */
 
-import { useRef, useState, Suspense } from "react";
+import { useRef, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
@@ -40,7 +40,7 @@ const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"], vari
 const body = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
 const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-mono" });
 
-function LoginContent() {
+export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
@@ -101,7 +101,7 @@ function LoginContent() {
         {/* -------------------------------------------------------------- */}
         {/* LEFT — animated mission-control scene                          */}
         {/* -------------------------------------------------------------- */}
-        <div className="order-2 relative h-[42vh] overflow-hidden border-t border-[var(--line)] lg:order-1 lg:h-full lg:border-t-0 lg:border-r">
+        <div className="relative h-[42vh] overflow-hidden border-b border-[var(--line)] lg:h-full lg:border-b-0 lg:border-r">
           <MissionScene />
           <div className="pointer-events-none absolute bottom-6 left-6 right-6 z-10 sm:bottom-10 sm:left-10">
             <span
@@ -122,7 +122,7 @@ function LoginContent() {
         {/* -------------------------------------------------------------- */}
         {/* RIGHT — sign-in form                                           */}
         {/* -------------------------------------------------------------- */}
-        <div className="order-1 flex items-center justify-center px-6 py-12 lg:order-2 lg:overflow-y-auto lg:py-16">
+        <div className="flex items-center justify-center px-6 py-12 lg:overflow-y-auto lg:py-16">
           <div className="w-full max-w-md">
             <Link
               href="/"
@@ -293,18 +293,18 @@ function LaunchOverlay({ onComplete }: { onComplete: () => void }) {
             className="absolute h-px bg-[var(--line)]"
             style={{ top: `${top}%`, left: "-20%" }}
             initial={{ width: 0, opacity: 0 }}
-            animate={{ width: ["0%", "50%", "0%"], opacity: [0, 0.8, 0], x: ["0vw", "140vw"] }}
-            transition={{ duration: 0.6, delay: 0.2 + i * 0.06, ease: "easeIn" }}
+            animate={{ width: ["0%", "40%", "0%"], opacity: [0, 0.5, 0], x: ["0vw", "140vw"] }}
+            transition={{ duration: 1.1, delay: 0.5 + i * 0.08, ease: "easeIn" }}
           />
         ))}
 
         {/* the rocket itself */}
         <motion.div
           className="absolute left-0 top-1/2"
-          style={{ marginLeft: "-8vw", marginTop: "-6vw", transform: "scale(1.5)" }}
-          initial={{ x: "-20vw", y: 0, rotate: 15 }}
-          animate={{ x: "120vw", y: [-4, -100, -200], rotate: [15, 5, -5] }}
-          transition={{ duration: 1.0, delay: 0.1, ease: [0.5, 0, 0.85, 0.35] }}
+          style={{ marginLeft: "-8vw", marginTop: "-6vw" }}
+          initial={{ x: "-10vw", y: 0, rotate: 12 }}
+          animate={{ x: "115vw", y: [-4, -80, -170], rotate: [12, 4, -6] }}
+          transition={{ duration: 1.6, delay: 0.3, ease: [0.5, 0, 0.85, 0.35] }}
           onAnimationComplete={onComplete}
         >
           <RocketSVG />
@@ -381,7 +381,7 @@ function MissionScene() {
       <div className="absolute inset-0 opacity-[0.05] [background-image:radial-gradient(var(--line)_1px,transparent_1px)] [background-size:26px_26px]" />
       <div className="absolute left-1/2 top-1/3 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--accent)] opacity-[0.08] blur-[110px]" />
 
-      <svg viewBox="0 0 400 420" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid slice" fill="none">
+      <svg viewBox="0 0 400 420" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid meet" fill="none">
         {/* stars */}
         {SCENE_STARS.map((s, i) => (
           <motion.circle
@@ -423,9 +423,9 @@ function MissionScene() {
         <motion.g
           style={{ transformOrigin: "320px 55px" }}
           animate={{ rotate: 360 }}
-          transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+          transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
         >
-          <circle cx="358" cy="55" r="3.5" fill="var(--accent)" />
+          <circle cx="358" cy="55" r="2.4" fill="var(--accent)" />
         </motion.g>
 
         {/* dashed distant orbit trail, lower area */}
@@ -435,12 +435,12 @@ function MissionScene() {
           rx="150"
           ry="46"
           stroke="var(--line)"
-          strokeWidth="1.5"
-          strokeDasharray="4 6"
-          opacity={0.7}
+          strokeWidth="1"
+          strokeDasharray="3 6"
+          opacity={0.4}
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
-          transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
+          transition={{ duration: 2, ease: "easeOut", delay: 0.4 }}
         />
 
         {/* ground line */}
@@ -465,47 +465,35 @@ function MissionScene() {
 
         {/* rocket idling on the pad */}
         <motion.g
-          transform="translate(150 260) scale(1.15)"
-          animate={{ y: [0, -6, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          transform="translate(150 260)"
+          animate={{ y: [0, -3, 0] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
         >
           {/* idle flame flicker */}
           <motion.path
             d="M-4 96 C-14 100, -18 108, -8 112 C-16 110, -20 102, -10 94 Z"
             fill="var(--accent)"
-            opacity={0.9}
-            animate={{ scaleY: [1, 1.4, 0.75, 1], opacity: [0.7, 1, 0.6, 0.7] }}
-            transition={{ duration: 0.3, repeat: Infinity, ease: "easeInOut" }}
+            opacity={0.6}
+            animate={{ scaleY: [1, 1.3, 0.85, 1], opacity: [0.5, 0.75, 0.4, 0.5] }}
+            transition={{ duration: 0.6, repeat: Infinity, ease: "easeInOut" }}
             style={{ transformOrigin: "-8px 100px" }}
           />
           {/* fins */}
-          <path d="M-14 70 L-26 96 L-14 90 Z" stroke="var(--ink)" strokeWidth="2.5" strokeLinejoin="round" />
-          <path d="M14 70 L26 96 L14 90 Z" stroke="var(--ink)" strokeWidth="2.5" strokeLinejoin="round" />
+          <path d="M-14 70 L-26 96 L-14 90 Z" stroke="var(--ink)" strokeWidth="2" strokeLinejoin="round" />
+          <path d="M14 70 L26 96 L14 90 Z" stroke="var(--ink)" strokeWidth="2" strokeLinejoin="round" />
           {/* body */}
           <motion.path
             d="M0 0 C16 20, 16 70, 16 90 L-16 90 C-16 70, -16 20, 0 0 Z"
             stroke="var(--ink)"
-            strokeWidth="2.5"
+            strokeWidth="2.2"
             strokeLinejoin="round"
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
+            transition={{ duration: 1.3, ease: "easeOut", delay: 0.2 }}
           />
-          <circle cx="0" cy="34" r="10" stroke="var(--accent)" strokeWidth="2.5" />
+          <circle cx="0" cy="34" r="8" stroke="var(--accent)" strokeWidth="2" />
         </motion.g>
       </svg>
     </div>
-  );
-}
-
-export default function LoginPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-[var(--bg)]">
-        <Loader2 size={32} className="animate-spin text-[var(--accent)]" />
-      </div>
-    }>
-      <LoginContent />
-    </Suspense>
   );
 }
