@@ -254,8 +254,8 @@ export default function ContactPage() {
       {/* BODY — sticky info/live-brief panel + multi-step form              */}
       {/* ------------------------------------------------------------------ */}
       <div className="mx-auto mt-16 grid max-w-7xl grid-cols-1 gap-14 px-6 sm:px-10 lg:grid-cols-12 lg:gap-20">
-        {/* LEFT */}
-        <div className="flex flex-col gap-12 lg:sticky lg:top-28 lg:col-span-5 lg:h-fit">
+        {/* LEFT (Appears Second on Mobile, First on Desktop) */}
+        <div className="order-2 flex flex-col gap-12 lg:order-1 lg:sticky lg:top-28 lg:col-span-5 lg:h-fit">
           {/* direct contact */}
           <div className="flex flex-col gap-4">
             <h3
@@ -360,13 +360,13 @@ export default function ContactPage() {
           </div>
         </div>
 
-        {/* RIGHT — multi-step form */}
+        {/* RIGHT — multi-step form (Appears First on Mobile, Second on Desktop) */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="lg:col-span-7"
+          className="order-1 lg:order-2 lg:col-span-7"
         >
           {isSuccess ? (
             <div className="rounded-3xl border border-[var(--line)] bg-[var(--bg)] p-8 shadow-2xl sm:p-12 lg:p-14 text-center flex flex-col items-center justify-center min-h-[400px]">

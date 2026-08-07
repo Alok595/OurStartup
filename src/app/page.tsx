@@ -37,8 +37,8 @@ export default function Home() {
   return (
     <main ref={containerRef} className="w-full h-full relative bg-[var(--bg)]">
       {/* Hero container with Parallax */}
-      <div className="relative h-screen w-full overflow-hidden">
-        <motion.div style={{ y: heroY }} className="absolute inset-0 h-full w-full">
+      <div className="relative h-auto w-full overflow-hidden sm:h-screen">
+        <motion.div style={{ y: heroY }} className="h-full w-full sm:absolute sm:inset-0">
           <Hero />
         </motion.div>
       </div>

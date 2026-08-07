@@ -253,9 +253,10 @@ export default function Services() {
     const track = trackRef.current;
     if (!container || !track) return;
 
-    const ctx = gsap.context(() => {
-      // The track is 600vh. The container is 100vh.
-      // We want to translate track by -(500vh) over the course of scrolling.
+    let mm = gsap.matchMedia();
+
+    mm.add("(min-width: 1024px)", () => {
+      // Desktop: Pin and scroll track vertically
       const getDistance = () => track.scrollHeight - window.innerHeight;
 
       gsap.to(track, {
@@ -265,7 +266,7 @@ export default function Services() {
           trigger: container,
           start: "top top",
           end: () => `+=${getDistance()}`,
-          scrub: 1, // Add a little smoothness to the scroll tie
+          scrub: 1,
           pin: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
@@ -281,7 +282,7 @@ export default function Services() {
       });
     });
 
-    return () => ctx.revert();
+    return () => mm.revert();
   }, []);
 
   const jumpTo = (i: number) => {
@@ -293,7 +294,7 @@ export default function Services() {
 
   return (
     <section className={`${display.variable} ${body.variable} ${mono.variable} relative bg-[var(--bg)]`}>
-      <div ref={containerRef} className="relative h-screen w-full overflow-hidden">
+      <div ref={containerRef} className="relative lg:h-screen w-full lg:overflow-hidden">
         
         {/* sticky header: jump-dots, progress rail */}
         <div className="absolute inset-x-0 top-0 z-30 bg-[var(--bg)]/80 backdrop-blur-md">
@@ -349,7 +350,7 @@ export default function Services() {
 function ServicePanel({ service }: { service: ServiceItem }) {
   return (
     <section
-      className="relative flex h-screen w-full flex-col justify-center overflow-hidden border-b border-[var(--line)] px-6 sm:px-10 [--accent:var(--accent-light)] dark:[--accent:var(--accent-dark)]"
+      className="relative flex min-h-screen py-24 w-full flex-col justify-center overflow-hidden border-b border-[var(--line)] px-6 sm:px-10 [--accent:var(--accent-light)] dark:[--accent:var(--accent-dark)]"
       style={{ "--accent-light": service.accentLight, "--accent-dark": service.accentDark } as React.CSSProperties}
     >
       {/* parallax background numeral */}

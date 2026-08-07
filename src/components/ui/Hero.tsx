@@ -210,7 +210,7 @@ export default function HeroSection() {
       {/* full-bleed SVG scene. Mobile: its own bottom band in normal flow. 
           sm+: original absolute full-bleed panel, right-anchored. */}
       <div
-        className="relative order-3 h-[45vh] min-h-[280px] w-full shrink-0 overflow-hidden rounded-t-2xl border-t border-[var(--line)] bg-[var(--bg)]
+        className="relative order-3 h-[55vh] min-h-[360px] w-full shrink-0 overflow-hidden rounded-t-2xl border-t border-[var(--line)] bg-[var(--bg)]
           sm:absolute sm:inset-y-0 sm:right-0 sm:order-none sm:h-full sm:min-h-0 sm:w-[72%] sm:rounded-none sm:border-0 sm:bg-transparent lg:w-[60%]"
       >
         <motion.div style={{ x: sx, y: sy }} className="h-full w-full">
@@ -475,7 +475,16 @@ function SvgStage({ Svg, slideKey }: { Svg: React.FC<{ accent: string }>; slideK
       const orbiters = root.querySelectorAll<SVGElement>(".orbit-dot");
 
       drawPaths.forEach((p, i) => {
-        const len = p.getTotalLength();
+        let len = p.getTotalLength();
+        if (p.tagName.toLowerCase() === "rect") {
+          const w = parseFloat(p.getAttribute("width") || "0");
+          const h = parseFloat(p.getAttribute("height") || "0");
+          const rx = parseFloat(p.getAttribute("rx") || "0");
+          len = 2 * w + 2 * h - 8 * rx + 2 * Math.PI * rx;
+        } else if (p.tagName.toLowerCase() === "circle") {
+          const r = parseFloat(p.getAttribute("r") || "0");
+          len = 2 * Math.PI * r;
+        }
         gsap.fromTo(p, { strokeDasharray: len, strokeDashoffset: len }, { strokeDashoffset: 0, duration: 0.9, ease: "power2.out", delay: 0.025 * i });
       });
       const settleAt = 0.5 + drawPaths.length * 0.025;

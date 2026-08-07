@@ -101,7 +101,7 @@ function LoginContent() {
         {/* -------------------------------------------------------------- */}
         {/* LEFT — animated mission-control scene                          */}
         {/* -------------------------------------------------------------- */}
-        <div className="relative h-[42vh] overflow-hidden border-b border-[var(--line)] lg:h-full lg:border-b-0 lg:border-r">
+        <div className="order-2 relative h-[42vh] overflow-hidden border-t border-[var(--line)] lg:order-1 lg:h-full lg:border-t-0 lg:border-r">
           <MissionScene />
           <div className="pointer-events-none absolute bottom-6 left-6 right-6 z-10 sm:bottom-10 sm:left-10">
             <span
@@ -122,7 +122,7 @@ function LoginContent() {
         {/* -------------------------------------------------------------- */}
         {/* RIGHT — sign-in form                                           */}
         {/* -------------------------------------------------------------- */}
-        <div className="flex items-center justify-center px-6 py-12 lg:overflow-y-auto lg:py-16">
+        <div className="order-1 flex items-center justify-center px-6 py-12 lg:order-2 lg:overflow-y-auto lg:py-16">
           <div className="w-full max-w-md">
             <Link
               href="/"
