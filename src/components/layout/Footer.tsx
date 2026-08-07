@@ -74,13 +74,13 @@ export default function Footer() {
             <h4 className="text-xs uppercase tracking-[0.2em] font-semibold text-[var(--sub)]" style={{ fontFamily: "var(--font-mono)" }}>Connect</h4>
             <div className="flex flex-wrap gap-3">
               <a href="#" aria-label="Twitter / X" className="group flex h-12 w-12 items-center justify-center rounded-xl border border-[var(--line)] transition-all hover:border-[var(--accent)] hover:bg-[var(--accent)]/5">
-                <TwitterIcon size={20} className="text-[var(--sub)] transition-colors group-hover:text-[var(--accent)]" />
+                <TwitterIcon width={20} height={20} className="text-[var(--sub)] transition-colors group-hover:text-[var(--accent)]" />
               </a>
               <a href="#" aria-label="LinkedIn" className="group flex h-12 w-12 items-center justify-center rounded-xl border border-[var(--line)] transition-all hover:border-[var(--accent)] hover:bg-[var(--accent)]/5">
-                <LinkedinIcon size={20} className="text-[var(--sub)] transition-colors group-hover:text-[var(--accent)]" />
+                <LinkedinIcon width={20} height={20} className="text-[var(--sub)] transition-colors group-hover:text-[var(--accent)]" />
               </a>
               <a href="#" aria-label="GitHub" className="group flex h-12 w-12 items-center justify-center rounded-xl border border-[var(--line)] transition-all hover:border-[var(--accent)] hover:bg-[var(--accent)]/5">
-                <GithubIcon size={20} className="text-[var(--sub)] transition-colors group-hover:text-[var(--accent)]" />
+                <GithubIcon width={20} height={20} className="text-[var(--sub)] transition-colors group-hover:text-[var(--accent)]" />
               </a>
             </div>
             
