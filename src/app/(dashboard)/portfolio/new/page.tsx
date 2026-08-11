@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Inter, Space_Grotesk } from "next/font/google";
-import { Loader2, Image as ImageIcon, X, ArrowLeft, Plus } from "lucide-react";
+import { Loader2, Image as ImageIcon, X, ArrowLeft, Plus, ChevronDown } from "lucide-react";
 import { CldUploadWidget } from "next-cloudinary";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -66,7 +66,7 @@ export default function AddProjectPage() {
   };
 
   return (
-    <div className={`${display.variable} ${body.variable} p-6 md:p-10 max-w-[1000px] mx-auto flex flex-col gap-8`} style={{ fontFamily: "var(--font-body)" }}>
+    <div className={`${display.variable} ${body.variable} p-6 md:p-10 pb-32 max-w-[1000px] mx-auto flex flex-col gap-8`} style={{ fontFamily: "var(--font-body)" }}>
       
       {/* Header */}
       <div className="flex flex-col gap-4 border-b border-[var(--line)] pb-6">
@@ -97,7 +97,18 @@ export default function AddProjectPage() {
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold text-[var(--ink)]">Category</label>
-              <input required type="text" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="h-11 rounded-xl border border-[var(--line)] bg-transparent px-4 text-sm outline-none focus:border-[var(--accent)]" placeholder="e.g. Mobile Application" />
+              <div className="relative">
+                <select required value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="h-11 w-full rounded-xl border border-[var(--line)] bg-transparent px-4 pr-10 text-sm text-[var(--ink)] outline-none focus:border-[var(--accent)] appearance-none cursor-pointer">
+                  <option value="" disabled className="bg-[var(--bg)] text-[var(--ink)]">Select a category</option>
+                  <option value="Web Development" className="bg-[var(--bg)] text-[var(--ink)]">Web Development</option>
+                  <option value="Mobile Application" className="bg-[var(--bg)] text-[var(--ink)]">Mobile Application</option>
+                  <option value="UI/UX Design" className="bg-[var(--bg)] text-[var(--ink)]">UI/UX Design</option>
+                  <option value="Backend Systems" className="bg-[var(--bg)] text-[var(--ink)]">Backend Systems</option>
+                  <option value="AI / Machine Learning" className="bg-[var(--bg)] text-[var(--ink)]">AI / Machine Learning</option>
+                  <option value="Other" className="bg-[var(--bg)] text-[var(--ink)]">Other</option>
+                </select>
+                <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--sub)] pointer-events-none" />
+              </div>
             </div>
           </div>
 
@@ -147,7 +158,18 @@ export default function AddProjectPage() {
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold text-[var(--ink)]">Budget</label>
-              <input type="text" value={formData.budget} onChange={e => setFormData({...formData, budget: e.target.value})} className="h-11 rounded-xl border border-[var(--line)] bg-transparent px-4 text-sm outline-none focus:border-[var(--accent)]" placeholder="$40k - $60k" />
+              <div className="relative">
+                <select value={formData.budget} onChange={e => setFormData({...formData, budget: e.target.value})} className="h-11 w-full rounded-xl border border-[var(--line)] bg-transparent px-4 pr-10 text-sm text-[var(--ink)] outline-none focus:border-[var(--accent)] appearance-none cursor-pointer">
+                  <option value="" disabled className="bg-[var(--bg)] text-[var(--ink)]">Select a budget</option>
+                  <option value="Under $10k" className="bg-[var(--bg)] text-[var(--ink)]">Under $10k</option>
+                  <option value="$10k - $25k" className="bg-[var(--bg)] text-[var(--ink)]">$10k - $25k</option>
+                  <option value="$25k - $50k" className="bg-[var(--bg)] text-[var(--ink)]">$25k - $50k</option>
+                  <option value="$50k - $100k" className="bg-[var(--bg)] text-[var(--ink)]">$50k - $100k</option>
+                  <option value="$100k+" className="bg-[var(--bg)] text-[var(--ink)]">$100k+</option>
+                  <option value="Undisclosed" className="bg-[var(--bg)] text-[var(--ink)]">Undisclosed</option>
+                </select>
+                <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--sub)] pointer-events-none" />
+              </div>
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold text-[var(--ink)]">Duration</label>
