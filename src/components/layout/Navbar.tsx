@@ -34,6 +34,7 @@
 
 import { AnimatePresence, motion, useMotionValue, useSpring } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Space_Grotesk, Inter } from "next/font/google";
@@ -92,15 +93,12 @@ export default function Navbar() {
         <div className="flex items-center justify-between gap-4">
           {/* logomark + wordmark */}
           <Link href="/" className="flex items-center gap-2.5">
-            <svg width="26" height="26" viewBox="0 0 32 32" fill="none" className="shrink-0">
-              <circle cx="13" cy="16" r="10" stroke="var(--sub)" strokeWidth="1.6" />
-              <circle cx="19" cy="16" r="10" stroke="var(--accent)" strokeWidth="2" />
-            </svg>
+            <Image src="/images/logo-modified.png" alt="GenZDevWorks Logo" width={112} height={112} className="w-8 h-8 shrink-0 transition-transform duration-300 hover:scale-[3.5] hover:z-50 relative origin-top-left" />
             <span
               className="text-xl font-bold tracking-tight text-[var(--ink)]"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              Startup<span style={{ color: "var(--accent)" }}>Our</span>
+              GenZDev<span style={{ color: "var(--accent)" }}>Works</span>
             </span>
           </Link>
 

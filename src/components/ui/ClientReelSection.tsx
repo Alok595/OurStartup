@@ -202,7 +202,7 @@ export default function ClientReelSection() {
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" className="text-white">
                         <path d="M12 2L15 8L21 9L16.5 14L18 20L12 17L6 20L7.5 14L3 9L9 8L12 2Z"></path>
                       </svg>
-                      <span className="text-xs text-white drop-shadow-md">Original Audio - @startupour</span>
+                      <span className="text-xs text-white drop-shadow-md">Original Audio - @genzdevworks</span>
                     </div>
                   </div>
                 </div>

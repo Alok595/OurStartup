@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 
 import { usePathname } from "next/navigation";
@@ -53,10 +54,8 @@ export default function Footer() {
           
           <div className="md:col-span-2 flex flex-col gap-4">
             <div className="text-2xl font-bold tracking-tight text-[var(--ink)] flex items-center gap-2" style={{ fontFamily: "var(--font-display)" }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--accent)]">
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-              </svg>
-              StartupOur
+              <Image src="/images/logo-modified.png" alt="GenZDevWorks Logo" width={112} height={112} className="w-8 h-8 shrink-0 transition-transform duration-300 hover:scale-[3.5] hover:z-50 relative origin-bottom-left" />
+              GenZDevWorks
             </div>
             <p className="text-sm text-[var(--sub)] max-w-sm" style={{ fontFamily: "var(--font-body)" }}>
               A technology-driven software development agency for forward-thinking enterprises.
@@ -100,7 +99,7 @@ export default function Footer() {
 
         {/* Very Bottom: Copyright */}
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 text-xs text-[var(--sub)]" style={{ fontFamily: "var(--font-mono)" }}>
-          <p>© {new Date().getFullYear()} StartupOur Agency. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} GenZDevWorks Agency. All rights reserved.</p>
           <div className="flex gap-6">
             <a href="#" className="hover:text-[var(--ink)] transition-colors">Privacy Policy</a>
             <a href="#" className="hover:text-[var(--ink)] transition-colors">Terms of Service</a>

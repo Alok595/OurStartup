@@ -20,23 +20,23 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "StartupOur | Premium Software Agency",
-    template: "%s | StartupOur Agency",
+    default: "GenZDevWorks | Premium Software Agency",
+    template: "%s | GenZDevWorks Agency",
   },
   description: "A technology-driven software development agency helping startups and enterprises build high-quality digital products, AI solutions, and mobile apps.",
   keywords: ["software agency", "web development", "mobile apps", "AI solutions", "UI/UX design", "startup scaling"],
-  authors: [{ name: "StartupOur" }],
+  authors: [{ name: "GenZDevWorks" }],
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://startupour.com",
-    title: "StartupOur | Premium Software Agency",
+    url: "https://genzdevworks.com",
+    title: "GenZDevWorks | Premium Software Agency",
     description: "Building scalable, secure, and innovative digital solutions tailored to business needs.",
-    siteName: "StartupOur",
+    siteName: "GenZDevWorks",
   },
   twitter: {
     card: "summary_large_image",
-    title: "StartupOur | Premium Software Agency",
+    title: "GenZDevWorks | Premium Software Agency",
     description: "Technology-driven software development agency helping startups and enterprises.",
   },
   robots: {

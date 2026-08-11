@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { 
@@ -27,15 +28,12 @@ export default function Sidebar() {
     <aside className="fixed left-0 top-0 z-40 hidden h-screen w-64 flex-col border-r border-[var(--line)] bg-[var(--bg)]/80 backdrop-blur-xl md:flex">
       <div className="flex h-16 items-center px-6 border-b border-[var(--line)]">
         <Link href="/" className="flex items-center gap-2">
-          <svg width="24" height="24" viewBox="0 0 32 32" fill="none" className="shrink-0">
-            <circle cx="13" cy="16" r="10" stroke="var(--sub)" strokeWidth="1.6" />
-            <circle cx="19" cy="16" r="10" stroke="var(--accent)" strokeWidth="2" />
-          </svg>
+          <Image src="/images/logo-modified.png" alt="GenZDevWorks Logo" width={112} height={112} className="w-8 h-8 shrink-0 transition-transform duration-300 hover:scale-[3.5] hover:z-50 relative origin-top-left" />
           <span
             className="text-lg font-bold tracking-tight text-[var(--ink)]"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            Startup<span style={{ color: "var(--accent)" }}>Our</span> Admin
+            GenZDev<span style={{ color: "var(--accent)" }}>Works</span> Admin
           </span>
         </Link>
       </div>
