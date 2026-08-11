@@ -29,6 +29,7 @@
 import { useRef, useState } from "react";
 import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
 import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import Image from "next/image";
 import {
   Copy,
   Check,
@@ -209,44 +210,75 @@ export default function ContactPage() {
 
         <div className="pointer-events-none absolute inset-0 opacity-[0.035] [background-image:linear-gradient(var(--line)_1px,transparent_1px),linear-gradient(90deg,var(--line)_1px,transparent_1px)] [background-size:64px_64px]" />
 
-        <div className="relative z-10 mx-auto max-w-5xl">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="mb-8 flex w-fit items-center gap-3 rounded-full border border-[var(--line)] bg-[var(--bg)] px-4 py-2"
-          >
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent)] opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--accent)]" />
-            </span>
-            <span
-              className="text-xs font-semibold uppercase tracking-widest text-[var(--ink)]"
-              style={{ fontFamily: "var(--font-mono)" }}
+        <div className="relative z-10 mx-auto max-w-5xl flex items-center justify-between">
+          <div className="max-w-lg flex-1">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="mb-8 flex w-fit items-center gap-3 rounded-full border border-[var(--line)] bg-[var(--bg)] px-4 py-2"
             >
-              Accepting new projects
-            </span>
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent)] opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--accent)]" />
+              </span>
+              <span
+                className="text-xs font-semibold uppercase tracking-widest text-[var(--ink)]"
+                style={{ fontFamily: "var(--font-mono)" }}
+              >
+                Accepting new projects
+              </span>
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="text-6xl font-bold leading-[0.95] tracking-tighter text-[var(--ink)] sm:text-8xl lg:text-[7rem]"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              Let's build <br className="hidden sm:block" />
+              <span className="text-[var(--sub)]">the future.</span>
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25, duration: 0.7 }}
+              className="mt-6 text-[15px] leading-relaxed text-[var(--sub)]"
+            >
+              Tell us what you're building. A four-step brief, less than two minutes, straight to a real person on
+              the team.
+            </motion.p>
+          </div>
+
+          {/* Floating Animated Logo (Right Side) */}
+          <motion.div
+            className="hidden sm:block relative z-20 cursor-pointer pointer-events-auto shrink-0"
+            animate={{ 
+              y: [0, -30, 0],
+              rotateZ: [-2, 4, -2],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            whileHover={{
+              scale: 1.25,
+              rotateZ: 0,
+              filter: "drop-shadow(0px 0px 60px var(--accent))",
+              transition: { duration: 0.4, type: "spring", stiffness: 200 }
+            }}
+          >
+            <Image 
+              src="/images/logo-modified.png" 
+              alt="GenZDevWorks Logo" 
+              width={600} 
+              height={600} 
+              className="w-56 h-56 sm:w-72 sm:h-72 lg:w-[400px] lg:h-[400px] object-contain drop-shadow-2xl"
+              priority
+            />
           </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="text-6xl font-bold leading-[0.95] tracking-tighter text-[var(--ink)] sm:text-8xl lg:text-[7rem]"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            Let's build <br className="hidden sm:block" />
-            <span className="text-[var(--sub)]">the future.</span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25, duration: 0.7 }}
-            className="mt-6 max-w-lg text-[15px] leading-relaxed text-[var(--sub)]"
-          >
-            Tell us what you're building. A four-step brief, less than two minutes, straight to a real person on
-            the team.
-          </motion.p>
         </div>
       </div>
 
