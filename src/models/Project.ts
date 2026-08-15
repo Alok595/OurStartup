@@ -7,6 +7,7 @@ export interface IProject extends Document {
   description: string;
   color: string;
   liveUrl?: string;
+  badge?: string;
   
   // Extended details
   year?: string;
@@ -37,6 +38,7 @@ const ProjectSchema = new Schema<IProject>({
   description: { type: String, required: true },
   color: { type: String, default: "#D9600A" },
   liveUrl: { type: String },
+  badge: { type: String },
   
   year: { type: String },
   client: { type: String },

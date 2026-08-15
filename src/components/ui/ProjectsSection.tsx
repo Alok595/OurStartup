@@ -19,6 +19,7 @@ type Project = {
   color: string;
   liveUrl?: string;
   heroImage?: string;
+  badge?: string;
 };
 
 import { useEffect, useState } from "react";
@@ -112,6 +113,35 @@ export default function ProjectsSection() {
                   backgroundImage: project.heroImage ? `url(${project.heroImage})` : undefined
                 }}
               >
+                {/* Folded Corner Ribbon Badge */}
+                {project.badge && (() => {
+                  const getBadgeStyles = (badge: string) => {
+                    switch (badge) {
+                      case "Premium":
+                        return "bg-gradient-to-r from-[#E6C27A] to-[#D4AF37] text-black";
+                      case "Featured":
+                        return "bg-gradient-to-r from-[#F9E596] to-[#E6C27A] text-black";
+                      case "Top Choice":
+                        return "bg-gradient-to-r from-[#FFDF00] to-[#D4AF37] text-black";
+                      case "Enterprise":
+                        return "bg-gradient-to-r from-[#C5A059] to-[#8C6239] text-white";
+                      case "Startup":
+                        return "bg-gradient-to-r from-[#F8F1CE] to-[#E2C792] text-black";
+                      default:
+                        return "bg-gradient-to-r from-[#E6C27A] to-[#D4AF37] text-black";
+                    }
+                  };
+                  return (
+                    <div className="absolute top-0 right-0 z-20 overflow-hidden w-28 h-28 pointer-events-none rounded-tr-2xl">
+                      <div className={`absolute top-[22px] -right-[28px] w-[140px] rotate-45 text-center py-1.5 text-[9px] font-bold uppercase tracking-widest shadow-lg border-y border-white/20 ${getBadgeStyles(project.badge)}`}>
+                        {/* Shimmer effect */}
+                        <div className="absolute inset-0 -translate-x-full animate-[shimmer_2.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+                        {project.badge}
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 {!project.heroImage && (
                   <>
                     <div 

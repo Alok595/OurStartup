@@ -37,7 +37,8 @@ export default function EditProjectPage() {
     solution: "",
     impact: "", // Comma separated
     gallery: [] as string[],
-    featured: false
+    featured: false,
+    badge: ""
   });
 
   useEffect(() => {
@@ -66,7 +67,8 @@ export default function EditProjectPage() {
             solution: p.solution || "",
             impact: p.impact ? p.impact.join(", ") : "",
             gallery: p.gallery || [],
-            featured: p.featured || false
+            featured: p.featured || false,
+            badge: p.badge || ""
           });
         } else {
           setError(true);
@@ -224,6 +226,20 @@ export default function EditProjectPage() {
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold text-[var(--ink)]">Client Name</label>
               <input type="text" value={formData.client} onChange={e => setFormData({...formData, client: e.target.value})} className="h-11 rounded-xl border border-[var(--line)] bg-transparent px-4 text-sm outline-none focus:border-[var(--accent)]" />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-semibold text-[var(--ink)]">Premium Badge (Optional)</label>
+              <div className="relative">
+                <select value={formData.badge} onChange={e => setFormData({...formData, badge: e.target.value})} className="h-11 w-full rounded-xl border border-[var(--line)] bg-transparent px-4 pr-10 text-sm text-[var(--ink)] outline-none focus:border-[var(--accent)] appearance-none cursor-pointer">
+                  <option value="" className="bg-[var(--bg)] text-[var(--ink)]">None</option>
+                  <option value="Premium" className="bg-[var(--bg)] text-[var(--ink)]">Premium</option>
+                  <option value="Featured" className="bg-[var(--bg)] text-[var(--ink)]">Featured</option>
+                  <option value="Top Choice" className="bg-[var(--bg)] text-[var(--ink)]">Top Choice</option>
+                  <option value="Enterprise" className="bg-[var(--bg)] text-[var(--ink)]">Enterprise</option>
+                  <option value="Startup" className="bg-[var(--bg)] text-[var(--ink)]">Startup</option>
+                </select>
+                <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--sub)] pointer-events-none" />
+              </div>
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold text-[var(--ink)]">Year</label>
