@@ -44,6 +44,19 @@ body {
   overflow-x: hidden;
 }
 
+/* Ensure form elements use readable text color (fixes light-mode admin panel) */
+input,
+textarea,
+select {
+  color: var(--ink);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--sub);
+  opacity: 1;
+}
+
 /* Lenis Recommended Styles */
 html.lenis, html.lenis body {
   height: auto;

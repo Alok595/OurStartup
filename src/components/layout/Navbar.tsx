@@ -45,8 +45,9 @@ const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"], vari
 const body = Inter({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-body" });
 
 const links = [
-  { href: "/services", label: "Services" },
   { href: "/projects", label: "Projects" },
+
+  { href: "/services", label: "Services" },
   { href: "/about", label: "About Us" },
 ];
 

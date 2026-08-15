@@ -161,7 +161,7 @@ export default function EditProjectPage() {
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold text-[var(--ink)]">Category</label>
               <div className="relative">
-                <select required value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="h-11 w-full rounded-xl border border-[var(--line)] bg-transparent px-4 pr-10 text-sm text-[var(--ink)] outline-none focus:border-[var(--accent)] appearance-none cursor-pointer">
+                <select required={formData.category !== "Other"} value={["Web Development","Mobile Application","UI/UX Design","Backend Systems","AI / Machine Learning"].includes(formData.category) ? formData.category : formData.category ? "Other" : ""} onChange={e => { if (e.target.value === "Other") { setFormData({...formData, category: "Other"}); } else { setFormData({...formData, category: e.target.value}); }}} className="h-11 w-full rounded-xl border border-[var(--line)] bg-transparent px-4 pr-10 text-sm text-[var(--ink)] outline-none focus:border-[var(--accent)] appearance-none cursor-pointer">
                   <option value="" disabled className="bg-[var(--bg)] text-[var(--ink)]">Select a category</option>
                   <option value="Web Development" className="bg-[var(--bg)] text-[var(--ink)]">Web Development</option>
                   <option value="Mobile Application" className="bg-[var(--bg)] text-[var(--ink)]">Mobile Application</option>
@@ -172,6 +172,16 @@ export default function EditProjectPage() {
                 </select>
                 <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--sub)] pointer-events-none" />
               </div>
+              {(!["Web Development","Mobile Application","UI/UX Design","Backend Systems","AI / Machine Learning",""].includes(formData.category) || formData.category === "Other") && (
+                <input
+                  required
+                  type="text"
+                  value={formData.category === "Other" ? "" : formData.category}
+                  onChange={e => setFormData({...formData, category: e.target.value || "Other"})}
+                  className="h-11 rounded-xl border border-[var(--line)] bg-transparent px-4 text-sm outline-none focus:border-[var(--accent)] mt-1.5"
+                  placeholder="Enter custom category name..."
+                />
+              )}
             </div>
           </div>
 
