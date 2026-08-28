@@ -58,7 +58,7 @@ export default function Navbar() {
   const pathname = usePathname();
 
   // Check if Navbar should be hidden on auth and admin routes
-  const hideRoutes = ['/login', '/dashboard', '/leads', '/portfolio', '/settings', '/stories'];
+  const hideRoutes = ['/login', '/dashboard', '/leads', '/portfolio', '/settings', '/stories', '/clients'];
   const isHidden = hideRoutes.some(route => pathname?.startsWith(route));
 
   // --- Scroll Detection ---

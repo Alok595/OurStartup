@@ -1,8 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 export default function WhatsAppButton() {
+  const pathname = usePathname();
+  const hideRoutes = ['/login', '/dashboard', '/leads', '/portfolio', '/settings', '/stories', '/clients'];
+  if (hideRoutes.some(route => pathname?.startsWith(route))) {
+    return null;
+  }
+
   const phoneNumber = "916202585952"; // Country code (91) + number
   const whatsappUrl = `https://wa.me/${phoneNumber}`;
 

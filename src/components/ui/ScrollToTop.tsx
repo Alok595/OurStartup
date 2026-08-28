@@ -3,9 +3,14 @@
 import { useState, useEffect } from "react";
 import { ArrowUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 export default function ScrollToTop() {
+  const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(false);
+
+  const hideRoutes = ['/login', '/dashboard', '/leads', '/portfolio', '/settings', '/stories', '/clients'];
+  const isHidden = hideRoutes.some(route => pathname?.startsWith(route));
 
   useEffect(() => {
     const toggleVisibility = () => {
@@ -26,6 +31,8 @@ export default function ScrollToTop() {
       behavior: "smooth",
     });
   };
+
+  if (isHidden) return null;
 
   return (
     <AnimatePresence>
