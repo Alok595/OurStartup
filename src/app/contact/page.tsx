@@ -81,7 +81,7 @@ const LinkedinIcon = ({ size = 24, ...props }: any) => (
 
 const SOCIALS = [
   { name: "Instagram", icon: InstagramIcon, link: "#" },
-  { name: "Email Us", icon: MailIcon, link: "mailto:hello@genzdevworks.com" },
+  { name: "Email Us", icon: MailIcon, link: "mailto:genzdevworks@gmail.com" },
   { name: "WhatsApp", icon: WhatsAppIcon, link: "#" },
   { name: "LinkedIn", icon: LinkedinIcon, link: "#" },
 ];
@@ -297,14 +297,14 @@ export default function ContactPage() {
               Direct contact
             </h3>
             <button
-              onClick={() => copy("hello@genzdevworks.com", "email")}
+              onClick={() => copy("genzdevworks@gmail.com", "email")}
               className="group flex items-center justify-between rounded-2xl border border-[var(--line)] px-5 py-4 text-left transition-colors hover:border-[var(--ink)]"
             >
               <span
                 className="text-xl font-medium text-[var(--ink)] sm:text-2xl"
                 style={{ fontFamily: "var(--font-display)" }}
               >
-                hello@genzdevworks.com
+                genzdevworks@gmail.com
               </span>
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--line)] text-[var(--sub)] transition-colors group-hover:border-[var(--ink)] group-hover:text-[var(--ink)]">
                 {copied === "email" ? <Check size={14} /> : <Copy size={14} />}

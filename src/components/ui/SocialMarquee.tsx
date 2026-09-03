@@ -27,7 +27,7 @@ const SOCIALS = [
         <polyline points="22,6 12,13 2,6"></polyline>
       </svg>
     ),
-    link: "mailto:hello@genzdevworks.com",
+    link: "mailto:genzdevworks@gmail.com",
   },
   {
     name: "WhatsApp",

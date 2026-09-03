@@ -6,7 +6,7 @@ import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 
 import { usePathname } from "next/navigation";
 import { Mail, Phone } from "lucide-react";
-import { TwitterIcon, LinkedinIcon, GithubIcon } from "@/components/ui/BrandIcons";
+import { LinkedinIcon, InstagramIcon } from "@/components/ui/BrandIcons";
 
 const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-display" });
 const body = Inter({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-body" });
@@ -72,21 +72,18 @@ export default function Footer() {
           <div className="flex flex-col gap-4">
             <h4 className="text-xs uppercase tracking-[0.2em] font-semibold text-[var(--sub)]" style={{ fontFamily: "var(--font-mono)" }}>Connect</h4>
             <div className="flex flex-wrap gap-3">
-              <a href="#" aria-label="Twitter / X" className="group flex h-12 w-12 items-center justify-center rounded-xl border border-[var(--line)] transition-all hover:border-[var(--accent)] hover:bg-[var(--accent)]/5">
-                <TwitterIcon width={20} height={20} className="text-[var(--sub)] transition-colors group-hover:text-[var(--accent)]" />
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="group flex h-12 w-12 items-center justify-center rounded-xl border border-[var(--line)] transition-all hover:border-[var(--accent)] hover:bg-[var(--accent)]/5">
+                <InstagramIcon width={20} height={20} className="text-[var(--sub)] transition-colors group-hover:text-[var(--accent)]" />
               </a>
               <a href="#" aria-label="LinkedIn" className="group flex h-12 w-12 items-center justify-center rounded-xl border border-[var(--line)] transition-all hover:border-[var(--accent)] hover:bg-[var(--accent)]/5">
                 <LinkedinIcon width={20} height={20} className="text-[var(--sub)] transition-colors group-hover:text-[var(--accent)]" />
               </a>
-              <a href="#" aria-label="GitHub" className="group flex h-12 w-12 items-center justify-center rounded-xl border border-[var(--line)] transition-all hover:border-[var(--accent)] hover:bg-[var(--accent)]/5">
-                <GithubIcon width={20} height={20} className="text-[var(--sub)] transition-colors group-hover:text-[var(--accent)]" />
-              </a>
             </div>
             
             <div className="mt-2 flex flex-col gap-3">
-              <a href="mailto:595alok@gmail.com" className="flex items-center gap-3 text-sm font-medium text-[var(--ink)] transition-colors hover:text-[var(--accent)]" style={{ fontFamily: "var(--font-body)" }}>
+              <a href="mailto:genzdevworks@gmail.com" className="flex items-center gap-3 text-sm font-medium text-[var(--ink)] transition-colors hover:text-[var(--accent)]" style={{ fontFamily: "var(--font-body)" }}>
                 <Mail size={16} className="text-[var(--sub)]" />
-                595alok@gmail.com
+                genzdevworks@gmail.com
               </a>
               <a href="tel:+916202585952" className="flex items-center gap-3 text-sm font-medium text-[var(--ink)] transition-colors hover:text-[var(--accent)]" style={{ fontFamily: "var(--font-body)" }}>
                 <Phone size={16} className="text-[var(--sub)]" />
