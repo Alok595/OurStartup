@@ -1236,19 +1236,19 @@ function HomeScreen({ onOpenApp, onOpenSite }: { onOpenApp: (app: 'login' | 'cal
         </div>
       </div>
 
-      {/* Main Apps Grid (2 Rows of 3) */}
-      <div className="grid grid-cols-3 gap-y-5 gap-x-4 max-w-[260px] mx-auto w-full px-1 my-auto">
+      {/* Main Apps Grid (4 Columns Layout) */}
+      <div className="grid grid-cols-4 gap-y-5 gap-x-2.5 max-w-[280px] mx-auto w-full px-1 my-auto">
         {/* Admin Login App */}
         <button
           type="button"
           onClick={() => onOpenApp('login')}
           className="flex flex-col items-center gap-1.5 group cursor-pointer focus:outline-none"
         >
-          <div className="w-13 h-13 rounded-2xl bg-gradient-to-br from-orange-400 to-amber-600 flex items-center justify-center shadow-lg shadow-orange-500/20 group-hover:scale-105 active:scale-95 transition-transform relative">
-            <Lock className="w-6 h-6 text-white stroke-[2.5]" />
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-400 to-amber-600 flex items-center justify-center shadow-lg shadow-orange-500/20 group-hover:scale-105 active:scale-95 transition-transform relative">
+            <Lock className="w-5 h-5 text-white stroke-[2.5]" />
             <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 border-2 border-white rounded-full" />
           </div>
-          <span className="text-[11px] font-medium text-[var(--ink)] tracking-tight">Admin</span>
+          <span className="text-[10px] font-medium text-[var(--ink)] tracking-tight">Admin</span>
         </button>
 
         {/* Phone / Call App */}
@@ -1257,10 +1257,34 @@ function HomeScreen({ onOpenApp, onOpenSite }: { onOpenApp: (app: 'login' | 'cal
           onClick={() => onOpenApp('call')}
           className="flex flex-col items-center gap-1.5 group cursor-pointer focus:outline-none"
         >
-          <div className="w-13 h-13 rounded-2xl bg-gradient-to-br from-emerald-400 to-green-600 flex items-center justify-center shadow-lg shadow-green-500/20 group-hover:scale-105 active:scale-95 transition-transform">
-            <Phone className="w-6 h-6 text-white stroke-[2.5]" />
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 to-green-600 flex items-center justify-center shadow-lg shadow-green-500/20 group-hover:scale-105 active:scale-95 transition-transform">
+            <Phone className="w-5 h-5 text-white stroke-[2.5]" />
           </div>
-          <span className="text-[11px] font-medium text-[var(--ink)] tracking-tight">Phone</span>
+          <span className="text-[10px] font-medium text-[var(--ink)] tracking-tight">Phone</span>
+        </button>
+
+        {/* Camera App */}
+        <button
+          type="button"
+          onClick={() => onOpenApp('camera')}
+          className="flex flex-col items-center gap-1.5 group cursor-pointer focus:outline-none"
+        >
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center shadow-lg shadow-slate-900/20 group-hover:scale-105 active:scale-95 transition-transform">
+            <Camera className="w-5 h-5 text-white stroke-[2.5]" />
+          </div>
+          <span className="text-[10px] font-medium text-[var(--ink)] tracking-tight">Camera</span>
+        </button>
+
+        {/* Startup Website App */}
+        <button
+          type="button"
+          onClick={onOpenSite}
+          className="flex flex-col items-center gap-1.5 group cursor-pointer focus:outline-none"
+        >
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 active:scale-95 transition-transform">
+            <Globe className="w-5 h-5 text-white stroke-[2.5]" />
+          </div>
+          <span className="text-[10px] font-medium text-[var(--ink)] tracking-tight">Startup</span>
         </button>
 
         {/* WhatsApp App */}
@@ -1270,50 +1294,43 @@ function HomeScreen({ onOpenApp, onOpenSite }: { onOpenApp: (app: 'login' | 'cal
           rel="noopener noreferrer"
           className="flex flex-col items-center gap-1.5 group cursor-pointer focus:outline-none"
         >
-          <div className="w-13 h-13 rounded-2xl bg-gradient-to-br from-[#25D366] to-[#128C7E] flex items-center justify-center shadow-lg shadow-green-600/25 group-hover:scale-105 active:scale-95 transition-transform">
-            <svg viewBox="0 0 24 24" width="26" height="26" fill="white">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#25D366] to-[#128C7E] flex items-center justify-center shadow-lg shadow-green-600/25 group-hover:scale-105 active:scale-95 transition-transform">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="white">
               <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zM12.05 20.21c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.214 8.214 0 0 1-1.26-4.43c0-4.54 3.7-8.24 8.24-8.24 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.83c.02 4.54-3.68 8.28-8.22 8.28zm4.52-6.16c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.22.25-.86.84-.86 2.05 0 1.21.88 2.38 1 2.55.12.17 1.74 2.66 4.21 3.73.59.25 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.11-.23-.17-.48-.3z" />
             </svg>
           </div>
-          <span className="text-[11px] font-medium text-[var(--ink)] tracking-tight">WhatsApp</span>
+          <span className="text-[10px] font-medium text-[var(--ink)] tracking-tight">WhatsApp</span>
         </a>
 
-        {/* Gmail App (Opens direct in Gmail web) */}
+        {/* Gmail App */}
         <a
           href="https://mail.google.com/mail/?view=cm&fs=1&to=genzdevworks@gmail.com"
           target="_blank"
           rel="noopener noreferrer"
           className="flex flex-col items-center gap-1.5 group cursor-pointer focus:outline-none"
         >
-          <div className="w-13 h-13 rounded-2xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center shadow-lg shadow-red-500/25 group-hover:scale-105 active:scale-95 transition-transform">
-            <Mail className="w-6 h-6 text-white stroke-[2.5]" />
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center shadow-lg shadow-red-500/25 group-hover:scale-105 active:scale-95 transition-transform">
+            <Mail className="w-5 h-5 text-white stroke-[2.5]" />
           </div>
-          <span className="text-[11px] font-medium text-[var(--ink)] tracking-tight">Gmail</span>
+          <span className="text-[10px] font-medium text-[var(--ink)] tracking-tight">Gmail</span>
         </a>
 
-        {/* Camera App */}
-        <button
-          type="button"
-          onClick={() => onOpenApp('camera')}
+        {/* Instagram App */}
+        <a
+          href="https://www.instagram.com/genzdevworks"
+          target="_blank"
+          rel="noopener noreferrer"
           className="flex flex-col items-center gap-1.5 group cursor-pointer focus:outline-none"
         >
-          <div className="w-13 h-13 rounded-2xl bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center shadow-lg shadow-slate-900/20 group-hover:scale-105 active:scale-95 transition-transform">
-            <Camera className="w-6 h-6 text-white stroke-[2.5]" />
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#FFDC80] via-[#F77737] via-[#E1306C] via-[#C13584] to-[#833AB4] flex items-center justify-center shadow-lg shadow-pink-500/25 group-hover:scale-105 active:scale-95 transition-transform">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+            </svg>
           </div>
-          <span className="text-[11px] font-medium text-[var(--ink)] tracking-tight">Camera</span>
-        </button>
-
-        {/* Startup Website App */}
-        <button
-          type="button"
-          onClick={onOpenSite}
-          className="flex flex-col items-center gap-1.5 group cursor-pointer focus:outline-none"
-        >
-          <div className="w-13 h-13 rounded-2xl bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 active:scale-95 transition-transform">
-            <Globe className="w-6 h-6 text-white stroke-[2.5]" />
-          </div>
-          <span className="text-[11px] font-medium text-[var(--ink)] tracking-tight">Startup</span>
-        </button>
+          <span className="text-[10px] font-medium text-[var(--ink)] tracking-tight">Instagram</span>
+        </a>
       </div>
     </motion.div>
   );
