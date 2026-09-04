@@ -23,6 +23,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
+  verification: {
+    google: "2yil0IV_DcsLoOnVDG3_JIt3Z5uRdPc-WxOCW1wMVek",
+  },
   title: {
     default: "GenZDevWorks | Premium Software Agency",
     template: "%s | GenZDevWorks Agency",
