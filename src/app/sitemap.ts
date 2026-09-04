@@ -3,7 +3,7 @@ import connectToDatabase from "@/lib/mongodb";
 import Project from "@/models/Project";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://genzdevworks.com'; // Change this to your actual production domain later
+  const baseUrl = 'https://genzdevworks.ratnahomes.in'; // Change this to your actual production domain later
   
   // Static core routes
   const staticRoutes = [

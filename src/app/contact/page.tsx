@@ -193,6 +193,23 @@ export default function ContactPage() {
 
   return (
     <main className={`${display.variable} ${body.variable} ${mono.variable} relative min-h-screen bg-[var(--bg)] pb-24`}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": FAQS.map((faq) => ({
+              "@type": "Question",
+              "name": faq.q,
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": faq.a,
+              },
+            })),
+          }),
+        }}
+      />
       {/* ------------------------------------------------------------------ */}
       {/* HERO — mouse-reactive blob + headline                             */}
       {/* ------------------------------------------------------------------ */}

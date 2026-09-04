@@ -3,6 +3,22 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import FAQSection, { FAQItem } from "@/components/ui/FAQSection";
+
+const PROJECTS_FAQS: FAQItem[] = [
+  {
+    q: "How do you manage project timelines?",
+    a: "We work with agile methodologies, breaking projects into manageable sprints to ensure consistent progress, regular feedback, and on-time delivery."
+  },
+  {
+    q: "Can I see the source code during development?",
+    a: "Yes! We set up a private repository for your project from day one. You will have full access and transparency into our codebase."
+  },
+  {
+    q: "Do you handle deployment and hosting?",
+    a: "We manage end-to-end deployment, typically utilizing cloud platforms like AWS, Vercel, or Google Cloud, depending on your architecture."
+  }
+];
 
 const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-display" });
 const body = Inter({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-body" });
@@ -98,6 +114,23 @@ export default function ProjectsPage() {
 
   return (
     <main className={`${display.variable} ${body.variable} ${mono.variable} min-h-screen bg-[var(--bg)] pt-32 pb-24 px-6 sm:px-10`}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": PROJECTS_FAQS.map((faq) => ({
+              "@type": "Question",
+              "name": faq.q,
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": faq.a,
+              },
+            })),
+          }),
+        }}
+      />
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-col gap-6 mb-20 text-center max-w-3xl mx-auto">
           <motion.h1 
@@ -437,8 +470,8 @@ export default function ProjectsPage() {
             </AnimatePresence>
           )}
         </div>
+        <FAQSection faqs={PROJECTS_FAQS} title="Project FAQs" />
       </div>
     </main>
   );
 }
-

@@ -12,6 +12,6 @@ export default function robots(): MetadataRoute.Robots {
         '/register/'
       ], // Protect admin/auth routes from search engine indexing
     },
-    sitemap: 'https://genzdevworks.com/sitemap.xml',
+    sitemap: 'https://genzdevworks.ratnahomes.in/sitemap.xml',
   };
 }

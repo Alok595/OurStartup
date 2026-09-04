@@ -19,6 +19,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://genzdevworks.ratnahomes.in"),
+  alternates: {
+    canonical: "/",
+  },
   title: {
     default: "GenZDevWorks | Premium Software Agency",
     template: "%s | GenZDevWorks Agency",
@@ -29,7 +33,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://genzdevworks.com",
+    url: "https://genzdevworks.ratnahomes.in",
     title: "GenZDevWorks | Premium Software Agency",
     description: "Building scalable, secure, and innovative digital solutions tailored to business needs.",
     siteName: "GenZDevWorks",
@@ -64,6 +68,19 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col mac-bg text-black dark:text-white transition-colors duration-500">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "GenZDevWorks",
+              "url": "https://genzdevworks.ratnahomes.in/",
+              "logo": "https://genzdevworks.ratnahomes.in/icon.png",
+              "description": "A technology-driven software development agency helping startups and enterprises build high-quality digital products, AI solutions, and mobile apps.",
+            })
+          }}
+        />
         {/* Subtle Grid Pattern Overlay */}
         <div 
           className="pointer-events-none fixed inset-0 z-40 h-full w-full opacity-[0.12] dark:opacity-[0.06] mix-blend-multiply dark:mix-blend-screen"
