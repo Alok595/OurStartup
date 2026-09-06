@@ -1,13 +1,5 @@
 import mongoose from "mongoose";
 
-const MONGODB_URL = process.env.MONGODB_URL;
-
-if (!MONGODB_URL) {
-  throw new Error(
-    "Please define the MONGODB_URL environment variable inside .env.local"
-  );
-}
-
 /**
  * Global is used here to maintain a cached connection across hot reloads
  * in development. This prevents connections growing exponentially
@@ -20,6 +12,15 @@ if (!cached) {
 }
 
 async function connectToDatabase() {
+  const MONGODB_URL = process.env.MONGODB_URL || process.env.MONGODB_URI;
+
+  if (!MONGODB_URL) {
+    console.error("CRITICAL: MONGODB_URL / MONGODB_URI is not defined in environment variables!");
+    throw new Error(
+      "Please define the MONGODB_URL or MONGODB_URI environment variable in your deployment platform settings (e.g. Vercel) or .env.local"
+    );
+  }
+
   if (cached.conn) {
     return cached.conn;
   }
@@ -29,7 +30,7 @@ async function connectToDatabase() {
       bufferCommands: false,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URL!, opts).then((mongoose) => {
+    cached.promise = mongoose.connect(MONGODB_URL, opts).then((mongoose) => {
       console.log("Successfully connected to MongoDB.");
       return mongoose;
     }).catch((error) => {

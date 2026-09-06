@@ -15,6 +15,7 @@ export async function GET(req: Request) {
     const projects = await Project.find(query).sort({ createdAt: -1 });
     return NextResponse.json({ success: true, data: projects });
   } catch (error) {
+    console.error("GET /api/portfolio error:", error);
     return NextResponse.json({ success: false, error: "Failed to fetch projects" }, { status: 500 });
   }
 }
