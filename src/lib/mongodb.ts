@@ -12,7 +12,7 @@ if (!cached) {
 }
 
 async function connectToDatabase() {
-  const MONGODB_URL = process.env.MONGODB_URL || process.env.MONGODB_URI;
+  let MONGODB_URL = process.env.MONGODB_URL || process.env.MONGODB_URI;
 
   if (!MONGODB_URL) {
     console.error("CRITICAL: MONGODB_URL / MONGODB_URI is not defined in environment variables!");
@@ -20,6 +20,9 @@ async function connectToDatabase() {
       "Please define the MONGODB_URL or MONGODB_URI environment variable in your deployment platform settings (e.g. Vercel) or .env.local"
     );
   }
+
+  // Clean up any leading/trailing quotes or whitespace if accidentally pasted into deployment settings
+  MONGODB_URL = MONGODB_URL.trim().replace(/^["']|["']$/g, "").trim();
 
   if (cached.conn) {
     return cached.conn;
