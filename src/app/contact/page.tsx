@@ -82,7 +82,7 @@ const LinkedinIcon = ({ size = 24, ...props }: any) => (
 const SOCIALS = [
   { name: "Instagram", icon: InstagramIcon, link: "#" },
   { name: "Email Us", icon: MailIcon, link: "mailto:genzdevworks@gmail.com" },
-  { name: "WhatsApp", icon: WhatsAppIcon, link: "#" },
+  { name: "WhatsApp", icon: WhatsAppIcon, link: "https://wa.me/916202585952" },
   { name: "LinkedIn", icon: LinkedinIcon, link: "#" },
 ];
 
@@ -328,11 +328,11 @@ export default function ContactPage() {
               </span>
             </button>
             <button
-              onClick={() => copy("+1 234 567 890", "phone")}
+              onClick={() => copy("+91 6202 585 952", "phone")}
               className="group flex items-center justify-between rounded-2xl border border-[var(--line)] px-5 py-4 text-left transition-colors hover:border-[var(--ink)]"
             >
-              <span className="text-lg font-medium text-[var(--sub)] sm:text-xl" style={{ fontFamily: "var(--font-display)" }}>
-                +1 (234) 567-890
+              <span className="text-lg font-medium text-[var(--ink)] sm:text-xl" style={{ fontFamily: "var(--font-display)" }}>
+                +91 6202 585 952
               </span>
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--line)] text-[var(--sub)] transition-colors group-hover:border-[var(--ink)] group-hover:text-[var(--ink)]">
                 {copied === "phone" ? <Check size={14} /> : <Copy size={14} />}
@@ -467,16 +467,18 @@ export default function ContactPage() {
                 className="min-h-[280px]"
               >
                 {step === 0 && (
-                  <div className="flex flex-col gap-10">
-                    <FloatingInput
+                  <div className="flex flex-col gap-9">
+                    <FormInput
                       id="name"
                       label="What's your name?"
+                      placeholder="e.g. Alex Rivera"
                       value={form.name}
                       onChange={(v) => setForm((f) => ({ ...f, name: v }))}
                     />
-                    <FloatingInput
+                    <FormInput
                       id="email"
                       label="Email address"
+                      placeholder="e.g. alex@startup.com"
                       type="email"
                       value={form.email}
                       onChange={(v) => setForm((f) => ({ ...f, email: v }))}
@@ -685,37 +687,39 @@ function Chip({ children, active, onClick }: { children: React.ReactNode; active
   );
 }
 
-function FloatingInput({
+function FormInput({
   id,
   label,
+  placeholder,
   value,
   onChange,
   type = "text",
 }: {
   id: string;
   label: string;
+  placeholder: string;
   value: string;
   onChange: (v: string) => void;
   type?: string;
 }) {
   return (
-    <div className="relative flex flex-col">
+    <div className="group flex flex-col gap-2 border-b border-[var(--line)] pb-2 transition-colors focus-within:border-[var(--accent)]">
+      <label
+        htmlFor={id}
+        className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--sub)] transition-colors group-focus-within:text-[var(--accent)]"
+        style={{ fontFamily: "var(--font-mono)" }}
+      >
+        {label}
+      </label>
       <input
         id={id}
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder={label}
-        className="peer w-full border-b border-[var(--line)] bg-transparent py-3 text-xl text-[var(--ink)] placeholder-transparent outline-none transition-colors focus:border-[var(--accent)]"
+        placeholder={placeholder}
+        className="w-full bg-transparent py-1 text-xl font-medium text-[var(--ink)] placeholder-[var(--sub)]/35 outline-none transition-colors"
         style={{ fontFamily: "var(--font-body)" }}
       />
-      <label
-        htmlFor={id}
-        className="pointer-events-none absolute left-0 -top-3 text-[10px] uppercase tracking-widest text-[var(--accent)] opacity-100 transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-[var(--sub)] peer-placeholder-shown:opacity-100"
-        style={{ fontFamily: "var(--font-mono)" }}
-      >
-        {label}
-      </label>
     </div>
   );
 }

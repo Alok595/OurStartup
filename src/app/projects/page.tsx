@@ -41,20 +41,21 @@ type Project = {
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 
-export default function ProjectsPage() {
-  const ProjectCardSkeleton = () => (
-    <div className="flex flex-col gap-5 rounded-3xl border border-[var(--line)] bg-[var(--bg)] p-6">
-      <div className="aspect-video w-full rounded-2xl bg-black/5 dark:bg-white/5 animate-pulse" />
-      <div className="flex flex-col gap-3">
-        <div className="h-4 w-24 bg-black/5 dark:bg-white/5 animate-pulse rounded" />
-        <div className="h-8 w-3/4 bg-black/5 dark:bg-white/5 animate-pulse rounded" />
-        <div className="h-16 w-full bg-black/5 dark:bg-white/5 animate-pulse rounded" />
-        <div className="mt-4 pt-4 border-t border-[var(--line)]/60 flex gap-4">
-          <div className="h-4 w-32 bg-black/5 dark:bg-white/5 animate-pulse rounded" />
-        </div>
+const ProjectCardSkeleton = () => (
+  <div className="flex flex-col gap-4 rounded-3xl border border-[var(--line)] bg-[var(--bg)] p-2.5 sm:p-3">
+    <div className="aspect-[16/9] w-full rounded-[20px] bg-black/5 dark:bg-white/5 animate-pulse" />
+    <div className="flex flex-col gap-3 px-3 sm:px-4 pb-3 pt-1">
+      <div className="h-4 w-24 bg-black/5 dark:bg-white/5 animate-pulse rounded" />
+      <div className="h-8 w-3/4 bg-black/5 dark:bg-white/5 animate-pulse rounded" />
+      <div className="h-16 w-full bg-black/5 dark:bg-white/5 animate-pulse rounded" />
+      <div className="mt-4 pt-4 border-t border-[var(--line)]/60 flex gap-4">
+        <div className="h-4 w-32 bg-black/5 dark:bg-white/5 animate-pulse rounded" />
       </div>
     </div>
-  );
+  </div>
+);
+
+export default function ProjectsPage() {
 
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -400,18 +401,17 @@ export default function ProjectsPage() {
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.96, y: -8 }}
                   transition={{ duration: 0.45, delay: idx * 0.04, ease: EASE }}
-                  className="group relative flex flex-col gap-5 rounded-3xl border border-[var(--line)] bg-[var(--bg)] p-6 transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.02] h-full"
+                  className="group relative flex flex-col gap-4 rounded-3xl border border-[var(--line)] bg-[var(--bg)] p-2.5 sm:p-3 transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.02] h-full shadow-sm hover:shadow-md"
                 >
                   <div 
-                    className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-[var(--line)]/50 bg-cover bg-center flex items-center justify-center"
+                    className="relative aspect-[16/9] w-full overflow-hidden rounded-[20px] border border-[var(--line)]/50 flex items-center justify-center"
                     style={{ 
                       backgroundColor: `${project.color}15`,
-                      backgroundImage: project.heroImage ? `url(${project.heroImage})` : undefined
                     }}
                   >
                     {/* Folded Corner Ribbon Badge */}
                     {displayBadge && (
-                      <div className="absolute top-0 right-0 z-20 overflow-hidden w-28 h-28 pointer-events-none rounded-tr-2xl">
+                      <div className="absolute top-0 right-0 z-30 overflow-hidden w-28 h-28 pointer-events-none rounded-tr-[20px]">
                         <div className={`absolute top-[22px] -right-[28px] w-[140px] rotate-45 text-center py-1.5 text-[9px] font-bold uppercase tracking-widest shadow-lg border-y border-white/20 ${getBadgeStyles(displayBadge)}`}>
                           {/* Shimmer effect */}
                           <div className="absolute inset-0 -translate-x-full animate-[shimmer_2.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
@@ -419,7 +419,7 @@ export default function ProjectsPage() {
                         </div>
                       </div>
                     )}
-                    {!project.heroImage && (
+                    {!project.heroImage ? (
                       <>
                         <div 
                           className="absolute inset-0 opacity-20"
@@ -430,13 +430,28 @@ export default function ProjectsPage() {
                           style={{ backgroundColor: project.color }}
                         />
                       </>
-                    )}
-                    {project.heroImage && (
-                      <div className="absolute inset-0 bg-black/10 transition-opacity duration-500 group-hover:opacity-0" />
+                    ) : (
+                      <>
+                        {/* Ambient blurred backdrop so any non-standard ratio blends seamlessly */}
+                        <div 
+                          className="absolute inset-0 bg-cover bg-center blur-2xl opacity-35 scale-125 pointer-events-none transition-opacity duration-500 group-hover:opacity-45"
+                          style={{ backgroundImage: `url(${project.heroImage})` }}
+                          aria-hidden="true"
+                        />
+                        {/* Full Cover Image - complete, uncropped presentation */}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img 
+                          src={project.heroImage} 
+                          alt={project.title}
+                          className="relative z-10 w-full h-full object-contain p-1 transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 z-20 bg-black/5 dark:bg-white/5 transition-opacity duration-500 group-hover:opacity-0 pointer-events-none" />
+                      </>
                     )}
                   </div>
                   
-                  <div className="flex flex-col gap-3 flex-1">
+                  <div className="flex flex-col gap-3 flex-1 px-3 sm:px-4 pb-3 pt-1">
                     <span className="text-xs font-semibold uppercase tracking-widest text-[var(--accent)]" style={{ fontFamily: "var(--font-mono)" }}>
                       {project.category}
                     </span>

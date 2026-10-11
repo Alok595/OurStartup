@@ -1,15 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, useReducedMotion, type Transition, type TargetAndTransition } from "framer-motion";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Inter, Fraunces, JetBrains_Mono } from "next/font/google";
-import { ArrowLeft, ArrowRight, CheckCircle2, ExternalLink, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, CheckCircle2, ExternalLink, X, ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
 
-// Fraunces gives the display type real character — a warm, editorial serif
-// with room to swing from quiet (300) to a heavy stamped italic (900) —
-// paired with Inter for reading and JetBrains Mono for "case file" data.
 const display = Fraunces({
   subsets: ["latin"],
   weight: ["300", "400", "600", "900"],
@@ -30,6 +27,7 @@ type ProjectData = {
   budget?: string;
   duration?: string;
   liveUrl?: string;
+  badge?: string;
   services?: string[];
   heroImage?: string;
   description?: string;
@@ -38,15 +36,6 @@ type ProjectData = {
   solution?: string;
   impact?: string[];
   gallery?: string[];
-};
-
-type SectionKey = "overview" | "work" | "results" | "gallery";
-
-const SECTION_LABELS: Record<SectionKey, string> = {
-  overview: "Overview",
-  work: "Challenge & Solution",
-  results: "Results",
-  gallery: "Gallery",
 };
 
 export default function ProjectDetailsPage() {
@@ -58,19 +47,66 @@ export default function ProjectDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
   const [lightbox, setLightbox] = useState<{ src: string; index: number | null } | null>(null);
-  const [activeSection, setActiveSection] = useState<SectionKey | null>(null);
   const [readProgress, setReadProgress] = useState(0);
+  const detailsRef = useRef<HTMLDivElement>(null);
 
-  const sectionRefs = useRef<Partial<Record<SectionKey, HTMLElement | null>>>({});
+  useEffect(() => {
+    const el = detailsRef.current;
+    if (!el) return;
 
-  const fadeUp = (delay = 0): { initial: TargetAndTransition; animate?: TargetAndTransition; whileInView?: TargetAndTransition; viewport?: object; transition: Transition } =>
+    let targetScroll = el.scrollTop;
+    let currentScroll = el.scrollTop;
+    let animId: number | null = null;
+    let isRunning = false;
+
+    const lerp = (start: number, end: number, factor: number) => start + (end - start) * factor;
+
+    const update = () => {
+      currentScroll = lerp(currentScroll, targetScroll, 0.14);
+      el.scrollTop = currentScroll;
+
+      if (Math.abs(targetScroll - currentScroll) > 0.5) {
+        animId = requestAnimationFrame(update);
+      } else {
+        el.scrollTop = targetScroll;
+        isRunning = false;
+        animId = null;
+      }
+    };
+
+    const onWheel = (e: WheelEvent) => {
+      const maxScroll = el.scrollHeight - el.clientHeight;
+      if (maxScroll <= 0) return;
+
+      const canScrollDown = el.scrollTop < maxScroll - 2;
+      const canScrollUp = el.scrollTop > 2;
+
+      if ((e.deltaY > 0 && canScrollDown) || (e.deltaY < 0 && canScrollUp)) {
+        e.preventDefault();
+        targetScroll = Math.max(0, Math.min(maxScroll, targetScroll + e.deltaY));
+        if (!isRunning) {
+          isRunning = true;
+          currentScroll = el.scrollTop;
+          animId = requestAnimationFrame(update);
+        }
+      }
+    };
+
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => {
+      el.removeEventListener("wheel", onWheel);
+      if (animId) cancelAnimationFrame(animId);
+    };
+  }, [project]);
+
+  const fadeUp = (delay = 0): { initial: TargetAndTransition; whileInView?: TargetAndTransition; viewport?: object; transition: Transition } =>
     prefersReducedMotion
       ? { initial: { opacity: 1, y: 0 }, transition: { duration: 0 } }
       : {
-          initial: { opacity: 0, y: 24 },
+          initial: { opacity: 0, y: 16 },
           whileInView: { opacity: 1, y: 0 },
-          viewport: { once: true, margin: "-60px" },
-          transition: { duration: 0.7, delay, ease: EASE },
+          viewport: { once: true, margin: "-30px" },
+          transition: { duration: 0.5, delay, ease: EASE },
         };
 
   useEffect(() => {
@@ -94,27 +130,31 @@ export default function ProjectDetailsPage() {
     fetchProject();
   }, [slug]);
 
-  const galleryLength = project?.gallery?.length ?? 0;
+  // All images: heroImage first, followed by any gallery exhibits
+  const allImages = project
+    ? ([project.heroImage, ...(project.gallery || [])].filter(Boolean) as string[])
+    : [];
+  const galleryLength = allImages.length;
 
-  // Escape closes the lightbox; arrow keys page through the gallery.
+  // Escape closes the lightbox; arrow keys page through images
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (!lightbox) return;
       if (e.key === "Escape") setLightbox(null);
       if (e.key === "ArrowRight" && lightbox.index !== null && galleryLength > 0) {
         const next = (lightbox.index + 1) % galleryLength;
-        setLightbox({ src: project!.gallery![next], index: next });
+        setLightbox({ src: allImages[next], index: next });
       }
       if (e.key === "ArrowLeft" && lightbox.index !== null && galleryLength > 0) {
         const prev = (lightbox.index - 1 + galleryLength) % galleryLength;
-        setLightbox({ src: project!.gallery![prev], index: prev });
+        setLightbox({ src: allImages[prev], index: prev });
       }
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [lightbox, galleryLength, project]);
+  }, [lightbox, galleryLength, allImages]);
 
-  // Reading progress + active dossier tab, tracked on scroll.
+  // Reading progress tracking on scroll
   useEffect(() => {
     let raf = 0;
     const onScroll = () => {
@@ -123,14 +163,6 @@ export default function ProjectDetailsPage() {
         const doc = document.documentElement;
         const scrollable = doc.scrollHeight - doc.clientHeight;
         setReadProgress(scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0);
-
-        let current: SectionKey | null = null;
-        (Object.keys(sectionRefs.current) as SectionKey[]).forEach((key) => {
-          const el = sectionRefs.current[key];
-          if (!el) return;
-          if (el.getBoundingClientRect().top <= 180) current = key;
-        });
-        setActiveSection(current);
       });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -139,35 +171,23 @@ export default function ProjectDetailsPage() {
       window.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(raf);
     };
-  }, [project]);
-
-  const scrollToSection = useCallback(
-    (key: SectionKey) => {
-      const el = sectionRefs.current[key];
-      if (!el) return;
-      el.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "start" });
-    },
-    [prefersReducedMotion]
-  );
-
-  const setSectionRef = (key: SectionKey) => (el: HTMLElement | null) => {
-    sectionRefs.current[key] = el;
-  };
+  }, []);
 
   if (isLoading) {
     return (
-      <main className={`${display.variable} ${body.variable} ${mono.variable} min-h-screen bg-[var(--bg)] pt-40 px-6 sm:px-10 max-w-6xl mx-auto flex flex-col gap-10`}>
-        <div className="flex flex-col gap-6">
-          <div className="h-4 w-28 bg-black/5 dark:bg-white/5 animate-pulse rounded-full" />
-          <div className="h-16 w-3/4 max-w-2xl bg-black/5 dark:bg-white/5 animate-pulse rounded-xl" />
-          <div className="h-6 w-1/2 max-w-md bg-black/5 dark:bg-white/5 animate-pulse rounded-lg" />
+      <main className={`${display.variable} ${body.variable} ${mono.variable} min-h-screen bg-[var(--bg)] pt-32 w-full`}>
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-10 w-full items-start">
+          <div className="w-full lg:w-[45%] shrink-0 flex flex-col gap-6 px-6 sm:px-10 lg:pl-12 lg:pr-8">
+            <div className="h-4 w-28 bg-black/5 dark:bg-white/5 animate-pulse rounded-full" />
+            <div className="h-12 w-3/4 bg-black/5 dark:bg-white/5 animate-pulse rounded-xl" />
+            <div className="h-20 w-full bg-black/5 dark:bg-white/5 animate-pulse rounded-xl" />
+            <div className="h-48 w-full bg-black/5 dark:bg-white/5 animate-pulse rounded-2xl" />
+          </div>
+          <div className="w-full lg:w-[55%] flex flex-col gap-2">
+            <div className="aspect-[16/10] w-full bg-black/5 dark:bg-white/5 animate-pulse" />
+            <div className="aspect-[16/10] w-full bg-black/5 dark:bg-white/5 animate-pulse" />
+          </div>
         </div>
-        <div className="flex flex-wrap gap-4 pt-6 border-t border-dashed border-[var(--line)]">
-          <div className="h-16 w-28 bg-black/5 dark:bg-white/5 animate-pulse rounded-2xl" />
-          <div className="h-16 w-32 bg-black/5 dark:bg-white/5 animate-pulse rounded-2xl" />
-          <div className="h-16 w-28 bg-black/5 dark:bg-white/5 animate-pulse rounded-2xl" />
-        </div>
-        <div className="w-full aspect-[21/9] rounded-3xl bg-black/5 dark:bg-white/5 animate-pulse mt-8" />
       </main>
     );
   }
@@ -180,14 +200,14 @@ export default function ProjectDetailsPage() {
             className="text-xs font-bold uppercase tracking-[0.25em] px-4 py-1.5 rounded-full border border-[var(--line)] text-[var(--sub)]"
             style={{ fontFamily: "var(--font-mono)" }}
           >
-            Case file missing
+            Project missing
           </span>
           <h1 className="text-4xl sm:text-5xl italic text-[var(--ink)]" style={{ fontFamily: "var(--font-display)" }}>
             This project isn&apos;t on record.
           </h1>
           <Link
             href="/projects"
-            className="inline-flex items-center gap-2 text-[var(--ink)] font-medium text-lg underline decoration-2 underline-offset-4 hover:opacity-70 transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 rounded"
+            className="inline-flex items-center gap-2 text-[var(--ink)] font-medium text-lg underline decoration-2 underline-offset-4 hover:opacity-70 transition-opacity rounded"
           >
             <ArrowLeft size={18} />
             Back to all projects
@@ -204,16 +224,26 @@ export default function ProjectDetailsPage() {
     { label: "Timeline", value: project.duration },
   ].filter((item) => item.value);
 
-  const navItems: SectionKey[] = [
-    project.overview ? "overview" : null,
-    project.challenge || project.solution ? "work" : null,
-    project.impact && project.impact.length > 0 ? "results" : null,
-    project.gallery && project.gallery.length > 0 ? "gallery" : null,
-  ].filter((v): v is SectionKey => v !== null);
+  const getBadgeStyles = (badge: string) => {
+    switch (badge) {
+      case "Premium":
+        return "bg-gradient-to-r from-[#E6C27A] to-[#D4AF37] text-black";
+      case "Featured":
+        return "bg-gradient-to-r from-[#F9E596] to-[#E6C27A] text-black";
+      case "Top Choice":
+        return "bg-gradient-to-r from-[#FFDF00] to-[#D4AF37] text-black";
+      case "Enterprise":
+        return "bg-gradient-to-r from-[#C5A059] to-[#8C6239] text-white";
+      case "Startup":
+        return "bg-gradient-to-r from-[#F8F1CE] to-[#E2C792] text-black";
+      default:
+        return "bg-gradient-to-r from-[#E6C27A] to-[#D4AF37] text-black";
+    }
+  };
 
   return (
     <main className={`${display.variable} ${body.variable} ${mono.variable} relative min-h-screen bg-[var(--bg)]`}>
-      {/* Reading-progress rule — a case file "highlighted so far" strip */}
+      {/* Reading Progress Top Bar */}
       <div className="fixed top-0 left-0 right-0 h-[3px] z-[90] bg-[var(--line)]">
         <div
           className="h-full transition-[width] duration-150 ease-out"
@@ -221,7 +251,7 @@ export default function ProjectDetailsPage() {
         />
       </div>
 
-      {/* Lightbox */}
+      {/* Lightbox Modal */}
       {lightbox && (
         <div
           className="fixed inset-0 z-[100] bg-black/92 backdrop-blur-md flex items-center justify-center p-4 sm:p-10"
@@ -230,21 +260,21 @@ export default function ProjectDetailsPage() {
           <button
             onClick={() => setLightbox(null)}
             aria-label="Close image"
-            className="absolute top-5 right-5 sm:top-8 sm:right-8 h-11 w-11 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+            className="absolute top-5 right-5 sm:top-8 sm:right-8 h-11 w-11 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
           >
             <X size={20} />
           </button>
 
-          {lightbox.index !== null && galleryLength > 1 && (
+          {galleryLength > 1 && (
             <>
               <button
                 aria-label="Previous image"
                 onClick={(e) => {
                   e.stopPropagation();
-                  const prev = (lightbox.index! - 1 + galleryLength) % galleryLength;
-                  setLightbox({ src: project.gallery![prev], index: prev });
+                  const prev = ((lightbox.index ?? 0) - 1 + galleryLength) % galleryLength;
+                  setLightbox({ src: allImages[prev], index: prev });
                 }}
-                className="absolute left-3 sm:left-8 top-1/2 -translate-y-1/2 h-11 w-11 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+                className="absolute left-3 sm:left-8 top-1/2 -translate-y-1/2 h-11 w-11 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
               >
                 <ChevronLeft size={22} />
               </button>
@@ -252,10 +282,10 @@ export default function ProjectDetailsPage() {
                 aria-label="Next image"
                 onClick={(e) => {
                   e.stopPropagation();
-                  const next = (lightbox.index! + 1) % galleryLength;
-                  setLightbox({ src: project.gallery![next], index: next });
+                  const next = ((lightbox.index ?? 0) + 1) % galleryLength;
+                  setLightbox({ src: allImages[next], index: next });
                 }}
-                className="absolute right-3 sm:right-8 top-1/2 -translate-y-1/2 h-11 w-11 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+                className="absolute right-3 sm:right-8 top-1/2 -translate-y-1/2 h-11 w-11 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
               >
                 <ChevronRight size={22} />
               </button>
@@ -267,7 +297,7 @@ export default function ProjectDetailsPage() {
             src={lightbox.src}
             alt="Fullscreen view"
             onClick={(e) => e.stopPropagation()}
-            className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl cursor-default"
+            className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
           />
 
           {lightbox.index !== null && (
@@ -281,135 +311,104 @@ export default function ProjectDetailsPage() {
         </div>
       )}
 
-      {/* Dossier index — sticky section rail, desktop only */}
-      {navItems.length > 1 && (
-        <nav
-          aria-label="Section navigation"
-          className="hidden xl:flex flex-col gap-5 fixed left-8 top-1/2 -translate-y-1/2 z-40"
-        >
-          {navItems.map((key, i) => {
-            const isActive = activeSection === key;
-            return (
-              <button
-                key={key}
-                onClick={() => scrollToSection(key)}
-                className="group flex items-center gap-3 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 rounded"
-                style={{ outlineColor: project.color }}
+      {/* Main Container: Full Width Custom Split (Left: 45%, Right: 55%) */}
+      <div className="w-full pt-28 sm:pt-32 pb-24">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-10 items-start w-full">
+          
+          {/* ═══════════════════════════════════════════════════════
+              LEFT SIDE (45%): ALL DETAILS (Sticky & Wheel-Scrollable)
+          ═══════════════════════════════════════════════════════ */}
+          <div
+            ref={detailsRef}
+            data-lenis-prevent="true"
+            className="w-full lg:w-[45%] shrink-0 lg:sticky lg:top-28 lg:self-start lg:max-h-[calc(100vh-8.5rem)] lg:overflow-y-auto px-6 sm:px-10 lg:pl-12 lg:pr-8 flex flex-col gap-8 scrollbar-thin scroll-smooth overscroll-contain"
+          >
+            
+            {/* Back to Portfolio Link */}
+            <div>
+              <Link
+                href="/projects"
+                className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-[var(--sub)] hover:text-[var(--ink)] transition-colors group"
+                style={{ fontFamily: "var(--font-mono)" }}
               >
-                <span
-                  className="h-px transition-all duration-300"
-                  style={{
-                    width: isActive ? 28 : 12,
-                    backgroundColor: isActive ? project.color : "var(--line)",
-                  }}
-                />
-                <span
-                  className="text-[11px] uppercase tracking-[0.15em] whitespace-nowrap transition-colors duration-300"
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    color: isActive ? "var(--ink)" : "var(--sub)",
-                    opacity: isActive ? 1 : 0.7,
-                  }}
-                >
-                  {String(i + 1).padStart(2, "0")} — {SECTION_LABELS[key]}
+                <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-1" />
+                Back to Portfolio
+              </Link>
+            </div>
+
+            {/* Category Tag & Badge */}
+            <div className="flex items-center gap-3 flex-wrap">
+              <span
+                className="text-xs font-bold uppercase tracking-[0.22em] text-[var(--accent)]"
+                style={{ fontFamily: "var(--font-mono)" }}
+              >
+                {project.category}
+              </span>
+              {project.badge && (
+                <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full shadow-sm ${getBadgeStyles(project.badge)}`}>
+                  {project.badge}
                 </span>
-              </button>
-            );
-          })}
-        </nav>
-      )}
+              )}
+            </div>
 
-      {/* ---------------------------------------------------------
-          1. HERO
-      --------------------------------------------------------- */}
-      <section className="relative pt-32 sm:pt-40 pb-14 px-6 sm:px-10 overflow-hidden">
-        <div
-          className="absolute top-0 right-0 w-[80vw] h-[80vw] max-w-[800px] max-h-[800px] rounded-full blur-[120px] opacity-[0.08] pointer-events-none translate-x-1/3 -translate-y-1/3"
-          style={{ backgroundColor: project.color }}
-        />
-
-        <div className="mx-auto max-w-6xl relative z-10 flex flex-col gap-7">
-          <Link
-            href="/projects"
-            className="inline-flex items-center gap-2 text-sm font-medium text-[var(--sub)] hover:text-[var(--ink)] transition-colors w-fit focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 rounded"
-            style={{ fontFamily: "var(--font-mono)" }}
-          >
-            <ArrowLeft size={16} />
-            Back to Projects
-          </Link>
-
-          <motion.div {...fadeUp(0)} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-3">
-            <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: project.color }} />
-            <span
-              className="text-sm font-bold uppercase tracking-[0.2em] text-[var(--ink)]"
-              style={{ fontFamily: "var(--font-mono)" }}
+            {/* Title */}
+            <h1
+              className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-[var(--ink)] leading-[1.08]"
+              style={{ fontFamily: "var(--font-display)" }}
             >
-              {project.category}
-            </span>
-          </motion.div>
+              {project.title}
+            </h1>
 
-          <motion.h1
-            {...fadeUp(0.08)}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-[13vw] sm:text-6xl lg:text-7xl leading-[1.02] tracking-tight text-[var(--ink)] max-w-4xl font-normal"
-            style={{ fontFamily: "var(--font-display)", fontWeight: 600 }}
-          >
-            {project.title}
-          </motion.h1>
+            {/* Client / Location subline if available */}
+            {project.client && (
+              <p className="text-base text-[var(--sub)]" style={{ fontFamily: "var(--font-body)" }}>
+                Designed & Built for <strong className="text-[var(--ink)] font-semibold">{project.client}</strong>
+              </p>
+            )}
 
-          {project.description && (
-            <motion.p
-              {...fadeUp(0.14)}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-lg sm:text-xl text-[var(--sub)] leading-relaxed max-w-2xl"
-              style={{ fontFamily: "var(--font-body)" }}
-            >
-              {project.description}
-            </motion.p>
-          )}
-
-          {project.liveUrl && (
-            <motion.div {...fadeUp(0.2)} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-              <a
-                href={project.liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-white transition-transform hover:scale-105 shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
-                style={{ backgroundColor: project.color, boxShadow: `0 8px 24px -6px ${project.color}60`, outlineColor: project.color }}
+            {/* Short Description */}
+            {project.description && (
+              <p
+                className="text-base text-[var(--sub)] leading-relaxed"
+                style={{ fontFamily: "var(--font-body)" }}
               >
-                Visit Live Site
-                <ExternalLink size={14} />
-              </a>
-            </motion.div>
-          )}
-        </div>
-      </section>
+                {project.description}
+              </p>
+            )}
 
-      {/* ---------------------------------------------------------
-          2. META — a stamped "ticket stub" of case-file facts
-      --------------------------------------------------------- */}
-      {(metaItems.length > 0 || (project.services && project.services.length > 0)) && (
-        <section className="px-6 sm:px-10 mb-16 sm:mb-24">
-          <motion.div
-            {...fadeUp(0.05)}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="mx-auto max-w-6xl rounded-3xl border border-dashed relative overflow-hidden"
-            style={{ borderColor: "var(--line)" }}
-          >
+            {/* Scope / Services */}
+            {project.services && project.services.length > 0 && (
+              <div className="flex flex-wrap gap-2 pt-1">
+                {project.services.map((service, i) => (
+                  <span
+                    key={i}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-black/[0.03] dark:bg-white/[0.05] border border-[var(--line)] text-[var(--ink)]"
+                    style={{ fontFamily: "var(--font-mono)" }}
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: project.color }} />
+                    {service}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Metadata Specs Grid */}
             {metaItems.length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-dashed" style={{ borderColor: "var(--line)" }}>
+              <div
+                className="grid grid-cols-2 gap-y-5 gap-x-6 py-5 border-y border-[var(--line)]"
+              >
                 {metaItems.map((item, i) => (
-                  <div key={i} className="flex flex-col gap-1.5 py-6 sm:py-7 px-5 sm:px-8">
+                  <div key={i} className="flex flex-col gap-1">
                     <span
-                      className="text-[10px] font-bold uppercase tracking-[0.18em]"
-                      style={{ fontFamily: "var(--font-mono)", color: project.color }}
+                      className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--sub)]"
+                      style={{ fontFamily: "var(--font-mono)" }}
                     >
                       {item.label}
                     </span>
-                    <span className="text-base sm:text-lg font-medium text-[var(--ink)]" style={{ fontFamily: "var(--font-display)" }}>
+                    <span
+                      className="text-base sm:text-lg font-medium text-[var(--ink)]"
+                      style={{ fontFamily: "var(--font-display)" }}
+                    >
                       {item.value}
                     </span>
                   </div>
@@ -417,281 +416,155 @@ export default function ProjectDetailsPage() {
               </div>
             )}
 
-            {project.services && project.services.length > 0 && (
+            {/* Overview Pull-Quote */}
+            {project.overview && (
               <div
-                className={`flex flex-wrap items-center gap-x-6 gap-y-3 px-5 sm:px-8 py-5 sm:py-6 ${
-                  metaItems.length > 0 ? "border-t border-dashed" : ""
-                }`}
-                style={{ borderColor: "var(--line)" }}
+                className="relative pl-5 border-l-2 py-1"
+                style={{ borderColor: project.color }}
               >
-                <span
-                  className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--sub)]"
-                  style={{ fontFamily: "var(--font-mono)" }}
+                <p
+                  className="text-lg italic leading-relaxed text-[var(--ink)]"
+                  style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
                 >
-                  Scope
-                </span>
-                {project.services.map((service, i) => (
-                  <span
-                    key={i}
-                    className="inline-flex items-center gap-2 text-sm font-medium text-[var(--ink)]"
-                    style={{ fontFamily: "var(--font-body)" }}
-                  >
-                    <span className="h-1 w-1 rounded-full" style={{ backgroundColor: project.color }} />
-                    {service}
-                  </span>
-                ))}
+                  &ldquo;{project.overview}&rdquo;
+                </p>
               </div>
             )}
-          </motion.div>
-        </section>
-      )}
 
-      {/* ---------------------------------------------------------
-          3. HERO IMAGE
-      --------------------------------------------------------- */}
-      {project.heroImage && (
-        <section className="px-6 sm:px-10 mb-16 sm:mb-24">
-          <motion.div {...fadeUp(0)} initial={{ opacity: 0, scale: 0.98 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} className="mx-auto max-w-6xl">
-            <button
-              onClick={() => setLightbox({ src: project.heroImage!, index: null })}
-              className="block w-full aspect-[16/9] sm:aspect-[16/8] overflow-hidden rounded-3xl shadow-2xl group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
-              style={{ outlineColor: project.color }}
-              aria-label="Open hero image full screen"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={project.heroImage}
-                alt={`${project.title} hero`}
-                className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-              />
-            </button>
-          </motion.div>
-        </section>
-      )}
-
-      {/* ---------------------------------------------------------
-          4. OVERVIEW — an oversized pull-quote
-      --------------------------------------------------------- */}
-      {project.overview && (
-        <section
-          ref={setSectionRef("overview")}
-          className="px-6 sm:px-10 py-16 sm:py-28 scroll-mt-28"
-        >
-          <div className="mx-auto max-w-4xl relative">
-            <span
-              aria-hidden
-              className="absolute -top-10 sm:-top-14 -left-2 sm:-left-6 text-[7rem] sm:text-[9rem] leading-none select-none pointer-events-none"
-              style={{ fontFamily: "var(--font-display)", color: project.color, opacity: 0.15 }}
-            >
-              &ldquo;
-            </span>
-            <motion.p
-              {...fadeUp(0)}
-              className="relative text-2xl sm:text-4xl lg:text-[2.75rem] italic leading-[1.35] text-[var(--ink)] whitespace-pre-wrap"
-              style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
-            >
-              {project.overview}
-            </motion.p>
-          </div>
-        </section>
-      )}
-
-      {/* ---------------------------------------------------------
-          5. CHALLENGE & SOLUTION — a diptych
-      --------------------------------------------------------- */}
-      {(project.challenge || project.solution) && (
-        <section
-          ref={setSectionRef("work")}
-          className="px-6 sm:px-10 py-16 sm:py-24 border-t border-[var(--line)] scroll-mt-28"
-        >
-          <div className="mx-auto max-w-6xl grid grid-cols-1 md:grid-cols-2 md:divide-x divide-[var(--line)]">
-            {project.challenge && (
-              <motion.div {...fadeUp(0)} className="flex flex-col gap-4 pb-12 md:pb-0 md:pr-12">
-                <span
-                  className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--sub)]"
-                  style={{ fontFamily: "var(--font-mono)" }}
-                >
-                  The Problem
-                </span>
-                <h3 className="text-2xl sm:text-3xl text-[var(--ink)]" style={{ fontFamily: "var(--font-display)", fontWeight: 600 }}>
-                  The Challenge
-                </h3>
-                <p className="text-lg text-[var(--sub)] leading-relaxed whitespace-pre-wrap" style={{ fontFamily: "var(--font-body)" }}>
-                  {project.challenge}
-                </p>
-              </motion.div>
-            )}
-
-            {project.solution && (
-              <motion.div
-                {...fadeUp(0.1)}
-                className="flex flex-col gap-4 pt-12 md:pt-0 md:pl-12 relative"
-              >
-                <span
-                  aria-hidden
-                  className="hidden md:block absolute -left-px top-0 bottom-0 w-px"
-                  style={{ backgroundColor: project.color }}
-                />
-                <span
-                  className="text-xs font-bold uppercase tracking-[0.2em]"
-                  style={{ fontFamily: "var(--font-mono)", color: project.color }}
-                >
-                  Our Approach
-                </span>
-                <h3 className="text-2xl sm:text-3xl text-[var(--ink)]" style={{ fontFamily: "var(--font-display)", fontWeight: 600 }}>
-                  The Solution
-                </h3>
-                <p className="text-lg text-[var(--ink)] leading-relaxed whitespace-pre-wrap" style={{ fontFamily: "var(--font-body)" }}>
-                  {project.solution}
-                </p>
-              </motion.div>
-            )}
-          </div>
-        </section>
-      )}
-
-      {/* ---------------------------------------------------------
-          6. RESULTS
-      --------------------------------------------------------- */}
-      {project.impact && project.impact.length > 0 && (
-        <section
-          ref={setSectionRef("results")}
-          className="px-6 sm:px-10 py-16 sm:py-24 border-t border-[var(--line)] scroll-mt-28"
-        >
-          <div className="mx-auto max-w-6xl flex flex-col gap-8">
-            <span
-              className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--sub)]"
-              style={{ fontFamily: "var(--font-mono)" }}
-            >
-              Results on Record
-            </span>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {project.impact.map((item, i) => (
-                <motion.div
-                  key={i}
-                  {...fadeUp(i * 0.06)}
-                  className="flex items-start gap-4 p-6 rounded-2xl border border-[var(--line)]"
-                >
-                  <CheckCircle2 size={20} className="shrink-0 mt-0.5" style={{ color: project.color }} />
-                  <span className="text-base font-medium text-[var(--ink)] leading-snug" style={{ fontFamily: "var(--font-body)" }}>
-                    {item}
-                  </span>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* ---------------------------------------------------------
-          7. GALLERY
-      --------------------------------------------------------- */}
-      {project.gallery && project.gallery.length > 0 && (
-        <section
-          ref={setSectionRef("gallery")}
-          className="px-6 sm:px-10 py-16 sm:py-24 border-t border-[var(--line)] scroll-mt-28"
-        >
-          <div className="mx-auto max-w-6xl flex flex-col gap-8">
-            <span
-              className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--sub)]"
-              style={{ fontFamily: "var(--font-mono)" }}
-            >
-              Gallery — {String(project.gallery.length).padStart(2, "0")} exhibits
-            </span>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {project.gallery.map((img, i) => {
-                const isWide = project.gallery!.length > 2 && i % 3 === 0;
-                return (
-                  <motion.button
-                    key={i}
-                    {...fadeUp(Math.min(i * 0.05, 0.3))}
-                    onClick={() => setLightbox({ src: img, index: i })}
-                    className={`group relative overflow-hidden rounded-2xl bg-[var(--line)] border border-[var(--line)] hover:shadow-xl transition-shadow duration-500 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 ${
-                      isWide ? "sm:col-span-2 aspect-[21/9]" : "aspect-[4/3]"
-                    }`}
-                    style={{ outlineColor: project.color }}
-                    aria-label={`Open gallery image ${i + 1}`}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={img}
-                      alt={`${project.title} — exhibit ${i + 1}`}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
+            {/* Challenge & Solution */}
+            {(project.challenge || project.solution) && (
+              <div className="flex flex-col gap-4">
+                {project.challenge && (
+                  <div className="p-5 rounded-2xl border border-[var(--line)] bg-black/[0.01] dark:bg-white/[0.01] flex flex-col gap-2">
                     <span
-                      className="absolute bottom-3 left-3 text-[10px] font-bold uppercase tracking-[0.15em] text-white/90 bg-black/40 backdrop-blur-sm rounded-full px-2.5 py-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--sub)]"
                       style={{ fontFamily: "var(--font-mono)" }}
                     >
-                      {String(i + 1).padStart(2, "0")}
+                      The Challenge
                     </span>
-                  </motion.button>
-                );
-              })}
+                    <p className="text-sm text-[var(--sub)] leading-relaxed whitespace-pre-wrap">
+                      {project.challenge}
+                    </p>
+                  </div>
+                )}
+                {project.solution && (
+                  <div className="p-5 rounded-2xl border border-[var(--line)] bg-black/[0.01] dark:bg-white/[0.01] flex flex-col gap-2">
+                    <span
+                      className="text-[11px] font-bold uppercase tracking-[0.18em]"
+                      style={{ fontFamily: "var(--font-mono)", color: project.color }}
+                    >
+                      The Solution
+                    </span>
+                    <p className="text-sm text-[var(--ink)] leading-relaxed whitespace-pre-wrap">
+                      {project.solution}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Results / Impact */}
+            {project.impact && project.impact.length > 0 && (
+              <div className="flex flex-col gap-2.5">
+                <span
+                  className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--sub)]"
+                  style={{ fontFamily: "var(--font-mono)" }}
+                >
+                  Impact on Record
+                </span>
+                <div className="flex flex-col gap-2">
+                  {project.impact.map((item, i) => (
+                    <div key={i} className="flex items-start gap-2.5 text-sm text-[var(--ink)]">
+                      <CheckCircle2 size={16} className="shrink-0 mt-0.5" style={{ color: project.color }} />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Action Buttons (Inquire / Live Demo) */}
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <Link
+                href="/contact"
+                className="flex-1 inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-full text-xs font-bold uppercase tracking-[0.15em] bg-[var(--ink)] text-[var(--bg)] hover:opacity-90 transition-opacity"
+                style={{ fontFamily: "var(--font-mono)" }}
+              >
+                Inquire Now
+              </Link>
+              {project.liveUrl && (
+                <a
+                  href={project.liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-full text-xs font-bold uppercase tracking-[0.15em] border border-[var(--line)] text-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--bg)] transition-colors"
+                  style={{ fontFamily: "var(--font-mono)" }}
+                >
+                  Live Demo
+                  <ExternalLink size={13} />
+                </a>
+              )}
             </div>
           </div>
-        </section>
-      )}
 
-      {/* ---------------------------------------------------------
-          8. CTA FOOTER
-      --------------------------------------------------------- */}
-      <section className="px-6 sm:px-10 py-24 sm:py-32 border-t border-[var(--line)] flex flex-col items-center justify-center gap-14 relative overflow-hidden">
-        <div
-          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[70vw] h-[70vw] max-w-[700px] max-h-[700px] rounded-full blur-[130px] opacity-[0.06] pointer-events-none"
-          style={{ backgroundColor: project.color }}
-        />
-
-        <div className="text-center flex flex-col items-center gap-10 relative z-10">
-          <span
-            className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] px-4 py-1.5 rounded-full border"
-            style={{ fontFamily: "var(--font-mono)", color: project.color, borderColor: project.color }}
-          >
-            Case closed — {project.year ?? "and counting"}
-          </span>
-          <h2
-            className="text-4xl sm:text-5xl lg:text-7xl tracking-tight text-[var(--ink)] leading-[1.08]"
-            style={{ fontFamily: "var(--font-display)", fontWeight: 600 }}
-          >
-            Ready to build <br className="hidden sm:block" />
-            <span className="italic" style={{ color: project.color }}>something similar?</span>
-          </h2>
-          <Link
-            href="/contact"
-            className="group flex h-20 w-20 sm:h-24 sm:w-24 items-center justify-center rounded-full text-white transition-transform hover:scale-110 active:scale-95 shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
-            style={{ backgroundColor: project.color, boxShadow: `0 20px 40px -10px ${project.color}50`, outlineColor: project.color }}
-          >
-            <ArrowRight size={32} className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-          </Link>
-        </div>
-      </section>
-
-      {/* Mobile dossier index — horizontal pill nav */}
-      {navItems.length > 1 && (
-        <nav
-          aria-label="Section navigation"
-          className="xl:hidden sticky bottom-4 z-40 mx-4 mb-4 flex gap-2 overflow-x-auto rounded-full border border-[var(--line)] bg-[var(--bg)]/90 backdrop-blur-md px-3 py-2 shadow-lg"
-        >
-          {navItems.map((key) => {
-            const isActive = activeSection === key;
-            return (
-              <button
-                key={key}
-                onClick={() => scrollToSection(key)}
-                className="shrink-0 text-xs font-medium px-3.5 py-1.5 rounded-full transition-colors whitespace-nowrap focus-visible:outline focus-visible:outline-2"
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  backgroundColor: isActive ? project.color : "transparent",
-                  color: isActive ? "#fff" : "var(--sub)",
-                  outlineColor: project.color,
-                }}
+          {/* ═══════════════════════════════════════════════════════
+              RIGHT SIDE (55%): FULL-WIDTH IMAGES (55% of Full)
+          ═══════════════════════════════════════════════════════ */}
+          <div className="w-full lg:w-[55%] flex flex-col">
+            {allImages.length === 0 ? (
+              <div
+                className="aspect-video w-full rounded-2xl border border-[var(--line)] flex items-center justify-center text-[var(--sub)]"
+                style={{ backgroundColor: `${project.color}10` }}
               >
-                {SECTION_LABELS[key]}
-              </button>
-            );
-          })}
-        </nav>
-      )}
+                No images available for this project.
+              </div>
+            ) : (
+              allImages.map((img, i) => {
+                const isPrimary = i === 0;
+                return (
+                  <motion.div
+                    key={i}
+                    {...fadeUp(i === 0 ? 0 : 0.08)}
+                    className="group relative w-full border-b-[3px] border-[var(--ink)]/50 dark:border-white/50 pb-3 mb-3 last:border-b-0 last:mb-0 last:pb-0"
+                  >
+                    <div
+                      onClick={() => setLightbox({ src: img, index: i })}
+                      className="relative w-full overflow-hidden cursor-pointer bg-black/[0.02] dark:bg-white/[0.02]"
+                    >
+                      {/* Image covering full width of the column */}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={img}
+                        alt={`${project.title} — view ${i + 1}`}
+                        className="w-full h-auto object-cover transition-transform duration-500 ease-out group-hover:scale-[1.01]"
+                        loading={i === 0 ? "eager" : "lazy"}
+                      />
+
+                      {/* Tag Badge at bottom left: PRIMARY VIEW or EXHIBIT # */}
+                      <div className="absolute bottom-4 left-4 z-20">
+                        <span
+                          className="inline-flex items-center px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-[0.15em] bg-black/80 backdrop-blur-md text-white shadow-md border border-white/10"
+                          style={{ fontFamily: "var(--font-mono)" }}
+                        >
+                          {isPrimary ? "Primary View" : `Exhibit ${String(i).padStart(2, "0")}`}
+                        </span>
+                      </div>
+
+                      {/* Hover Expand Icon */}
+                      <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="p-2.5 rounded-full bg-black/80 backdrop-blur-md text-white shadow-lg border border-white/10">
+                          <Maximize2 size={16} />
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })
+            )}
+          </div>
+
+        </div>
+      </div>
     </main>
   );
 }
