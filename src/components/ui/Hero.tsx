@@ -46,6 +46,7 @@ import { AnimatePresence, motion, useMotionValue, useSpring } from "framer-motio
 import { gsap } from "gsap";
 import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 gsap.registerPlugin(MotionPathPlugin);
@@ -298,19 +299,21 @@ export default function HeroSection() {
             transition={{ duration: 0.6, delay: 0.15 }}
             className="mt-8 flex flex-wrap items-center gap-3 sm:mt-10 sm:gap-4"
           >
-            <MagneticButton
-              onClick={() => router.push('/contact')}
-              className="rounded-full px-6 py-3 text-sm font-medium text-white dark:text-[#0A0C10]"
-              style={{ backgroundColor: "var(--accent)", fontFamily: "var(--font-body)" }}
-            >
-              Start a project
-            </MagneticButton>
-            <button 
-              onClick={() => router.push('/projects')}
-              className="rounded-full border border-[var(--line)] px-6 py-3 text-sm font-medium text-[var(--ink)] transition-colors hover:border-[var(--sub)]"
+            <Link href="/contact" prefetch={true}>
+              <MagneticButton
+                className="rounded-full px-6 py-3 text-sm font-medium text-white dark:text-[#0A0C10]"
+                style={{ backgroundColor: "var(--accent)", fontFamily: "var(--font-body)" }}
+              >
+                Start a project
+              </MagneticButton>
+            </Link>
+            <Link 
+              href="/projects"
+              prefetch={true}
+              className="inline-flex rounded-full border border-[var(--line)] px-6 py-3 text-sm font-medium text-[var(--ink)] transition-colors hover:border-[var(--sub)]"
             >
               See our work
-            </button>
+            </Link>
           </motion.div>
         </div>
       </div>

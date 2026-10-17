@@ -125,9 +125,11 @@ export default function Navbar() {
               <User size={16} />
             </Link>
 
-            <MagneticButton onClick={() => router.push('/contact')} className="hidden items-center rounded-full px-5 py-2.5 text-[13.5px] font-semibold text-white dark:text-[#0A0C10] md:inline-flex" style={{ backgroundColor: "var(--accent)" }}>
-              Let&apos;s Talk
-            </MagneticButton>
+            <Link href="/contact" prefetch={true} className="hidden md:inline-flex">
+              <MagneticButton className="items-center rounded-full px-5 py-2.5 text-[13.5px] font-semibold text-white dark:text-[#0A0C10]" style={{ backgroundColor: "var(--accent)" }}>
+                Let&apos;s Talk
+              </MagneticButton>
+            </Link>
 
             {/* mobile menu trigger */}
             <button
@@ -185,16 +187,15 @@ export default function Navbar() {
                   </Link>
                 </motion.div>
               ))}
-              <motion.button
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.05 + links.length * 0.05 }}
-                onClick={() => { setOpen(false); router.push('/contact'); }}
-                className="mt-2 w-full rounded-full px-5 py-3 text-center text-[14px] font-semibold text-white dark:text-[#0A0C10]"
+              <Link
+                href="/contact"
+                prefetch={true}
+                onClick={() => setOpen(false)}
+                className="mt-2 block w-full rounded-full px-5 py-3 text-center text-[14px] font-semibold text-white dark:text-[#0A0C10] transition-transform active:scale-[0.98]"
                 style={{ backgroundColor: "var(--accent)" }}
               >
                 Let&apos;s Talk
-              </motion.button>
+              </Link>
             </div>
           </motion.div>
         )}

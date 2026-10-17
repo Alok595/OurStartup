@@ -1,47 +1,24 @@
-"use client";
+import HeroParallaxWrapper from "@/components/ui/HeroParallaxWrapper";
+import Hero from "@/components/ui/Hero";
+import IntroSection from "@/components/ui/IntroSection";
+import WorkstationSection from "@/components/ui/WorkstationSection";
+import ClientReelSection from "@/components/ui/ClientReelSection";
+import ProjectsSection from "@/components/ui/ProjectsSection";
+import SocialMarquee from "@/components/ui/SocialMarquee";
+import TechMarquee from "@/components/ui/TechMarquee";
+import { getProjects } from "@/lib/portfolio";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import dynamic from "next/dynamic";
+export const revalidate = 60; // 0-second cached ISR
 
-const SectionSkeleton = () => (
-  <div className="w-full min-h-[50vh] flex items-center justify-center bg-[var(--bg)]">
-    <div className="w-3/4 max-w-4xl h-64 rounded-3xl animate-pulse bg-black/5 dark:bg-white/5 border border-[var(--line)]" />
-  </div>
-);
-
-const HeroSkeleton = () => (
-  <div className="w-full h-screen bg-[var(--bg)] flex items-center justify-center">
-    <div className="w-full h-full animate-pulse bg-black/5 dark:bg-white/5" />
-  </div>
-);
-
-const Hero = dynamic(() => import("@/components/ui/Hero"), { loading: () => <HeroSkeleton /> });
-const IntroSection = dynamic(() => import("@/components/ui/IntroSection"), { loading: () => <SectionSkeleton /> });
-const WorkstationSection = dynamic(() => import("@/components/ui/WorkstationSection"), { loading: () => <SectionSkeleton /> });
-const ClientReelSection = dynamic(() => import("@/components/ui/ClientReelSection"), { loading: () => <SectionSkeleton /> });
-const ProjectsSection = dynamic(() => import("@/components/ui/ProjectsSection"), { loading: () => <SectionSkeleton /> });
-const SocialMarquee = dynamic(() => import("@/components/ui/SocialMarquee"), { loading: () => <div className="h-32 w-full animate-pulse bg-black/5 dark:bg-white/5" /> });
-const TechMarquee = dynamic(() => import("@/components/ui/TechMarquee"), { loading: () => <div className="h-32 w-full animate-pulse bg-black/5 dark:bg-white/5" /> });
-
-export default function Home() {
-  const containerRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end start"]
-  });
-
-  // The Hero section will move down at half the speed of the scroll, creating a parallax effect
-  const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+export default async function Home() {
+  const featuredProjects = await getProjects(true);
 
   return (
-    <main ref={containerRef} className="w-full h-full relative bg-[var(--bg)]">
+    <main className="w-full h-full relative bg-[var(--bg)]">
       {/* Hero container with Parallax */}
-      <div className="relative h-auto w-full overflow-hidden sm:h-screen">
-        <motion.div style={{ y: heroY }} className="h-full w-full sm:absolute sm:inset-0">
-          <Hero />
-        </motion.div>
-      </div>
+      <HeroParallaxWrapper>
+        <Hero />
+      </HeroParallaxWrapper>
 
       {/* The rest of the content overlaps the Hero */}
       <div className="relative z-10 bg-[var(--bg)]">
@@ -50,7 +27,7 @@ export default function Home() {
         <WorkstationSection />
         <TechMarquee />
         <ClientReelSection />
-        <ProjectsSection />
+        <ProjectsSection initialProjects={featuredProjects.slice(0, 4)} />
       </div>
     </main>
   );

@@ -38,18 +38,22 @@ const ProjectCardSkeleton = () => (
   </div>
 );
 
-export default function ProjectsSection() {
-
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export default function ProjectsSection({ initialProjects = [] }: { initialProjects?: Project[] }) {
+  const [projects, setProjects] = useState<Project[]>(initialProjects);
+  const [isLoading, setIsLoading] = useState(initialProjects.length === 0);
 
   useEffect(() => {
+    if (initialProjects.length > 0) {
+      setProjects(initialProjects);
+      setIsLoading(false);
+      return;
+    }
+
     const fetchProjects = async () => {
       try {
         const res = await fetch("/api/portfolio?featured=true");
         if (res.ok) {
           const json = await res.json();
-          // Show max 4 projects on home page
           setProjects(json.data?.slice(0, 4) || []);
         }
       } catch (error) {
@@ -59,7 +63,7 @@ export default function ProjectsSection() {
       }
     };
     fetchProjects();
-  }, []);
+  }, [initialProjects]);
 
   return (
     <section className={`${display.variable} ${body.variable} ${mono.variable} relative overflow-hidden border-b border-[var(--line)] bg-[var(--bg)] px-6 py-24 sm:px-10`}>
