@@ -7,7 +7,6 @@ import Footer from "@/components/layout/Footer";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
-import ClickEffect from "@/components/ui/ClickEffect";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -103,7 +102,6 @@ export default function RootLayout({
             <Footer />
             <ScrollToTop />
             <WhatsAppButton />
-            <ClickEffect />
           </SmoothScroll>
         </ThemeProvider>
       </body>

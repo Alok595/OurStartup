@@ -11,12 +11,14 @@ import {
   Settings,
   ChevronRight,
   Star,
-  Users
+  Users,
+  UserCheck
 } from "lucide-react";
 
 const NAV_ITEMS = [
   { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
   { label: "Leads", href: "/leads", icon: MessageSquare },
+  { label: "Interested Clients", href: "/interested-clients", icon: UserCheck },
   { label: "Clients", href: "/clients", icon: Users },
   { label: "Projects", href: "/portfolio", icon: Briefcase },
   { label: "Stories", href: "/stories", icon: Star },

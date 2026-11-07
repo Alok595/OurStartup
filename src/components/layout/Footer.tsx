@@ -16,7 +16,7 @@ export default function Footer() {
   const pathname = usePathname();
 
   // Hide Footer on auth and admin routes
-  const hideRoutes = ['/login', '/dashboard', '/leads', '/portfolio', '/settings', '/stories', '/clients'];
+  const hideRoutes = ['/login', '/dashboard', '/leads', '/portfolio', '/settings', '/stories', '/clients', '/interested-clients'];
   if (hideRoutes.some(route => pathname?.startsWith(route))) {
     return null;
   }

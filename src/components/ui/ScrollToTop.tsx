@@ -9,7 +9,7 @@ export default function ScrollToTop() {
   const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(false);
 
-  const hideRoutes = ['/login', '/dashboard', '/leads', '/portfolio', '/settings', '/stories', '/clients'];
+  const hideRoutes = ['/login', '/dashboard', '/leads', '/portfolio', '/settings', '/stories', '/clients', '/interested-clients'];
   const isHidden = hideRoutes.some(route => pathname?.startsWith(route));
 
   useEffect(() => {

@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 export default function WhatsAppButton() {
   const pathname = usePathname();
-  const hideRoutes = ['/login', '/dashboard', '/leads', '/portfolio', '/settings', '/stories', '/clients'];
+  const hideRoutes = ['/login', '/dashboard', '/leads', '/portfolio', '/settings', '/stories', '/clients', '/interested-clients'];
   if (hideRoutes.some(route => pathname?.startsWith(route))) {
     return null;
   }
