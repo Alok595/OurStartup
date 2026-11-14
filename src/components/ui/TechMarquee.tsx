@@ -1,11 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
-
-const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-display" });
-const body = Inter({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-body" });
-const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-mono" });
 
 const TECHNOLOGIES = [
   "React",
@@ -27,7 +22,7 @@ export default function TechMarquee() {
   const duplicateTechs = [...TECHNOLOGIES, ...TECHNOLOGIES, ...TECHNOLOGIES, ...TECHNOLOGIES];
 
   return (
-    <section className={`${display.variable} ${body.variable} ${mono.variable} border-b border-[var(--line)] bg-[var(--bg)] py-12 overflow-hidden`}>
+    <section className="border-b border-[var(--line)] bg-[var(--bg)] py-12 overflow-hidden">
       <div className="flex flex-col items-center gap-8">
         
         <h3 

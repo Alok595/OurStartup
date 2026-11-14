@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Inter, Space_Grotesk } from "next/font/google";
 import { Search, Plus, Trash2, Edit, X, Loader2, ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
 
-const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-display" });
-const body = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
+type ProjectCredential = {
+  title?: string;
+  email: string;
+  password: string;
+};
 
 type ClientRecord = {
   _id: string;
@@ -18,17 +20,40 @@ type ClientRecord = {
   endDate?: string;
   projectEmail?: string;
   projectPassword?: string;
+  projectCredentials?: ProjectCredential[];
   projectLinks: string[];
   createdAt: string;
 };
 
 export default function ClientsPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        return sessionStorage.getItem("admin_clients_auth") === "true";
+      } catch (e) {}
+    }
+    return false;
+  });
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
 
-  const [clients, setClients] = useState<ClientRecord[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [clients, setClients] = useState<ClientRecord[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = sessionStorage.getItem("admin_clients_cache");
+        if (cached) return JSON.parse(cached);
+      } catch (e) {}
+    }
+    return [];
+  });
+  const [isLoading, setIsLoading] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        if (sessionStorage.getItem("admin_clients_cache")) return false;
+      } catch (e) {}
+    }
+    return true;
+  });
   const [search, setSearch] = useState("");
   
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,21 +61,49 @@ export default function ClientsPage() {
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState("");
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    phone: string;
+    dealAmount: any;
+    paid: any;
+    startDate: string;
+    endDate: string;
+    projectCredentials: ProjectCredential[];
+    projectLinks: string[];
+  }>({
     name: "",
     phone: "",
     dealAmount: "" as any,
     paid: "" as any,
     startDate: "",
     endDate: "",
-    projectEmail: "",
-    projectPassword: "",
+    projectCredentials: [{ title: "", email: "", password: "" }],
     projectLinks: [""],
   });
 
   const openEditModal = (client: ClientRecord) => {
     setFormError("");
     setEditingId(client._id);
+
+    let credentials: ProjectCredential[] = [];
+    if (client.projectCredentials && client.projectCredentials.length > 0) {
+      credentials = client.projectCredentials.map(c => ({
+        title: c.title || "",
+        email: c.email || "",
+        password: c.password || "",
+      }));
+    } else if (client.projectEmail || client.projectPassword) {
+      credentials = [
+        {
+          title: "Primary",
+          email: client.projectEmail || "",
+          password: client.projectPassword || "",
+        },
+      ];
+    } else {
+      credentials = [{ title: "", email: "", password: "" }];
+    }
+
     setFormData({
       name: client.name,
       phone: client.phone,
@@ -58,8 +111,7 @@ export default function ClientsPage() {
       paid: client.paid,
       startDate: client.startDate ? new Date(client.startDate).toISOString().split('T')[0] : "",
       endDate: client.endDate ? new Date(client.endDate).toISOString().split('T')[0] : "",
-      projectEmail: client.projectEmail || "",
-      projectPassword: client.projectPassword || "",
+      projectCredentials: credentials,
       projectLinks: client.projectLinks && client.projectLinks.length > 0 ? client.projectLinks : [""],
     });
     setIsModalOpen(true);
@@ -69,11 +121,45 @@ export default function ClientsPage() {
     setFormError("");
     setEditingId(null);
     setFormData({ 
-      name: "", phone: "", dealAmount: "" as any, paid: "" as any, 
-      startDate: "", endDate: "", projectEmail: "", 
-      projectPassword: "", projectLinks: [""] 
+      name: "", 
+      phone: "", 
+      dealAmount: "" as any, 
+      paid: "" as any, 
+      startDate: "", 
+      endDate: "", 
+      projectCredentials: [{ title: "", email: "", password: "" }],
+      projectLinks: [""] 
     });
     setIsModalOpen(true);
+  };
+
+  const handleAddCredential = () => {
+    setFormData({
+      ...formData,
+      projectCredentials: [
+        ...formData.projectCredentials,
+        { title: "", email: "", password: "" },
+      ],
+    });
+  };
+
+  const handleCredentialChange = (
+    index: number,
+    field: "title" | "email" | "password",
+    value: string
+  ) => {
+    const updated = [...formData.projectCredentials];
+    updated[index] = { ...updated[index], [field]: value };
+    setFormData({ ...formData, projectCredentials: updated });
+  };
+
+  const handleRemoveCredential = (index: number) => {
+    const updated = formData.projectCredentials.filter((_, i) => i !== index);
+    setFormData({
+      ...formData,
+      projectCredentials:
+        updated.length > 0 ? updated : [{ title: "", email: "", password: "" }],
+    });
   };
 
   const handleAddLink = () => {
@@ -105,6 +191,9 @@ export default function ClientsPage() {
     e.preventDefault();
     if (password === "admin@123") {
       setIsAuthenticated(true);
+      try {
+        sessionStorage.setItem("admin_clients_auth", "true");
+      } catch (err) {}
       setAuthError("");
     } else {
       setAuthError("Incorrect password");
@@ -118,12 +207,14 @@ export default function ClientsPage() {
   }, [isAuthenticated]);
 
   const fetchClients = async () => {
-    setIsLoading(true);
     try {
       const res = await fetch("/api/clients");
       if (res.ok) {
         const data = await res.json();
         setClients(data);
+        try {
+          sessionStorage.setItem("admin_clients_cache", JSON.stringify(data));
+        } catch (err) {}
       }
     } catch (err) {
       console.error(err);
@@ -149,15 +240,16 @@ export default function ClientsPage() {
 
   const deleteClient = async (id: string) => {
     if (!confirm("Are you sure you want to delete this client?")) return;
+    // Instant optimistic removal from UI
+    setClients(prev => prev.filter(c => c._id !== id));
     try {
       const res = await fetch(`/api/clients/${id}`, {
         method: "DELETE",
       });
-      if (res.ok) {
-        fetchClients();
-      }
+      if (!res.ok) throw new Error();
     } catch (err) {
       console.error(err);
+      fetchClients();
     }
   };
 
@@ -168,15 +260,61 @@ export default function ClientsPage() {
     try {
       const url = editingId ? `/api/clients/${editingId}` : "/api/clients";
       const method = editingId ? "PATCH" : "POST";
-      
+
+      const cleanedCredentials = formData.projectCredentials.filter(
+        (c) => c && (c.email.trim() !== "" || c.password.trim() !== "" || (c.title && c.title.trim() !== ""))
+      );
+
+      const dealAmt = Number(formData.dealAmount) || 0;
+      const paidAmt = Number(formData.paid) || 0;
+      const dueAmt = dealAmt - paidAmt;
+      const links = formData.projectLinks.filter(l => l.trim() !== "");
+
+      // Instant Optimistic Update (0ms UI latency)
+      const optimisticClient: ClientRecord = {
+        _id: editingId || `temp-${Date.now()}`,
+        name: formData.name,
+        phone: formData.phone,
+        dealAmount: dealAmt,
+        paid: paidAmt,
+        due: dueAmt,
+        startDate: formData.startDate,
+        endDate: formData.endDate || undefined,
+        projectCredentials: cleanedCredentials,
+        projectEmail: cleanedCredentials[0]?.email || "",
+        projectPassword: cleanedCredentials[0]?.password || "",
+        projectLinks: links,
+        createdAt: new Date().toISOString(),
+      };
+
+      if (editingId) {
+        setClients(prev => prev.map(c => c._id === editingId ? { ...c, ...optimisticClient } : c));
+      } else {
+        setClients(prev => [optimisticClient, ...prev]);
+      }
+
+      // Close modal immediately
+      setIsModalOpen(false);
+      setEditingId(null);
+      setFormData({ 
+        name: "", phone: "", dealAmount: "" as any, paid: "" as any, 
+        startDate: "", endDate: "", 
+        projectCredentials: [{ title: "", email: "", password: "" }],
+        projectLinks: [""] 
+      });
+
+      // Background network sync
       const res = await fetch(url, {
         method: method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          dealAmount: Number(formData.dealAmount) || 0,
-          paid: Number(formData.paid) || 0,
-          projectLinks: formData.projectLinks.filter(l => l.trim() !== ""), // Only send non-empty links
+          dealAmount: dealAmt,
+          paid: paidAmt,
+          projectCredentials: cleanedCredentials,
+          projectEmail: cleanedCredentials[0]?.email || "",
+          projectPassword: cleanedCredentials[0]?.password || "",
+          projectLinks: links,
         }),
       });
       
@@ -185,17 +323,16 @@ export default function ClientsPage() {
         throw new Error(data.error || `Failed to ${editingId ? 'update' : 'create'} client`);
       }
 
-      setIsModalOpen(false);
-      setEditingId(null);
-      setFormData({ 
-        name: "", phone: "", dealAmount: "" as any, paid: "" as any, 
-        startDate: "", endDate: "", projectEmail: "", 
-        projectPassword: "", projectLinks: [""] 
-      });
-      fetchClients();
+      // Quietly update with the real server document
+      if (!editingId && data?._id) {
+        setClients(prev => prev.map(c => c._id === optimisticClient._id ? data : c));
+      } else if (editingId && data?._id) {
+        setClients(prev => prev.map(c => c._id === editingId ? data : c));
+      }
     } catch (err: any) {
       console.error(err);
-      setFormError(err.message || "Something went wrong while saving.");
+      fetchClients();
+      alert(err.message || "Something went wrong while saving.");
     } finally {
       setIsSubmitting(false);
     }
@@ -203,7 +340,7 @@ export default function ClientsPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className={`${display.variable} ${body.variable} min-h-[70vh] flex items-center justify-center p-6`}>
+      <div className="min-h-[70vh] flex items-center justify-center p-6">
         <div className="w-full max-w-md bg-[var(--bg)] border border-[var(--line)] rounded-2xl p-8 shadow-sm">
           <h2 className="text-2xl font-bold mb-2 text-center text-[var(--ink)]" style={{ fontFamily: "var(--font-display)" }}>
             Protected Area
@@ -242,7 +379,7 @@ export default function ClientsPage() {
   );
 
   return (
-    <div className={`${display.variable} ${body.variable} p-6 md:p-10 max-w-[1400px] mx-auto flex flex-col gap-8`}>
+    <div className="p-6 md:p-10 max-w-[1400px] mx-auto flex flex-col gap-8">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold tracking-tight text-[var(--ink)]" style={{ fontFamily: "var(--font-display)" }}>
@@ -385,10 +522,31 @@ export default function ClientsPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                           <div>
                             <h4 className="text-xs font-semibold text-[var(--sub)] uppercase tracking-wider mb-2">Project Credentials</h4>
-                            <div className="space-y-2">
-                              <p className="text-sm"><span className="text-[var(--sub)] font-medium">Email: </span> {client.projectEmail || <span className="text-gray-400 italic">Not provided</span>}</p>
-                              <p className="text-sm"><span className="text-[var(--sub)] font-medium">Password: </span> {client.projectPassword || <span className="text-gray-400 italic">Not provided</span>}</p>
-                            </div>
+                            {(() => {
+                              const creds = (client.projectCredentials && client.projectCredentials.length > 0)
+                                ? client.projectCredentials
+                                : (client.projectEmail || client.projectPassword)
+                                ? [{ title: "Primary", email: client.projectEmail || "", password: client.projectPassword || "" }]
+                                : [];
+
+                              if (creds.length === 0) {
+                                return <p className="text-sm text-gray-400 italic">Not provided</p>;
+                              }
+
+                              return (
+                                <div className="space-y-2.5">
+                                  {creds.map((c, idx) => (
+                                    <div key={idx} className="p-2.5 rounded-lg border border-[var(--line)]/70 bg-black/[0.02] dark:bg-white/[0.02]">
+                                      {c.title && <div className="text-xs font-bold text-[var(--ink)] mb-1">{c.title}</div>}
+                                      <div className="space-y-1 text-xs">
+                                        <p><span className="text-[var(--sub)] font-medium">Email / User: </span> {c.email || <span className="text-gray-400 italic">Not provided</span>}</p>
+                                        <p><span className="text-[var(--sub)] font-medium">Password: </span> <span className="font-mono">{c.password || <span className="text-gray-400 italic">Not provided</span>}</span></p>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              );
+                            })()}
                           </div>
                           <div>
                             <h4 className="text-xs font-semibold text-[var(--sub)] uppercase tracking-wider mb-2">Project Links</h4>
@@ -550,27 +708,85 @@ export default function ClientsPage() {
               {/* Project Credentials Section */}
               <div className="bg-[var(--bg)] border border-[var(--line)] rounded-xl p-5 shadow-sm">
                 <h3 className="text-sm font-semibold mb-4 text-[var(--ink)]">Project Credentials & Links (Optional)</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label className="block text-xs font-medium text-[var(--sub)] mb-1">Project Email</label>
-                    <input
-                      type="email"
-                      value={formData.projectEmail}
-                      onChange={e => setFormData({...formData, projectEmail: e.target.value})}
-                      className="w-full h-10 px-3 rounded-lg border border-[var(--line)] bg-transparent outline-none focus:border-[var(--accent)] text-sm"
-                      placeholder="client@example.com"
-                    />
+                
+                {/* Dynamic Credentials List */}
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-xs font-medium text-[var(--sub)]">Project Login Credentials</label>
+                    <button
+                      type="button"
+                      onClick={handleAddCredential}
+                      className="text-xs font-medium text-[var(--accent)] hover:underline flex items-center gap-1 cursor-pointer"
+                    >
+                      <Plus size={14} /> Add Another Credential
+                    </button>
                   </div>
-                  <div>
-                    <label className="block text-xs font-medium text-[var(--sub)] mb-1">Project Password</label>
-                    <input
-                      type="text"
-                      value={formData.projectPassword}
-                      onChange={e => setFormData({...formData, projectPassword: e.target.value})}
-                      className="w-full h-10 px-3 rounded-lg border border-[var(--line)] bg-transparent outline-none focus:border-[var(--accent)] text-sm"
-                      placeholder="Password credentials"
-                    />
+
+                  <div className="flex flex-col gap-3">
+                    {formData.projectCredentials.map((cred, index) => (
+                      <div 
+                        key={index} 
+                        className="p-3.5 rounded-xl border border-[var(--line)] bg-black/[0.015] dark:bg-white/[0.015] flex flex-col gap-2.5"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-semibold text-[var(--sub)] uppercase tracking-wider">
+                            Credential #{index + 1}
+                          </span>
+                          {formData.projectCredentials.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveCredential(index)}
+                              className="p-1.5 text-red-500 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
+                              title="Remove Credential"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          )}
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          <div>
+                            <label className="block text-[11px] font-medium text-[var(--sub)] mb-1">Service / Title</label>
+                            <input
+                              type="text"
+                              value={cred.title || ""}
+                              onChange={(e) => handleCredentialChange(index, "title", e.target.value)}
+                              className="w-full h-10 px-3 rounded-lg border border-[var(--line)] bg-transparent outline-none focus:border-[var(--accent)] text-sm"
+                              placeholder="e.g. MongoDB, AWS, Admin"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-medium text-[var(--sub)] mb-1">Project Email / User</label>
+                            <input
+                              type="text"
+                              value={cred.email}
+                              onChange={(e) => handleCredentialChange(index, "email", e.target.value)}
+                              className="w-full h-10 px-3 rounded-lg border border-[var(--line)] bg-transparent outline-none focus:border-[var(--accent)] text-sm"
+                              placeholder="client@example.com"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-medium text-[var(--sub)] mb-1">Project Password</label>
+                            <input
+                              type="text"
+                              value={cred.password}
+                              onChange={(e) => handleCredentialChange(index, "password", e.target.value)}
+                              className="w-full h-10 px-3 rounded-lg border border-[var(--line)] bg-transparent outline-none focus:border-[var(--accent)] text-sm"
+                              placeholder="Password credentials"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
+
+                  <button
+                    type="button"
+                    onClick={handleAddCredential}
+                    className="mt-2.5 flex items-center gap-1.5 text-xs font-medium text-[var(--accent)] hover:underline cursor-pointer"
+                  >
+                    <Plus size={14} /> Add Another Credential
+                  </button>
                 </div>
                 
                 <div>

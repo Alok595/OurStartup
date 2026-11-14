@@ -3,9 +3,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
-import { Space_Grotesk } from "next/font/google";
-
-const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-display" });
 
 export type FAQItem = { q: string; a: string };
 
@@ -13,7 +10,7 @@ export default function FAQSection({ faqs, title = "Frequently Asked Questions" 
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   return (
-    <div className={`mx-auto mt-28 mb-28 w-full max-w-3xl px-6 sm:px-10 ${display.variable}`}>
+    <div className="mx-auto mt-28 mb-28 w-full max-w-3xl px-6 sm:px-10">
       <h3
         className="mb-8 text-sm font-semibold uppercase tracking-[0.2em] text-[var(--sub)]"
         style={{ fontFamily: "var(--font-mono)" }}

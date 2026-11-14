@@ -15,14 +15,14 @@ export async function GET(req: Request) {
 
     await connectToDatabase();
 
-    // Fetch counts
-    const totalProjects = await Project.countDocuments();
-    const totalLeads = await Lead.countDocuments();
-    const totalStories = await Testimonial.countDocuments();
-
-    // Fetch recent activity (mix of recent leads and projects)
-    const recentLeads = await Lead.find({}).sort({ createdAt: -1 }).limit(3);
-    const recentProjects = await Project.find({}).sort({ createdAt: -1 }).limit(3);
+    // Fetch counts & activity in parallel with Promise.all and .lean() for maximum speed
+    const [totalProjects, totalLeads, totalStories, recentLeads, recentProjects] = await Promise.all([
+      Project.countDocuments(),
+      Lead.countDocuments(),
+      Testimonial.countDocuments(),
+      Lead.find({}).sort({ createdAt: -1 }).limit(3).lean(),
+      Project.find({}).sort({ createdAt: -1 }).limit(3).lean(),
+    ]);
 
     const activity = [
       ...recentLeads.map(l => ({

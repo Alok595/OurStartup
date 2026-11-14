@@ -2,7 +2,6 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import FAQSection, { FAQItem } from "@/components/ui/FAQSection";
 
@@ -32,10 +31,6 @@ const PROJECTS_FAQS: FAQItem[] = [
     a: "We manage end-to-end deployment, typically utilizing cloud platforms like AWS, Vercel, or Google Cloud, depending on your architecture.",
   },
 ];
-
-const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-display" });
-const body = Inter({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-body" });
-const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-mono" });
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -117,7 +112,7 @@ export default function ProjectsCatalog({ initialProjects = [] }: { initialProje
   }, [projects, activeFilter]);
 
   return (
-    <main className={`${display.variable} ${body.variable} ${mono.variable} min-h-screen bg-[var(--bg)] pt-32 pb-24 px-6 sm:px-10`}>
+    <main className="min-h-screen bg-[var(--bg)] pt-32 pb-24 px-6 sm:px-10">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

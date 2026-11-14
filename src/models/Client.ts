@@ -1,5 +1,11 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+export interface IProjectCredential {
+  title?: string;
+  email: string;
+  password: string;
+}
+
 export interface IClient extends Document {
   name: string;
   phone: string;
@@ -10,10 +16,20 @@ export interface IClient extends Document {
   endDate?: Date;
   projectEmail?: string;
   projectPassword?: string;
+  projectCredentials: IProjectCredential[];
   projectLinks: string[];
   createdAt: Date;
   updatedAt: Date;
 }
+
+const ProjectCredentialSchema = new Schema(
+  {
+    title: { type: String, default: "" },
+    email: { type: String, default: "" },
+    password: { type: String, default: "" },
+  },
+  { _id: false }
+);
 
 const ClientSchema = new Schema<IClient>(
   {
@@ -26,6 +42,7 @@ const ClientSchema = new Schema<IClient>(
     endDate: { type: Date },
     projectEmail: { type: String },
     projectPassword: { type: String },
+    projectCredentials: { type: [ProjectCredentialSchema], default: [] },
     projectLinks: { type: [String], default: [] },
   },
   {

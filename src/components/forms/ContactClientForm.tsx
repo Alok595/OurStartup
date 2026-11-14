@@ -2,7 +2,6 @@
 
 import { useRef, useState } from "react";
 import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
-import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import Image from "next/image";
 import {
   Copy,
@@ -19,10 +18,6 @@ import {
   Clock,
   MapPin,
 } from "lucide-react";
-
-const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-display" });
-const body = Inter({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-body" });
-const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-mono" });
 
 const InstagramIcon = ({ size = 24, ...props }: any) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -166,7 +161,7 @@ export default function ContactClientForm() {
   };
 
   return (
-    <main className={`${display.variable} ${body.variable} ${mono.variable} relative min-h-screen bg-[var(--bg)] pb-24`}>
+    <main className="relative min-h-screen bg-[var(--bg)] pb-24">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

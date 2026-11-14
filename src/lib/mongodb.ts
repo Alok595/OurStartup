@@ -24,6 +24,10 @@ async function connectToDatabase() {
   // Clean up any leading/trailing quotes or whitespace if accidentally pasted into deployment settings
   MONGODB_URL = MONGODB_URL.trim().replace(/^["']|["']$/g, "").trim();
 
+  if (mongoose.connection.readyState === 1) {
+    return mongoose;
+  }
+
   if (cached.conn) {
     return cached.conn;
   }
@@ -31,6 +35,11 @@ async function connectToDatabase() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      maxPoolSize: 10,
+      minPoolSize: 2,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+      family: 4,
     };
 
     cached.promise = mongoose.connect(MONGODB_URL, opts).then((mongoose) => {

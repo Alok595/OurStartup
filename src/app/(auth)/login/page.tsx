@@ -3,14 +3,9 @@
 import { useRef, useState, useEffect, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { Loader2, ArrowRight, Smartphone, Monitor, Phone, Camera, Lock, Globe, Mail } from "lucide-react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-
-const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-display" });
-const body = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
-const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-mono" });
 
 function LoginContent() {
   const router = useRouter();
@@ -132,7 +127,7 @@ function LoginContent() {
   };
 
   return (
-    <main className={`immersive-wrapper ${display.variable} ${body.variable} ${mono.variable}`}>
+    <main className="immersive-wrapper">
       
       {/* 3D Scene Container */}
       <div className="scene3d">

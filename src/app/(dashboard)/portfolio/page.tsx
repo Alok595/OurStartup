@@ -1,12 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Inter, Space_Grotesk } from "next/font/google";
 import { Search, Plus, Trash2, Loader2, ExternalLink, Edit } from "lucide-react";
 import Link from "next/link";
-
-const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-display" });
-const body = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
 
 type Project = {
   _id: string;
@@ -42,8 +38,23 @@ export default function PortfolioAdminPage() {
     </div>
   );
 
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [projects, setProjects] = useState<Project[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = sessionStorage.getItem("admin_projects_cache");
+        if (cached) return JSON.parse(cached);
+      } catch (e) {}
+    }
+    return [];
+  });
+  const [isLoading, setIsLoading] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        if (sessionStorage.getItem("admin_projects_cache")) return false;
+      } catch (e) {}
+    }
+    return true;
+  });
   const [search, setSearch] = useState("");
 
   useEffect(() => {
@@ -55,7 +66,11 @@ export default function PortfolioAdminPage() {
       const res = await fetch("/api/portfolio");
       if (res.ok) {
         const json = await res.json();
-        setProjects(json.data || []);
+        const data = json.data || [];
+        setProjects(data);
+        try {
+          sessionStorage.setItem("admin_projects_cache", JSON.stringify(data));
+        } catch (e) {}
       }
     } catch (err) {
       console.error(err);
@@ -66,7 +81,12 @@ export default function PortfolioAdminPage() {
 
   const deleteProject = async (id: string) => {
     if (!confirm("Are you sure you want to delete this project?")) return;
-    setProjects(projects.filter(p => p._id !== id));
+    const remaining = projects.filter(p => p._id !== id);
+    setProjects(remaining);
+    try {
+      sessionStorage.setItem("admin_projects_cache", JSON.stringify(remaining));
+    } catch (e) {}
+
     try {
       await fetch(`/api/portfolio/${id}`, { method: "DELETE" });
     } catch (err) {
@@ -81,7 +101,7 @@ export default function PortfolioAdminPage() {
   );
 
   return (
-    <div className={`${display.variable} ${body.variable} p-6 md:p-10 max-w-[1400px] mx-auto flex flex-col gap-8 relative`} style={{ fontFamily: "var(--font-body)" }}>
+    <div className="p-6 md:p-10 max-w-[1400px] mx-auto flex flex-col gap-8 relative" style={{ fontFamily: "var(--font-body)" }}>
       
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">

@@ -37,12 +37,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { Space_Grotesk, Inter } from "next/font/google";
 import { User } from "lucide-react";
 import ThemeToggle from "@/components/ui/ThemeToggle";
-
-const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-display" });
-const body = Inter({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-body" });
 
 const links = [
   { href: "/projects", label: "Projects" },
@@ -80,7 +76,7 @@ export default function Navbar() {
   if (isHidden) return null;
 
   return (
-    <header className={`${display.variable} ${body.variable} fixed inset-x-0 top-0 z-50 flex justify-center px-3 pt-3 sm:px-6 sm:pt-4`} style={{ fontFamily: "var(--font-body)" }}>
+    <header className="fixed inset-x-0 top-0 z-50 flex justify-center px-3 pt-3 sm:px-6 sm:pt-4" style={{ fontFamily: "var(--font-body)" }}>
       <motion.nav
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}

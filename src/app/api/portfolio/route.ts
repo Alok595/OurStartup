@@ -12,7 +12,7 @@ export async function GET(req: Request) {
     const query = featured ? { featured: true } : {};
     
     // Fetch projects, sorted by newest first
-    const projects = await Project.find(query).sort({ createdAt: -1 });
+    const projects = await Project.find(query).sort({ createdAt: -1 }).lean();
     return NextResponse.json({ success: true, data: projects });
   } catch (error) {
     console.error("GET /api/portfolio error:", error);

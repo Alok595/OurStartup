@@ -30,8 +30,23 @@ type InterestedClientRecord = {
 };
 
 export default function InterestedClientsPage() {
-  const [clients, setClients] = useState<InterestedClientRecord[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [clients, setClients] = useState<InterestedClientRecord[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = sessionStorage.getItem("admin_interested_clients_cache");
+        if (cached) return JSON.parse(cached);
+      } catch (e) {}
+    }
+    return [];
+  });
+  const [isLoading, setIsLoading] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        if (sessionStorage.getItem("admin_interested_clients_cache")) return false;
+      } catch (e) {}
+    }
+    return true;
+  });
   const [search, setSearch] = useState("");
   const [selectedFilter, setSelectedFilter] = useState<"All" | "Interested" | "Rejected" | "Pending">("All");
 
@@ -66,6 +81,9 @@ export default function InterestedClientsPage() {
       if (res.ok) {
         const data = await res.json();
         setClients(data);
+        try {
+          sessionStorage.setItem("admin_interested_clients_cache", JSON.stringify(data));
+        } catch (e) {}
       }
     } catch (err) {
       console.error("Failed to fetch interested clients:", err);
@@ -112,9 +130,31 @@ export default function InterestedClientsPage() {
     }
 
     setIsSubmitting(true);
+    
+    // Instant optimistic update (0ms UI latency)
+    const tempId = editingId || `temp-${Date.now()}`;
+    const optimisticRecord: InterestedClientRecord = {
+      _id: tempId,
+      name: formData.name.trim(),
+      phone: formData.phone.trim(),
+      status: formData.status,
+      notes: formData.notes,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    if (editingId) {
+      setClients(prev => prev.map(c => c._id === editingId ? { ...c, ...optimisticRecord } : c));
+    } else {
+      setClients(prev => [optimisticRecord, ...prev]);
+    }
+
+    // Instantly close modal
+    setIsModalOpen(false);
+
     try {
       if (editingId) {
-        // Edit existing
+        // Edit existing in background
         const res = await fetch(`/api/interested-clients/${editingId}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -127,9 +167,9 @@ export default function InterestedClientsPage() {
         }
 
         const updated = await res.json();
-        setClients(clients.map((c) => (c._id === editingId ? updated : c)));
+        setClients(prev => prev.map((c) => (c._id === editingId ? updated : c)));
       } else {
-        // Create new
+        // Create new in background
         const res = await fetch("/api/interested-clients", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -142,12 +182,12 @@ export default function InterestedClientsPage() {
         }
 
         const created = await res.json();
-        setClients([created, ...clients]);
+        setClients(prev => prev.map((c) => (c._id === tempId ? created : c)));
       }
-
-      setIsModalOpen(false);
     } catch (err: any) {
-      setFormError(err.message || "An error occurred");
+      console.error(err);
+      fetchClients(); // Revert on failure
+      alert(err.message || "An error occurred while saving.");
     } finally {
       setIsSubmitting(false);
     }

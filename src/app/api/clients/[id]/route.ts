@@ -34,6 +34,17 @@ export async function PATCH(
       body.due = newDealAmount - newPaid;
     }
 
+    if (Array.isArray(body.projectCredentials)) {
+      const filtered = body.projectCredentials.filter(
+        (c: any) => c && (c.email?.trim() || c.password?.trim() || c.title?.trim())
+      );
+      body.projectCredentials = filtered;
+      if (filtered.length > 0) {
+        body.projectEmail = filtered[0].email || "";
+        body.projectPassword = filtered[0].password || "";
+      }
+    }
+
     const updatedClient = await Client.findByIdAndUpdate(
       clientId,
       { $set: body },

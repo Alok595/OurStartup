@@ -44,7 +44,7 @@ export async function GET() {
     await connectToDatabase();
     
     // Fetch leads, sorted by newest first
-    const leads = await Lead.find({}).sort({ createdAt: -1 });
+    const leads = await Lead.find({}).sort({ createdAt: -1 }).lean();
     
     return NextResponse.json(leads, { status: 200 });
   } catch (error) {

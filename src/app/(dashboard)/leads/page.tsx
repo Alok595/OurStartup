@@ -1,11 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Inter, Space_Grotesk } from "next/font/google";
 import { Search, MoreVertical, Loader2 } from "lucide-react";
-
-const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-display" });
-const body = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
 
 type Lead = {
   _id: string;
@@ -43,8 +39,23 @@ export default function LeadsPage() {
     </tr>
   );
 
-  const [leads, setLeads] = useState<Lead[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [leads, setLeads] = useState<Lead[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = sessionStorage.getItem("admin_leads_cache");
+        if (cached) return JSON.parse(cached);
+      } catch (e) {}
+    }
+    return [];
+  });
+  const [isLoading, setIsLoading] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        if (sessionStorage.getItem("admin_leads_cache")) return false;
+      } catch (e) {}
+    }
+    return true;
+  });
   const [search, setSearch] = useState("");
 
   useEffect(() => {
@@ -57,6 +68,9 @@ export default function LeadsPage() {
       if (res.ok) {
         const data = await res.json();
         setLeads(data);
+        try {
+          sessionStorage.setItem("admin_leads_cache", JSON.stringify(data));
+        } catch (e) {}
       }
     } catch (err) {
       console.error(err);
@@ -88,7 +102,7 @@ export default function LeadsPage() {
   );
 
   return (
-    <div className={`${display.variable} ${body.variable} p-6 md:p-10 max-w-[1400px] mx-auto flex flex-col gap-8`}>
+    <div className="p-6 md:p-10 max-w-[1400px] mx-auto flex flex-col gap-8">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold tracking-tight text-[var(--ink)]" style={{ fontFamily: "var(--font-display)" }}>

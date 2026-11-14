@@ -2,11 +2,6 @@
 
 import { motion } from "framer-motion";
 import { useRef } from "react";
-import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
-
-const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-display" });
-const body = Inter({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-body" });
-const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-mono" });
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -69,7 +64,7 @@ export default function ClientReelSection() {
   };
 
   return (
-    <section className={`${display.variable} ${body.variable} ${mono.variable} relative overflow-hidden border-b border-[var(--line)] bg-[var(--bg)] py-24`}>
+    <section className="relative overflow-hidden border-b border-[var(--line)] bg-[var(--bg)] py-24">
       <div className="mx-auto flex flex-col gap-12">
         
         {/* Header */}

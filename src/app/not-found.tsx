@@ -30,11 +30,7 @@ import { useRef } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Space_Grotesk, Inter } from "next/font/google";
 import { ArrowLeft, RotateCcw } from "lucide-react";
-
-const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-display" });
-const body = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
 
 const STARS = [
   { x: 40, y: 30, r: 1.4, d: 2.4 },
@@ -93,7 +89,7 @@ export default function NotFound() {
 
   return (
     <div
-      className={`relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 py-20 ${display.variable} ${body.variable}`}
+      className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 py-20"
     >
       {/* ambient glow */}
       <div className="pointer-events-none absolute left-1/2 top-[30%] h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--accent)]/10 blur-[130px]" />

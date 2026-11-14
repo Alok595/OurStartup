@@ -1,16 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { Zap, Code, Shield, Cpu, ChevronRight } from "lucide-react";
-
-const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-display" });
-const body = Inter({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-body" });
-const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
 export default function AboutSection() {
   return (
-    <section className={`${display.variable} ${body.variable} ${mono.variable} relative min-h-screen w-full bg-[var(--bg)] pt-32 pb-24 overflow-hidden`}>
+    <section className="relative min-h-screen w-full bg-[var(--bg)] pt-32 pb-24 overflow-hidden">
       {/* Background Grid */}
       <div className="pointer-events-none absolute inset-0 opacity-[0.03] [background-image:linear-gradient(var(--line)_1px,transparent_1px),linear-gradient(90deg,var(--line)_1px,transparent_1px)] [background-size:64px_64px]" />
       

@@ -1,18 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { useState, useEffect } from "react";
 import { Loader2, Image as ImageIcon, X, ArrowLeft, Plus, ChevronDown } from "lucide-react";
 import { CldUploadWidget } from "next-cloudinary";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-display" });
-const body = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
-
 export default function AddProjectPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    router.prefetch("/portfolio");
+  }, [router]);
   
   const [formData, setFormData] = useState({
     title: "",
@@ -55,6 +55,7 @@ export default function AddProjectPage() {
       });
       
       if (res.ok) {
+        try { sessionStorage.removeItem("admin_projects_cache"); } catch (e) {}
         router.push("/portfolio");
       } else {
         console.error("Failed to add project");
@@ -67,7 +68,7 @@ export default function AddProjectPage() {
   };
 
   return (
-    <div className={`${display.variable} ${body.variable} p-6 md:p-10 pb-32 max-w-[1000px] mx-auto flex flex-col gap-8`} style={{ fontFamily: "var(--font-body)" }}>
+    <div className="p-6 md:p-10 pb-32 max-w-[1000px] mx-auto flex flex-col gap-8" style={{ fontFamily: "var(--font-body)" }}>
       
       {/* Header */}
       <div className="flex flex-col gap-4 border-b border-[var(--line)] pb-6">

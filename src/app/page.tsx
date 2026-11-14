@@ -1,6 +1,7 @@
 import HeroParallaxWrapper from "@/components/ui/HeroParallaxWrapper";
 import Hero from "@/components/ui/Hero";
 import IntroSection from "@/components/ui/IntroSection";
+import StatsSection from "@/components/ui/StatsSection";
 import WorkstationSection from "@/components/ui/WorkstationSection";
 import ClientReelSection from "@/components/ui/ClientReelSection";
 import ProjectsSection from "@/components/ui/ProjectsSection";
@@ -23,6 +24,7 @@ export default async function Home() {
       {/* The rest of the content overlaps the Hero */}
       <div className="relative z-10 bg-[var(--bg)]">
         <IntroSection />
+        <StatsSection />
         <SocialMarquee />
         <WorkstationSection />
         <TechMarquee />

@@ -2,12 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useMotionTemplate, MotionValue } from "framer-motion";
-import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import { Star, X, Check, Loader2 } from "lucide-react";
-
-const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-display" });
-const body = Inter({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-body" });
-const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-mono" });
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -117,7 +112,7 @@ export default function WorkstationSection() {
     <section
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className={`${display.variable} ${body.variable} ${mono.variable} relative flex min-h-[100vh] items-center justify-center overflow-hidden border-b border-[var(--line)] bg-[var(--bg)] px-6 py-24 sm:px-10`}
+      className="relative flex min-h-[100vh] items-center justify-center overflow-hidden border-b border-[var(--line)] bg-[var(--bg)] px-6 py-24 sm:px-10"
       style={{ fontFamily: "var(--font-body)" }}
     >
       <div className="pointer-events-none absolute inset-0 opacity-[0.04] [background-image:linear-gradient(var(--line)_1px,transparent_1px),linear-gradient(90deg,var(--line)_1px,transparent_1px)] [background-size:64px_64px]" />

@@ -15,7 +15,7 @@ export async function GET() {
     await connectToDatabase();
     
     // Fetch all clients, sorted by most recent
-    const clients = await Client.find({}).sort({ createdAt: -1 });
+    const clients = await Client.find({}).sort({ createdAt: -1 }).lean();
     
     return NextResponse.json(clients);
   } catch (error: any) {
@@ -35,11 +35,37 @@ export async function POST(request: Request) {
     await connectToDatabase();
     const body = await request.json();
     
-    const { name, phone, dealAmount, paid, startDate, endDate, projectEmail, projectPassword, projectLinks } = body;
+    const { 
+      name, 
+      phone, 
+      dealAmount, 
+      paid, 
+      startDate, 
+      endDate, 
+      projectEmail, 
+      projectPassword, 
+      projectCredentials, 
+      projectLinks 
+    } = body;
     
     if (!name || !phone || !startDate) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
+
+    // Normalize credentials array
+    const credentialsList = Array.isArray(projectCredentials) 
+      ? projectCredentials.filter((c: any) => c && (c.email?.trim() || c.password?.trim() || c.title?.trim()))
+      : [];
+
+    if (credentialsList.length === 0 && (projectEmail || projectPassword)) {
+      credentialsList.push({
+        title: "Primary",
+        email: projectEmail || "",
+        password: projectPassword || ""
+      });
+    }
+
+    const firstCred = credentialsList[0] || {};
 
     const newClient = new Client({
       name,
@@ -48,8 +74,9 @@ export async function POST(request: Request) {
       paid: Number(paid) || 0,
       startDate: new Date(startDate),
       endDate: endDate ? new Date(endDate) : undefined,
-      projectEmail,
-      projectPassword,
+      projectEmail: firstCred.email || projectEmail || "",
+      projectPassword: firstCred.password || projectPassword || "",
+      projectCredentials: credentialsList,
       projectLinks: Array.isArray(projectLinks) ? projectLinks : [],
     });
 

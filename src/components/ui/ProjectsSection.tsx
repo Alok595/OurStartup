@@ -2,11 +2,6 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
-
-const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-display" });
-const body = Inter({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-body" });
-const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-mono" });
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -66,7 +61,7 @@ export default function ProjectsSection({ initialProjects = [] }: { initialProje
   }, [initialProjects]);
 
   return (
-    <section className={`${display.variable} ${body.variable} ${mono.variable} relative overflow-hidden border-b border-[var(--line)] bg-[var(--bg)] px-6 py-24 sm:px-10`}>
+    <section className="relative overflow-hidden border-b border-[var(--line)] bg-[var(--bg)] px-6 py-24 sm:px-10">
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-16">
           <div className="flex flex-col gap-4">

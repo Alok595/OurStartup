@@ -12,7 +12,7 @@ export async function GET() {
     }
 
     await connectToDatabase();
-    const clients = await InterestedClient.find({}).sort({ createdAt: -1 });
+    const clients = await InterestedClient.find({}).sort({ createdAt: -1 }).lean();
 
     return NextResponse.json(clients, { status: 200 });
   } catch (error: any) {

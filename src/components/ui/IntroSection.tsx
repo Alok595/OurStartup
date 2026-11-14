@@ -23,11 +23,6 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform, useMotionTemplate } from "framer-motion";
-import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
-
-const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-display" });
-const body = Inter({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-body" });
-const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-mono" });
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -60,7 +55,7 @@ export default function IntroSection() {
   return (
     <section
       id="about"
-      className={`${display.variable} ${body.variable} ${mono.variable} relative flex min-h-[100vh] flex-col justify-center overflow-hidden border-b border-[var(--line)] bg-[var(--bg)] px-6 py-24 sm:px-10 sm:py-28 lg:py-32`}
+      className="relative flex min-h-[100vh] flex-col justify-center overflow-hidden border-b border-[var(--line)] bg-[var(--bg)] px-6 py-24 sm:px-10 sm:py-28 lg:py-32"
       style={{ fontFamily: "var(--font-body)" }}
     >
       {/* faint grid texture — same language as the hero, kept very quiet */}
@@ -138,6 +133,31 @@ export default function IntroSection() {
             >
               Tap a highlighted word to learn more
             </motion.p>
+
+            {/* Quick Metrics Ribbon */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.6, delay: 0.35, ease: EASE }}
+              className="mt-12 flex flex-wrap items-center justify-center gap-3 sm:gap-4"
+            >
+              <div className="flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--bg)] px-4 py-2 text-xs text-[var(--ink)] shadow-xs">
+                <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
+                <span className="font-bold text-[var(--accent)]" style={{ fontFamily: "var(--font-display)" }}>15+</span>
+                <span className="text-[var(--sub)] font-medium">Websites Shipped Last Month</span>
+              </div>
+              <div className="flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--bg)] px-4 py-2 text-xs text-[var(--ink)] shadow-xs">
+                <span className="h-2 w-2 rounded-full bg-[#0C9C89]" />
+                <span className="font-bold text-[#0C9C89]" style={{ fontFamily: "var(--font-display)" }}>₹1L++</span>
+                <span className="text-[var(--sub)] font-medium">Client Revenue via Software</span>
+              </div>
+              <div className="flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--bg)] px-4 py-2 text-xs text-[var(--ink)] shadow-xs">
+                <span className="h-2 w-2 rounded-full bg-[#5B45CF]" />
+                <span className="font-bold text-[#5B45CF]" style={{ fontFamily: "var(--font-display)" }}>90%+</span>
+                <span className="text-[var(--sub)] font-medium">Customer Return (Google Search)</span>
+              </div>
+            </motion.div>
           </div>
         </div>
 

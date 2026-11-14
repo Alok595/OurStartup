@@ -44,7 +44,6 @@ import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
-import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import {
   Globe,
   Smartphone,
@@ -58,10 +57,6 @@ import {
 } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
-
-const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-display" });
-const body = Inter({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-body" });
-const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-mono" });
 
 type ServiceItem = {
   id: string;
@@ -293,7 +288,7 @@ export default function Services() {
   };
 
   return (
-    <section className={`${display.variable} ${body.variable} ${mono.variable} relative bg-[var(--bg)]`}>
+    <section className="relative bg-[var(--bg)]">
       <div ref={containerRef} className="relative lg:h-screen w-full lg:overflow-hidden">
         
         {/* sticky header: jump-dots, progress rail */}

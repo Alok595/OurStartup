@@ -1,12 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { Trash2, Plus, Loader2, ShieldAlert } from "lucide-react";
-
-const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-display" });
-const body = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
-const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-mono" });
 
 type Admin = {
   _id: string;
@@ -82,7 +77,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className={`${display.variable} ${body.variable} ${mono.variable} p-6 md:p-10 max-w-4xl mx-auto flex flex-col gap-8`}>
+    <div className="p-6 md:p-10 max-w-4xl mx-auto flex flex-col gap-8">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight text-[var(--ink)]" style={{ fontFamily: "var(--font-display)" }}>
           Settings

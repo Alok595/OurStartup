@@ -45,15 +45,10 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { AnimatePresence, motion, useMotionValue, useSpring } from "framer-motion";
 import { gsap } from "gsap";
 import { MotionPathPlugin } from "gsap/MotionPathPlugin";
-import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 gsap.registerPlugin(MotionPathPlugin);
-
-const display = Space_Grotesk({ subsets: ["latin"], weight: ["500", "700"], variable: "--font-display" });
-const body = Inter({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-body" });
-const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-mono" });
 
 // ---------------------------------------------------------------------------
 // SERVICE DATA — accentLight is tuned for contrast on a cream background,
@@ -182,7 +177,7 @@ export default function HeroSection() {
     <section
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
-      className={`${display.variable} ${body.variable} ${mono.variable} relative flex min-h-[100svh] w-full flex-col overflow-x-clip
+      className={`relative flex min-h-[100svh] w-full flex-col overflow-x-clip
         sm:block sm:h-[100svh] sm:min-h-[700px] sm:overflow-hidden
         [--bg:#F5F3EC] dark:[--bg:#0A0C10]
         [--ink:#14171F] dark:[--ink:#EDEAE2]

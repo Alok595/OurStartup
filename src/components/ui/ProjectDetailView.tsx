@@ -3,17 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { motion, useReducedMotion, type Transition, type TargetAndTransition } from "framer-motion";
 import Link from "next/link";
-import { Inter, Fraunces, JetBrains_Mono } from "next/font/google";
 import { ArrowLeft, CheckCircle2, ExternalLink, X, ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
-
-const display = Fraunces({
-  subsets: ["latin"],
-  weight: ["300", "400", "600", "900"],
-  style: ["normal", "italic"],
-  variable: "--font-display",
-});
-const body = Inter({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-body" });
-const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-mono" });
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -168,7 +158,7 @@ export default function ProjectDetailView({ project }: { project: ProjectData })
   };
 
   return (
-    <main className={`${display.variable} ${body.variable} ${mono.variable} relative min-h-screen bg-[var(--bg)]`}>
+    <main className="relative min-h-screen bg-[var(--bg)]">
       {/* Reading Progress Top Bar */}
       <div className="fixed top-0 left-0 right-0 h-[3px] z-[90] bg-[var(--line)]">
         <div

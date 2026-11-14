@@ -2,11 +2,6 @@
 
 import { motion } from "framer-motion";
 import { Users, Mail, Eye, TrendingUp, ArrowUpRight } from "lucide-react";
-import { Inter, Space_Grotesk } from "next/font/google";
-
-const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-display" });
-const body = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
-
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 
@@ -32,8 +27,23 @@ function BriefcaseIcon(props: any) {
 }
 
 export default function DashboardOverview() {
-  const [data, setData] = useState<{stats: any, recentActivity: any[]}>({ stats: null, recentActivity: [] });
-  const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState<{stats: any, recentActivity: any[]}>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = sessionStorage.getItem("admin_overview_cache");
+        if (cached) return JSON.parse(cached);
+      } catch (e) {}
+    }
+    return { stats: null, recentActivity: [] };
+  });
+  const [isLoading, setIsLoading] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        if (sessionStorage.getItem("admin_overview_cache")) return false;
+      } catch (e) {}
+    }
+    return true;
+  });
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -42,6 +52,9 @@ export default function DashboardOverview() {
         if (res.ok) {
           const json = await res.json();
           setData(json.data);
+          try {
+            sessionStorage.setItem("admin_overview_cache", JSON.stringify(json.data));
+          } catch (e) {}
         }
       } catch (err) {
         console.error(err);
@@ -60,7 +73,7 @@ export default function DashboardOverview() {
   ];
 
   return (
-    <div className={`${display.variable} ${body.variable} p-6 md:p-10 max-w-7xl mx-auto flex flex-col gap-8`}>
+    <div className="p-6 md:p-10 max-w-7xl mx-auto flex flex-col gap-8">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight text-[var(--ink)]" style={{ fontFamily: "var(--font-display)" }}>
           Overview

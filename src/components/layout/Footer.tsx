@@ -2,15 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 
 import { usePathname } from "next/navigation";
 import { Mail, Phone } from "lucide-react";
 import { LinkedinIcon, InstagramIcon } from "@/components/ui/BrandIcons";
-
-const display = Space_Grotesk({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-display" });
-const body = Inter({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-body" });
-const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-mono" });
 
 export default function Footer() {
   const pathname = usePathname();
@@ -22,7 +17,7 @@ export default function Footer() {
   }
 
   return (
-    <footer className={`${display.variable} ${body.variable} ${mono.variable} border-t border-[var(--line)] bg-[var(--bg)] pt-20 pb-10 sm:pt-28 sm:pb-12 px-6 sm:px-10`}>
+    <footer className="border-t border-[var(--line)] bg-[var(--bg)] pt-20 pb-10 sm:pt-28 sm:pb-12 px-6 sm:px-10">
       <div className="mx-auto max-w-7xl flex flex-col gap-16">
         
         {/* Top Section: CTA */}
