@@ -10,7 +10,8 @@ import {
   Star, 
   ArrowUpRight, 
   Sparkles,
-  Layers
+  CheckCircle2,
+  Activity
 } from "lucide-react";
 import Link from "next/link";
 
@@ -101,6 +102,332 @@ const STATS: StatItem[] = [
   },
 ];
 
+/* -------------------------------------------------------------------------- */
+/* MICRO-CHART VISUALIZATIONS (CLEAN, DIRECT ON CARD, NO NESTED INNER BOX)    */
+/* -------------------------------------------------------------------------- */
+
+// 1. Weekly Sprint Bar Chart (Websites Developed)
+function VelocityBarChart({ accent }: { accent: string }) {
+  const weeks = [
+    { label: "Week 1", height: 35, count: "2" },
+    { label: "Week 2", height: 55, count: "4" },
+    { label: "Week 3", height: 75, count: "4" },
+    { label: "Week 4", height: 100, count: "5+" },
+  ];
+
+  return (
+    <div className="w-full">
+      <div className="flex items-center justify-between text-[11px] mb-3">
+        <span className="font-semibold text-[var(--ink)] flex items-center gap-1.5" style={{ fontFamily: "var(--font-mono)" }}>
+          <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: accent }} />
+          Sprint Ship Velocity
+        </span>
+        <span className="text-[10px] font-bold text-[var(--accent)] bg-[var(--accent)]/10 px-2 py-0.5 rounded-full">
+          +150% Peak
+        </span>
+      </div>
+      
+      <div className="flex items-end justify-between gap-3 h-20 pt-2 border-b border-[var(--line)]">
+        {weeks.map((w, idx) => (
+          <div key={idx} className="flex-1 flex flex-col items-center h-full justify-end group/bar">
+            <span className="text-[9px] font-bold text-[var(--sub)] opacity-0 group-hover/bar:opacity-100 transition-opacity mb-1 font-mono">
+              {w.count}
+            </span>
+            <div 
+              className="w-full rounded-t-lg transition-all duration-500 relative"
+              style={{ 
+                height: `${w.height}%`, 
+                backgroundColor: idx === 3 ? accent : `${accent}40`
+              }}
+            >
+              {idx === 3 && (
+                <span className="absolute -top-1 left-1/2 -translate-x-1/2 h-2 w-2 rounded-full bg-white shadow ring-2" style={{ borderColor: accent }} />
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      <div className="flex justify-between text-[10px] font-mono text-[var(--sub)] mt-2">
+        {weeks.map((w, idx) => (
+          <span key={idx}>{w.label}</span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// 2. Upward Revenue Area Sparkline (Revenue Generated)
+function RevenueAreaChart({ accent }: { accent: string }) {
+  return (
+    <div className="w-full">
+      <div className="flex items-center justify-between text-[11px] mb-2">
+        <span className="font-semibold text-[var(--ink)] flex items-center gap-1.5" style={{ fontFamily: "var(--font-mono)" }}>
+          <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: accent }} />
+          Cumulative Monthly Yield
+        </span>
+        <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full flex items-center gap-1">
+          <span>▲</span> 140% MoM
+        </span>
+      </div>
+
+      <div className="relative h-20 w-full overflow-hidden">
+        <svg className="w-full h-full overflow-visible" viewBox="0 0 280 70" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={accent} stopOpacity="0.3" />
+              <stop offset="100%" stopColor={accent} stopOpacity="0.0" />
+            </linearGradient>
+          </defs>
+
+          {/* Dotted horizontal guides */}
+          <line x1="0" y1="20" x2="280" y2="20" stroke="currentColor" strokeOpacity="0.08" strokeDasharray="3 3" />
+          <line x1="0" y1="45" x2="280" y2="45" stroke="currentColor" strokeOpacity="0.08" strokeDasharray="3 3" />
+
+          {/* Gradient area under curve */}
+          <path
+            d="M 0 62 Q 50 56, 100 44 T 200 24 T 275 6 L 275 70 L 0 70 Z"
+            fill="url(#revGrad)"
+          />
+
+          {/* Upward Line */}
+          <path
+            d="M 0 62 Q 50 56, 100 44 T 200 24 T 275 6"
+            fill="none"
+            stroke={accent}
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
+
+          {/* Animated Glowing Tip */}
+          <circle cx="275" cy="6" r="4.5" fill={accent} />
+          <circle cx="275" cy="6" r="9" fill={accent} opacity="0.35" className="animate-ping" />
+        </svg>
+      </div>
+
+      <div className="flex items-center justify-between text-[10px] text-[var(--sub)] font-mono mt-1 pt-1.5 border-t border-[var(--line)]">
+        <span>Launch Baseline</span>
+        <span className="font-semibold text-[var(--ink)]">₹1,00,000+ Scaled</span>
+      </div>
+    </div>
+  );
+}
+
+// 3. Google SEO Organic Donut & SERP Badges (Google Search SEO)
+function SeoRadialChart({ accent }: { accent: string }) {
+  const radius = 24;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (90 / 100) * circumference;
+
+  return (
+    <div className="w-full">
+      <div className="flex items-center justify-between text-[11px] mb-3">
+        <span className="font-semibold text-[var(--ink)] flex items-center gap-1.5" style={{ fontFamily: "var(--font-mono)" }}>
+          <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: accent }} />
+          Traffic Attribution
+        </span>
+        <span className="text-[10px] font-bold text-violet-600 dark:text-violet-400 bg-violet-500/10 px-2 py-0.5 rounded-full">
+          Top 3 SERP
+        </span>
+      </div>
+
+      <div className="flex items-center gap-4 py-1">
+        {/* Radial Meter */}
+        <div className="relative flex items-center justify-center shrink-0 w-16 h-16">
+          <svg className="w-16 h-16 -rotate-90">
+            <circle
+              cx="32"
+              cy="32"
+              r={radius}
+              stroke="currentColor"
+              strokeOpacity="0.08"
+              strokeWidth="6"
+              fill="transparent"
+            />
+            <circle
+              cx="32"
+              cy="32"
+              r={radius}
+              stroke={accent}
+              strokeWidth="6"
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeDashoffset}
+              strokeLinecap="round"
+              fill="transparent"
+            />
+          </svg>
+          <span className="absolute text-xs font-bold text-[var(--ink)]" style={{ fontFamily: "var(--font-mono)" }}>
+            90%
+          </span>
+        </div>
+
+        {/* Breakdown bars */}
+        <div className="flex-1 space-y-2.5">
+          <div>
+            <div className="flex justify-between text-[10px] mb-1 font-mono">
+              <span className="text-[var(--sub)]">Organic Google</span>
+              <span className="font-semibold text-[var(--ink)]">90%</span>
+            </div>
+            <div className="h-2 w-full rounded-full bg-black/5 dark:bg-white/5 overflow-hidden">
+              <div className="h-full rounded-full" style={{ width: "90%", backgroundColor: accent }} />
+            </div>
+          </div>
+          <div>
+            <div className="flex justify-between text-[10px] mb-1 font-mono">
+              <span className="text-[var(--sub)]">Direct & Referrals</span>
+              <span className="font-semibold text-[var(--ink)]">10%</span>
+            </div>
+            <div className="h-2 w-full rounded-full bg-black/5 dark:bg-white/5 overflow-hidden">
+              <div className="h-full rounded-full bg-[var(--sub)]/35" style={{ width: "10%" }} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 4. Go-To-Market Benchmark Horizontal Bar (Speed To Market)
+function SpeedBenchmarkChart({ accent }: { accent: string }) {
+  return (
+    <div className="w-full">
+      <div className="flex items-center justify-between text-[11px] mb-3">
+        <span className="font-semibold text-[var(--ink)] flex items-center gap-1.5" style={{ fontFamily: "var(--font-mono)" }}>
+          <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: accent }} />
+          Ship Speed Comparison
+        </span>
+        <span className="text-[10px] font-bold text-sky-600 dark:text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded-full">
+          3x Speedup
+        </span>
+      </div>
+
+      <div className="space-y-3 py-1">
+        <div>
+          <div className="flex justify-between text-[10px] mb-1 font-mono">
+            <span className="text-[var(--ink)] font-bold flex items-center gap-1">
+              ⚡ GenZDevWorks Sprints
+            </span>
+            <span className="font-bold text-[var(--accent)]">3.5 Weeks</span>
+          </div>
+          <div className="h-2.5 w-full rounded-full bg-black/5 dark:bg-white/5 overflow-hidden">
+            <div 
+              className="h-full rounded-full transition-all duration-700" 
+              style={{ width: "32%", backgroundColor: accent }} 
+            />
+          </div>
+        </div>
+
+        <div>
+          <div className="flex justify-between text-[10px] mb-1 font-mono">
+            <span className="text-[var(--sub)]">Traditional Agencies</span>
+            <span className="text-[var(--sub)]">12+ Weeks</span>
+          </div>
+          <div className="h-2.5 w-full rounded-full bg-black/5 dark:bg-white/5 overflow-hidden">
+            <div className="h-full rounded-full bg-[var(--sub)]/30" style={{ width: "100%" }} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 5. 30-Day Heartbeat Uptime Monitor (Production Infrastructure Uptime)
+function UptimeMonitorGrid({ accent }: { accent: string }) {
+  const ticks = Array.from({ length: 26 }).map((_, i) => ({
+    id: i,
+    height: i % 7 === 0 ? "h-5" : i % 3 === 0 ? "h-6" : "h-7",
+  }));
+
+  return (
+    <div className="w-full">
+      <div className="flex items-center justify-between text-[11px] mb-3">
+        <span className="font-semibold text-[var(--ink)] flex items-center gap-1.5" style={{ fontFamily: "var(--font-mono)" }}>
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          Live SLA Health Status
+        </span>
+        <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+          100% Operational
+        </span>
+      </div>
+
+      {/* Grid of status bars */}
+      <div className="flex items-end justify-between gap-[3px] py-1 h-9">
+        {ticks.map((t) => (
+          <div
+            key={t.id}
+            className={`w-full rounded-full transition-colors hover:opacity-75 ${t.height}`}
+            style={{ backgroundColor: "#10B981" }}
+            title="Operational: 100%"
+          />
+        ))}
+      </div>
+
+      <div className="flex items-center justify-between text-[10px] text-[var(--sub)] font-mono mt-2 pt-1.5 border-t border-[var(--line)]">
+        <span>30 Days ago</span>
+        <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+          <Activity size={10} /> 18ms latency
+        </span>
+        <span>Today</span>
+      </div>
+    </div>
+  );
+}
+
+// 6. Rating & Trust Satisfaction Breakdown (Client Satisfaction)
+function RatingBreakdownChart({ accent }: { accent: string }) {
+  return (
+    <div className="w-full">
+      <div className="flex items-center justify-between text-[11px] mb-3">
+        <span className="font-semibold text-[var(--ink)] flex items-center gap-1.5" style={{ fontFamily: "var(--font-mono)" }}>
+          <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: accent }} />
+          Verified Reviews
+        </span>
+        <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full flex items-center gap-0.5">
+          <CheckCircle2 size={10} /> 100% Verified
+        </span>
+      </div>
+
+      <div className="space-y-2 py-1">
+        <div>
+          <div className="flex justify-between text-[10px] mb-1 font-mono">
+            <span className="text-[var(--ink)] font-semibold flex items-center gap-1">
+              5 Stars ★★★★★
+            </span>
+            <span className="font-bold text-[var(--ink)]">96%</span>
+          </div>
+          <div className="h-2 w-full rounded-full bg-black/5 dark:bg-white/5 overflow-hidden">
+            <div className="h-full rounded-full" style={{ width: "96%", backgroundColor: accent }} />
+          </div>
+        </div>
+
+        <div>
+          <div className="flex justify-between text-[10px] mb-1 font-mono">
+            <span className="text-[var(--sub)] flex items-center gap-1">
+              4 Stars ★★★★☆
+            </span>
+            <span className="text-[var(--sub)]">4%</span>
+          </div>
+          <div className="h-2 w-full rounded-full bg-black/5 dark:bg-white/5 overflow-hidden">
+            <div className="h-full rounded-full bg-[var(--sub)]/30" style={{ width: "4%" }} />
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between text-[10px] text-[var(--sub)] font-mono mt-2 pt-1.5 border-t border-[var(--line)]">
+        <span>Zero Disputed Milestones</span>
+        <span className="text-amber-600 dark:text-amber-400 font-bold">100% On-Time</span>
+      </div>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* MAIN SECTION COMPONENT                                                     */
+/* -------------------------------------------------------------------------- */
+
 export default function StatsSection() {
   return (
     <section 
@@ -185,55 +512,67 @@ export default function StatsSection() {
                   style={{ background: `linear-gradient(90deg, transparent, ${stat.accent}, transparent)` }}
                 />
 
-                {/* Card Top: Tag + Icon */}
-                <div className="flex items-center justify-between gap-4">
-                  <span 
-                    className="inline-flex items-center gap-1.5 rounded-full border border-[var(--line)] bg-black/[0.02] dark:bg-white/[0.03] px-3 py-1 text-[11px] font-medium tracking-[0.1em] uppercase text-[var(--sub)]"
-                    style={{ fontFamily: "var(--font-mono)" }}
-                  >
+                <div>
+                  {/* Card Top: Tag + Icon */}
+                  <div className="flex items-center justify-between gap-4">
                     <span 
-                      className="h-1.5 w-1.5 rounded-full" 
-                      style={{ backgroundColor: stat.accent }}
-                    />
-                    {stat.tag}
-                  </span>
+                      className="inline-flex items-center gap-1.5 rounded-full border border-[var(--line)] bg-black/[0.02] dark:bg-white/[0.03] px-3 py-1 text-[11px] font-medium tracking-[0.1em] uppercase text-[var(--sub)]"
+                      style={{ fontFamily: "var(--font-mono)" }}
+                    >
+                      <span 
+                        className="h-1.5 w-1.5 rounded-full" 
+                        style={{ backgroundColor: stat.accent }}
+                      />
+                      {stat.tag}
+                    </span>
 
-                  <div 
-                    className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[var(--line)] transition-transform duration-300 group-hover:scale-110"
-                    style={{ backgroundColor: `${stat.accent}14`, color: stat.accent }}
-                  >
-                    <Icon size={18} />
+                    <div 
+                      className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[var(--line)] transition-transform duration-300 group-hover:scale-110"
+                      style={{ backgroundColor: `${stat.accent}14`, color: stat.accent }}
+                    >
+                      <Icon size={18} />
+                    </div>
                   </div>
-                </div>
 
-                {/* Card Middle: Main Stat Value */}
-                <div className="my-8">
-                  <div className="flex items-baseline gap-3">
-                    <span 
-                      className="text-5xl font-extrabold tracking-tight sm:text-6xl text-[var(--ink)] transition-colors group-hover:text-[var(--accent)]"
+                  {/* Card Middle: Main Stat Value */}
+                  <div className="my-6">
+                    <div className="flex items-baseline gap-3">
+                      <span 
+                        className="text-4xl sm:text-5xl font-extrabold tracking-tight text-[var(--ink)] transition-colors group-hover:text-[var(--accent)]"
+                        style={{ fontFamily: "var(--font-display)" }}
+                      >
+                        {stat.value}
+                      </span>
+                      {stat.subValue && (
+                        <span 
+                          className="text-[11px] font-semibold uppercase tracking-wider text-[var(--sub)]"
+                          style={{ fontFamily: "var(--font-mono)" }}
+                        >
+                          {stat.subValue}
+                        </span>
+                      )}
+                    </div>
+
+                    <h3 
+                      className="mt-2 text-base font-bold text-[var(--ink)] sm:text-lg"
                       style={{ fontFamily: "var(--font-display)" }}
                     >
-                      {stat.value}
-                    </span>
-                    {stat.subValue && (
-                      <span 
-                        className="text-xs font-semibold uppercase tracking-wider text-[var(--sub)]"
-                        style={{ fontFamily: "var(--font-mono)" }}
-                      >
-                        {stat.subValue}
-                      </span>
-                    )}
+                      {stat.title}
+                    </h3>
                   </div>
 
-                  <h3 
-                    className="mt-3 text-lg font-bold text-[var(--ink)] sm:text-xl"
-                    style={{ fontFamily: "var(--font-display)" }}
-                  >
-                    {stat.title}
-                  </h3>
+                  {/* Micro Data Visualizations / Mini Charts */}
+                  <div className="my-5">
+                    {stat.id === "websites" && <VelocityBarChart accent={stat.accent} />}
+                    {stat.id === "revenue" && <RevenueAreaChart accent={stat.accent} />}
+                    {stat.id === "seo" && <SeoRadialChart accent={stat.accent} />}
+                    {stat.id === "speed" && <SpeedBenchmarkChart accent={stat.accent} />}
+                    {stat.id === "uptime" && <UptimeMonitorGrid accent={stat.accent} />}
+                    {stat.id === "rating" && <RatingBreakdownChart accent={stat.accent} />}
+                  </div>
                 </div>
 
-                {/* Card Bottom: Description & subtle link / badge */}
+                {/* Card Bottom: Description */}
                 <div className="pt-4 border-t border-[var(--line)]/60">
                   <p className="text-xs sm:text-[13px] leading-relaxed text-[var(--sub)]">
                     {stat.description}
