@@ -121,7 +121,7 @@ export default function Footer() {
 
         {/* Giant wordmark */}
         <div className="mt-12 select-none overflow-hidden" aria-hidden>
-          <div className="flex justify-between">
+          <div className="flex w-full items-center justify-between">
             {WORDMARK.map((c, i) => (
               <motion.span
                 key={i}
@@ -129,7 +129,7 @@ export default function Footer() {
                 whileInView={{ y: "0%" }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.9, delay: i * 0.035, ease: EASE }}
-                className="f-display inline-block text-[8.2vw] leading-[0.8] text-[#F3EFE6] transition-colors duration-200 hover:text-[var(--yolk)] 2xl:text-[118px]"
+                className="f-display inline-block text-[6.6vw] sm:text-[6.9vw] md:text-[7.1vw] lg:text-[7.3vw] leading-[0.85] text-[#F3EFE6] transition-colors duration-200 hover:text-[var(--yolk)] 2xl:text-[100px]"
               >
                 {c}
               </motion.span>
