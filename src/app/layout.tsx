@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
+import { Archivo, Familjen_Grotesk, Instrument_Serif, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/layout/SmoothScroll";
 import Navbar from "@/components/layout/Navbar";
@@ -7,33 +7,36 @@ import Footer from "@/components/layout/Footer";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
+import Cursor from "@/components/ui/Cursor";
+import MobileDock from "@/components/ui/MobileDock";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const spaceGrotesk = Space_Grotesk({
+// Display: Archivo with the width axis, so headlines can run expanded.
+const display = Archivo({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["600", "700"],
+  axes: ["wdth"],
+  display: "swap",
 });
 
-const inter = Inter({
+const body = Familjen_Grotesk({
   variable: "--font-body",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const serif = Instrument_Serif({
+  variable: "--font-serif",
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
+const mono = IBM_Plex_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["400", "500", "600"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -85,10 +88,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${display.variable} ${body.variable} ${serif.variable} ${mono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col mac-bg text-black dark:text-white transition-colors duration-500">
+      <body className="min-h-full flex flex-col bg-[var(--bg)] text-[var(--ink)]">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -102,24 +105,21 @@ export default function RootLayout({
             })
           }}
         />
-        {/* Subtle Grid Pattern Overlay */}
-        <div 
-          className="pointer-events-none fixed inset-0 z-40 h-full w-full opacity-[0.12] dark:opacity-[0.06] mix-blend-multiply dark:mix-blend-screen"
-          style={{ backgroundImage: 'radial-gradient(var(--ink) 1px, transparent 1px)', backgroundSize: '32px 32px' }}
-        ></div>
-        
-        {/* Noise Texture Overlay */}
-        <div 
-          className="pointer-events-none fixed inset-0 z-50 h-full w-full opacity-[0.04] dark:opacity-[0.03] mix-blend-overlay"
-          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
-        ></div>
+        {/* Paper grain — one fixed layer, GPU-cheap */}
+        <div
+          aria-hidden
+          className="pointer-events-none fixed inset-0 z-[60] opacity-[0.035] dark:opacity-[0.05]"
+          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")` }}
+        />
         <ThemeProvider>
           <SmoothScroll>
             <Navbar />
             {children}
             <Footer />
+            <MobileDock />
             <ScrollToTop />
             <WhatsAppButton />
+            <Cursor />
           </SmoothScroll>
         </ThemeProvider>
       </body>

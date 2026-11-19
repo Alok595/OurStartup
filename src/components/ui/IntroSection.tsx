@@ -1,309 +1,144 @@
 "use client";
 
-/**
- * IntroSection.tsx
- * ----------------------------------------------------------------------------
- * "About" section, two-column on larger screens:
- *   left  — eyebrow, the agency's exact description copy (six service
- *           phrases tagged inline, same interaction as before: scroll-drawn
- *           underline + hover/focus/tap tooltip), startup emphasis
- *   right — an animated line-art "workstation" scene: desk, monitor, CPU
- *           tower, a seated person typing, floating UI chips, a coffee cup
- *           with steam — drawn in the same stroke language as HeroSection's
- *           SVGs (pathLength draw-in, then small infinite idle loops).
- * Below both: the six-item capability ledger, unchanged in spirit.
- *
- * On mobile the illustration moves to the top (its own card, full width) so
- * it's never squeezed or hidden — text and ledger follow below it.
- *
- * Requires the same CSS custom properties as HeroSection to be available on
- * this section: --bg, --ink, --sub, --line, --accent.
- * ----------------------------------------------------------------------------
- */
+import { useRef, useState } from "react";
+import { AnimatePresence, motion, useScroll, useTransform, MotionValue } from "framer-motion";
+import { Reveal, Spark } from "@/components/ui/motion";
 
-import { useState } from "react";
-import { AnimatePresence, motion, useMotionValue, useSpring, useTransform, useMotionTemplate } from "framer-motion";
+type Capability = { id: string; tag: string; label: string; blurb: string; color: string; fg: string };
 
-const EASE = [0.16, 1, 0.3, 1] as const;
+const CAPS: Capability[] = [
+  { id: "web", tag: "websites", label: "Web Development", blurb: "Marketing sites, dashboards and web apps engineered for speed and SEO.", color: "#34D399", fg: "#0E0E10" },
+  { id: "mobile", tag: "mobile applications", label: "Mobile Applications", blurb: "iOS and Android products with fluid UI and offline support.", color: "#60A5FA", fg: "#0E0E10" },
+  { id: "ai", tag: "AI-powered solutions", label: "AI-Powered Solutions", blurb: "Copilots and retrieval pipelines that work quietly inside your product.", color: "#C4B5FD", fg: "#0E0E10" },
+  { id: "automation", tag: "automation", label: "Automation", blurb: "Resilient pipelines that remove manual, repetitive work.", color: "#FF9A6B", fg: "#0E0E10" },
+  { id: "branding", tag: "branding", label: "Branding", blurb: "Logo systems and design tokens that stay consistent everywhere.", color: "#FF8FB4", fg: "#0E0E10" },
+  { id: "custom", tag: "custom software", label: "Custom Software", blurb: "Bespoke systems shaped around how your team actually works.", color: "#FFD23F", fg: "#0E0E10" },
+];
 
-// ---------------------------------------------------------------------------
-// Six disciplines — same ids/order/accents as HeroSection's `services`, and
-// tag text matches the exact wording used in the paragraph below so the
-// highlighted words line up 1:1 with the sentence.
-// ---------------------------------------------------------------------------
-type Capability = {
-  id: string;
-  tag: string;
-  label: string;
-  blurb: string;
-  accentLight: string;
-  accentDark: string;
-};
+const LEAD =
+  "We are a technology-driven software agency helping startups, businesses, ambitious founders and forward-thinking enterprises build high-quality digital products.";
 
-const CAPABILITIES: Capability[] = [
-  { id: "web", tag: "websites", label: "Web Development", blurb: "Marketing sites, dashboards and web apps engineered for speed and SEO.", accentLight: "#D9600A", accentDark: "#FF8A3D" },
-  { id: "mobile", tag: "mobile applications", label: "Mobile Applications", blurb: "iOS and Android products with fluid UI and offline support.", accentLight: "#5B45CF", accentDark: "#9C8CFF" },
-  { id: "ai", tag: "AI-powered solutions", label: "AI-Powered Solutions", blurb: "Copilots and retrieval pipelines that work quietly inside your product.", accentLight: "#0C9C89", accentDark: "#4FE8D0" },
-  { id: "automation", tag: "automation", label: "Automation", blurb: "Resilient pipelines that remove manual, repetitive work.", accentLight: "#0C9C89", accentDark: "#4FE8D0" },
-  { id: "branding", tag: "branding", label: "Branding", blurb: "Logo systems and design tokens that stay consistent everywhere.", accentLight: "#5B45CF", accentDark: "#9C8CFF" },
-  { id: "custom", tag: "custom software", label: "Custom Software", blurb: "Bespoke systems shaped around how your team actually works.", accentLight: "#D9600A", accentDark: "#FF8A3D" },
+const AUDIENCE = [
+  { label: "Startups", bg: "#FFD23F", rot: -4 },
+  { label: "Businesses", bg: "#34D399", rot: 3 },
+  { label: "Content creators", bg: "#FF8FB4", rot: -2 },
 ];
 
 export default function IntroSection() {
   const [active, setActive] = useState<string | null>(null);
+  const leadRef = useRef<HTMLParagraphElement>(null);
+  const { scrollYProgress } = useScroll({ target: leadRef, offset: ["start 0.85", "end 0.5"] });
+  const words = LEAD.split(" ");
 
   return (
-    <section
-      id="about"
-      className="relative flex min-h-[100vh] flex-col justify-center overflow-hidden border-b border-[var(--line)] bg-[var(--bg)] px-6 py-24 sm:px-10 sm:py-28 lg:py-32"
-      style={{ fontFamily: "var(--font-body)" }}
-    >
-      {/* faint grid texture — same language as the hero, kept very quiet */}
-      <div className="pointer-events-none absolute inset-0 opacity-[0.04] [background-image:linear-gradient(var(--line)_1px,transparent_1px),linear-gradient(90deg,var(--line)_1px,transparent_1px)] [background-size:64px_64px]" />
-
-      <div className="relative mx-auto max-w-5xl text-center">
-        <div className="flex flex-col items-center gap-12">
-          {/* ---------------------------------------------------------- */}
-          {/* COPY */}
-          {/* ---------------------------------------------------------- */}
-          <div className="w-full">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.6, ease: EASE }}
-              className="mb-8"
-            >
-              <div className="flex flex-col items-center gap-4">
-                <h2 
-                  className="text-5xl font-bold tracking-tight text-[var(--ink)] sm:text-6xl lg:text-[4.5rem]" 
-                  style={{ fontFamily: "var(--font-display)" }}
+    <section id="about" className="relative border-t-2 border-[var(--edge)] bg-[var(--bg)] px-5 py-14 sm:px-8 sm:py-20">
+      <div className="mx-auto grid max-w-[1400px] gap-12 lg:grid-cols-12">
+        <div className="lg:col-span-3">
+          <div className="lg:sticky lg:top-28">
+            <Reveal>
+              <p className="label flex items-center gap-2 text-[var(--sub)]">
+                <span className="inline-block h-3 w-3 bg-[var(--accent)]" /> (01) Who we are
+              </p>
+            </Reveal>
+            <div className="mt-8 flex flex-wrap gap-3 lg:flex-col lg:items-start">
+              {AUDIENCE.map((a, i) => (
+                <motion.span
+                  key={a.label}
+                  initial={{ opacity: 0, scale: 0.5, rotate: 0 }}
+                  whileInView={{ opacity: 1, scale: 1, rotate: a.rot }}
+                  whileHover={{ rotate: 0, scale: 1.08 }}
+                  viewport={{ once: true }}
+                  transition={{ type: "spring", stiffness: 260, damping: 15, delay: 0.1 + i * 0.08 }}
+                  className="label border-2 border-[#0E0E10] px-3 py-2 !text-[12px] text-[#0E0E10] shadow-[3px_3px_0_#0E0E10]"
+                  style={{ backgroundColor: a.bg }}
                 >
-                  Who we are.
-                </h2>
-                <div className="flex flex-wrap justify-center gap-2 mt-2">
-                  <span
-                    className="inline-flex items-center rounded-full border border-[var(--accent)]/30 bg-[var(--accent)]/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--accent)]"
-                    style={{ fontFamily: "var(--font-mono)" }}
-                  >
-                    Startups
-                  </span>
-                  <span
-                    className="inline-flex items-center rounded-full border border-[var(--accent)]/30 bg-[var(--accent)]/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--accent)]"
-                    style={{ fontFamily: "var(--font-mono)" }}
-                  >
-                    Businesses
-                  </span>
-                  <span
-                    className="inline-flex items-center rounded-full border border-[var(--accent)]/30 bg-[var(--accent)]/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--accent)]"
-                    style={{ fontFamily: "var(--font-mono)" }}
-                  >
-                    Content Creators
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
-              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, delay: 0.1, ease: EASE }}
-              className="text-2xl leading-[1.55] tracking-tight text-[var(--ink)] sm:text-3xl lg:text-[2.2rem]"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              We are a technology-driven software development agency helping startups, businesses, ambitious founders, and forward-thinking enterprises build high-quality digital products. 
-              Whether you need scalable enterprise systems, e-commerce platforms, or sleek portfolio apps for content creators, our core focus is transforming complex ideas into intuitive, user-centric experiences that drive real growth.
-              From <TaggedWord cap={CAPABILITIES[0]} index={0} active={active} setActive={setActive} /> and{" "}
-              <TaggedWord cap={CAPABILITIES[1]} index={1} active={active} setActive={setActive} /> to{" "}
-              <TaggedWord cap={CAPABILITIES[2]} index={2} active={active} setActive={setActive} />,{" "}
-              <TaggedWord cap={CAPABILITIES[3]} index={3} active={active} setActive={setActive} />,{" "}
-              <TaggedWord cap={CAPABILITIES[4]} index={4} active={active} setActive={setActive} />, and{" "}
-              <TaggedWord cap={CAPABILITIES[5]} index={5} active={active} setActive={setActive} />, we deliver
-              scalable, secure, and innovative solutions tailored to your exact business needs.
-            </motion.p>
-
-            <motion.p
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.6, delay: 0.9 }}
-              className="mt-4 text-[12px] uppercase tracking-[0.16em] text-[var(--sub)]/70 lg:hidden"
-              style={{ fontFamily: "var(--font-mono)" }}
-            >
-              Tap a highlighted word to learn more
-            </motion.p>
-
-            {/* Quick Metrics Ribbon */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.6, delay: 0.35, ease: EASE }}
-              className="mt-12 flex flex-wrap items-center justify-center gap-3 sm:gap-4"
-            >
-              <div className="flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--bg)] px-4 py-2 text-xs text-[var(--ink)] shadow-xs">
-                <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
-                <span className="font-bold text-[var(--accent)]" style={{ fontFamily: "var(--font-display)" }}>15+</span>
-                <span className="text-[var(--sub)] font-medium">Websites Shipped Last Month</span>
-              </div>
-              <div className="flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--bg)] px-4 py-2 text-xs text-[var(--ink)] shadow-xs">
-                <span className="h-2 w-2 rounded-full bg-[#0C9C89]" />
-                <span className="font-bold text-[#0C9C89]" style={{ fontFamily: "var(--font-display)" }}>₹1L++</span>
-                <span className="text-[var(--sub)] font-medium">Client Revenue via Software</span>
-              </div>
-              <div className="flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--bg)] px-4 py-2 text-xs text-[var(--ink)] shadow-xs">
-                <span className="h-2 w-2 rounded-full bg-[#5B45CF]" />
-                <span className="font-bold text-[#5B45CF]" style={{ fontFamily: "var(--font-display)" }}>90%+</span>
-                <span className="text-[var(--sub)] font-medium">Customer Return (Google Search)</span>
-              </div>
-            </motion.div>
+                  {a.label}
+                </motion.span>
+              ))}
+            </div>
           </div>
         </div>
 
+        <div className="lg:col-span-9">
+          <p ref={leadRef} className="f-display-narrow text-[2.1rem] leading-[1.08] text-[var(--ink)] sm:text-5xl lg:text-[3.1rem]">
+            {words.map((w, idx) => (
+              <ScrubWord key={idx} progress={scrollYProgress} range={[idx / words.length, (idx + 1) / words.length]}>
+                {w}
+              </ScrubWord>
+            ))}
+          </p>
+
+          <Reveal delay={0.1} className="mt-8 grid gap-8 border-t-2 border-[var(--edge)] pt-8 md:grid-cols-[auto_1fr]">
+            <Spark size={44} color="var(--accent)" className="hidden md:block" />
+            <p className="max-w-3xl text-xl leading-relaxed text-[var(--sub)] sm:text-2xl">
+              Whether you need scalable enterprise systems, e-commerce platforms or sleek portfolio apps for content creators, we turn
+              complex ideas into intuitive experiences that drive real growth. From{" "}
+              <Tag cap={CAPS[0]} active={active} setActive={setActive} /> and <Tag cap={CAPS[1]} active={active} setActive={setActive} /> to{" "}
+              <Tag cap={CAPS[2]} active={active} setActive={setActive} />, <Tag cap={CAPS[3]} active={active} setActive={setActive} />,{" "}
+              <Tag cap={CAPS[4]} active={active} setActive={setActive} /> and <Tag cap={CAPS[5]} active={active} setActive={setActive} /> — we ship
+              solutions that are scalable, secure and shaped around your business.
+            </p>
+          </Reveal>
+          <p className="label mt-6 text-[var(--sub)] opacity-70 lg:hidden">Tap a highlighted word</p>
+        </div>
       </div>
     </section>
   );
 }
 
-// ---------------------------------------------------------------------------
-// TAGGED WORD — accent-colored inline phrase with a scroll-drawn underline;
-// hover, focus, or tap reveals a small tooltip card with a one-liner.
-// ---------------------------------------------------------------------------
-function TaggedWord({
+function ScrubWord({ children, progress, range }: { children: string; progress: MotionValue<number>; range: [number, number] }) {
+  const opacity = useTransform(progress, range, [0.14, 1]);
+  return (
+    <motion.span style={{ opacity }} className="inline">
+      {children}{" "}
+    </motion.span>
+  );
+}
+
+function Tag({
   cap,
-  index,
   active,
   setActive,
 }: {
   cap: Capability;
-  index: number;
   active: string | null;
   setActive: React.Dispatch<React.SetStateAction<string | null>>;
 }) {
-  const isOpen = active === cap.id;
-
+  const open = active === cap.id;
   return (
-    <span
-      className="relative inline-block [--cap-color:var(--cap-light)] dark:[--cap-color:var(--cap-dark)]"
-      style={{ "--cap-light": cap.accentLight, "--cap-dark": cap.accentDark } as React.CSSProperties}
-    >
+    <span className="relative inline-block">
       <button
         type="button"
         onMouseEnter={() => setActive(cap.id)}
-        onMouseLeave={() => setActive((cur) => (cur === cap.id ? null : cur))}
+        onMouseLeave={() => setActive((c) => (c === cap.id ? null : c))}
         onFocus={() => setActive(cap.id)}
-        onBlur={() => setActive((cur) => (cur === cap.id ? null : cur))}
-        onClick={() => setActive(isOpen ? null : cap.id)}
-        className="relative -mx-0.5 inline-block rounded-sm border-0 bg-transparent px-0.5 py-0 align-baseline font-semibold text-[var(--cap-color)] outline-none transition-opacity duration-200 hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cap-color)]"
+        onBlur={() => setActive((c) => (c === cap.id ? null : c))}
+        onClick={() => setActive(open ? null : cap.id)}
+        className="group relative inline-block px-1 font-semibold"
       >
-        {cap.tag}
-        <motion.span
+        <span
           aria-hidden
-          initial={{ scaleX: 0 }}
-          whileInView={{ scaleX: 1 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.5, delay: 0.5 + index * 0.12, ease: EASE }}
-          className="absolute -bottom-0.5 left-0.5 right-0.5 h-[2.5px] origin-left rounded-full"
-          style={{ backgroundColor: "var(--cap-color)" }}
+          className="absolute inset-x-0 bottom-[0.08em] top-[0.18em] -rotate-1 transition-transform duration-200 group-hover:rotate-1"
+          style={{ backgroundColor: cap.color }}
         />
+        <span className="relative text-[#0E0E10]">{cap.tag}</span>
       </button>
-
       <AnimatePresence>
-        {isOpen && (
+        {open && (
           <motion.span
             role="tooltip"
-            initial={{ opacity: 0, y: 6, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 6, scale: 0.96 }}
-            transition={{ duration: 0.18, ease: "easeOut" }}
-            className="pointer-events-none absolute left-1/2 top-full z-20 mt-3 w-48 -translate-x-1/2 rounded-xl border border-[var(--line)] bg-[var(--bg)] p-3 text-left shadow-lg sm:w-56 block"
+            initial={{ opacity: 0, y: 8, rotate: -3 }}
+            animate={{ opacity: 1, y: 0, rotate: -1.5 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.18 }}
+            className="pointer-events-none absolute left-1/2 top-full z-30 mt-3 block w-60 -translate-x-1/2 border-2 border-[#0E0E10] p-3 text-left shadow-[4px_4px_0_#0E0E10]"
+            style={{ backgroundColor: cap.color }}
           >
-            <span className="block text-[10px] uppercase tracking-[0.14em] text-[var(--cap-color)]" style={{ fontFamily: "var(--font-mono)" }}>
-              {cap.label}
-            </span>
-            <span className="mt-1 block text-[12.5px] font-normal leading-snug tracking-normal text-[var(--sub)]" style={{ fontFamily: "var(--font-body)" }}>
-              {cap.blurb}
-            </span>
+            <span className="label block !text-[10px] text-[#0E0E10]">{cap.label}</span>
+            <span className="mt-1 block text-[14px] font-medium leading-snug text-[#0E0E10]">{cap.blurb}</span>
           </motion.span>
         )}
       </AnimatePresence>
     </span>
   );
-}
-
-// ---------------------------------------------------------------------------
-// MINI ICON — tiny line-drawn glyphs for the ledger (unchanged concept).
-// ---------------------------------------------------------------------------
-function MiniIcon({ id }: { id: string }) {
-  const stroke = "var(--cap-color)";
-  const shape = { fill: "none", stroke, strokeWidth: 1.6, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
-  const draw = (delay = 0) => ({
-    initial: { pathLength: 0, opacity: 0 },
-    whileInView: { pathLength: 1, opacity: 1 },
-    viewport: { once: true, margin: "-40px" },
-    transition: { duration: 0.7, delay, ease: EASE },
-  });
-
-  switch (id) {
-    case "web":
-      return (
-        <svg viewBox="0 0 32 32" className="h-7 w-7 overflow-visible">
-          <motion.rect x="4" y="6" width="24" height="20" rx="3" {...shape} {...draw(0)} />
-          <motion.line x1="4" y1="13" x2="28" y2="13" {...shape} {...draw(0.4)} />
-          <circle cx="8" cy="9.5" r="0.9" fill={stroke} />
-        </svg>
-      );
-    case "mobile":
-      return (
-        <svg viewBox="0 0 32 32" className="h-7 w-7 overflow-visible">
-          <motion.rect x="9" y="3" width="14" height="26" rx="4" {...shape} {...draw(0)} />
-          <motion.line x1="13" y1="24.5" x2="19" y2="24.5" {...shape} {...draw(0.5)} />
-        </svg>
-      );
-    case "ai":
-      return (
-        <svg viewBox="0 0 32 32" className="h-7 w-7 overflow-visible">
-          <motion.line x1="8" y1="10" x2="16" y2="16" {...shape} {...draw(0)} />
-          <motion.line x1="24" y1="10" x2="16" y2="16" {...shape} {...draw(0.1)} />
-          <motion.line x1="8" y1="22" x2="16" y2="16" {...shape} {...draw(0.2)} />
-          <motion.line x1="24" y1="22" x2="16" y2="16" {...shape} {...draw(0.3)} />
-          <circle cx="8" cy="10" r="2" fill={stroke} />
-          <circle cx="24" cy="10" r="2" fill={stroke} />
-          <circle cx="8" cy="22" r="2" fill={stroke} />
-          <circle cx="24" cy="22" r="2" fill={stroke} />
-          <circle cx="16" cy="16" r="2.6" fill={stroke} />
-        </svg>
-      );
-    case "automation":
-      return (
-        <svg viewBox="0 0 32 32" className="h-7 w-7 overflow-visible">
-          <motion.circle cx="16" cy="16" r="8" {...shape} {...draw(0)} />
-          <motion.circle cx="16" cy="16" r="2.6" {...shape} {...draw(0.4)} />
-          {[0, 90, 180, 270].map((deg, i) => {
-            const x1 = 16 + 8 * Math.cos((deg * Math.PI) / 180);
-            const y1 = 16 + 8 * Math.sin((deg * Math.PI) / 180);
-            const x2 = 16 + 12 * Math.cos((deg * Math.PI) / 180);
-            const y2 = 16 + 12 * Math.sin((deg * Math.PI) / 180);
-            return <motion.line key={deg} x1={x1} y1={y1} x2={x2} y2={y2} {...shape} strokeWidth={2.2} {...draw(0.15 + i * 0.05)} />;
-          })}
-        </svg>
-      );
-    case "branding":
-      return (
-        <svg viewBox="0 0 32 32" className="h-7 w-7 overflow-visible">
-          <motion.circle cx="13" cy="16" r="8" {...shape} {...draw(0)} />
-          <motion.circle cx="19" cy="16" r="8" {...shape} {...draw(0.25)} />
-        </svg>
-      );
-    case "custom":
-      return (
-        <svg viewBox="0 0 32 32" className="h-7 w-7 overflow-visible">
-          <motion.path d="M12 8 L4 16 L12 24" {...shape} {...draw(0)} />
-          <motion.path d="M20 8 L28 16 L20 24" {...shape} {...draw(0.2)} />
-        </svg>
-      );
-    default:
-      return null;
-  }
 }

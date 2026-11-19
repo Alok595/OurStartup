@@ -1,51 +1,35 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { ArrowUp } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
+import { isAdminRoute } from "@/components/ui/motion";
 
 export default function ScrollToTop() {
   const pathname = usePathname();
-  const [isVisible, setIsVisible] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const { scrollY, scrollYProgress } = useScroll();
 
-  const hideRoutes = ['/login', '/dashboard', '/leads', '/portfolio', '/settings', '/stories', '/clients', '/interested-clients'];
-  const isHidden = hideRoutes.some(route => pathname?.startsWith(route));
+  useMotionValueEvent(scrollY, "change", (y) => setVisible(y > 600));
 
-  useEffect(() => {
-    const toggleVisibility = () => {
-      if (window.scrollY > 500) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
-      }
-    };
-
-    window.addEventListener("scroll", toggleVisibility);
-    return () => window.removeEventListener("scroll", toggleVisibility);
-  }, []);
-
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
-
-  if (isHidden) return null;
+  if (isAdminRoute(pathname)) return null;
 
   return (
     <AnimatePresence>
-      {isVisible && (
+      {visible && (
         <motion.button
-          initial={{ opacity: 0, scale: 0.5, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.5, y: 20 }}
-          onClick={scrollToTop}
-          className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--ink)] text-[var(--bg)] shadow-lg transition-transform hover:scale-110 active:scale-95"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 24 }}
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           aria-label="Scroll to top"
+          className="group fixed bottom-5 right-5 z-50 hidden h-12 w-12 place-items-center overflow-hidden border-2 border-[var(--edge)] bg-[var(--paper)] text-[var(--ink)] shadow-[4px_4px_0_var(--shadow)] transition-transform hover:-translate-y-1 sm:bottom-6 sm:right-6 md:grid"
         >
-          <ArrowUp size={24} />
+          {/* fill shows how far down the page you are */}
+          <motion.span aria-hidden style={{ scaleY: scrollYProgress }} className="absolute inset-0 origin-bottom bg-[var(--yolk)]" />
+          <svg className="relative transition-transform duration-300 group-hover:-translate-y-0.5" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square">
+            <path d="M12 20V4M5 11l7-7 7 7" />
+          </svg>
         </motion.button>
       )}
     </AnimatePresence>

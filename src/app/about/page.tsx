@@ -24,7 +24,7 @@ const ABOUT_FAQS = [
 
 export default function AboutPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between">
+    <main className="flex min-h-screen flex-col bg-[var(--bg)]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -43,8 +43,8 @@ export default function AboutPage() {
         }}
       />
       <AboutSection />
-      <div className="w-full bg-[var(--bg)]">
-        <FAQSection faqs={ABOUT_FAQS} title="About Us - FAQs" />
+      <div className="w-full border-t-2 border-[var(--edge)] bg-[var(--bg)]">
+        <FAQSection faqs={ABOUT_FAQS} title="About us, answered." />
       </div>
     </main>
   );

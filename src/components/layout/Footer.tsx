@@ -1,100 +1,147 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
-
 import { usePathname } from "next/navigation";
-import { Mail, Phone } from "lucide-react";
+import { motion } from "framer-motion";
 import { LinkedinIcon, InstagramIcon } from "@/components/ui/BrandIcons";
+import { Arrow, EASE, Magnetic, Marquee, Spark, isAdminRoute } from "@/components/ui/motion";
+
+const SITEMAP = [
+  { href: "/projects", label: "Work" },
+  { href: "/services", label: "Services" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
+];
+
+const WORDMARK = "GENZDEVWORKS".split("");
 
 export default function Footer() {
   const pathname = usePathname();
-
-  // Hide Footer on auth and admin routes
-  const hideRoutes = ['/login', '/dashboard', '/leads', '/portfolio', '/settings', '/stories', '/clients', '/interested-clients'];
-  if (hideRoutes.some(route => pathname?.startsWith(route))) {
-    return null;
-  }
+  if (isAdminRoute(pathname)) return null;
 
   return (
-    <footer className="border-t border-[var(--line)] bg-[var(--bg)] pt-20 pb-10 sm:pt-28 sm:pb-12 px-6 sm:px-10">
-      <div className="mx-auto max-w-7xl flex flex-col gap-16">
-        
-        {/* Top Section: CTA */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10">
-          <div className="flex flex-col gap-6 max-w-2xl">
-            <h2 className="text-5xl sm:text-7xl font-bold tracking-tight text-[var(--ink)]" style={{ fontFamily: "var(--font-display)" }}>
-              Let's build<br />something great.
+    <footer className="panel-cobalt halftone relative overflow-hidden border-t-2 border-[var(--edge)]">
+      {/* Running headline */}
+      <div className="border-b border-white/15 py-4 sm:py-6">
+        <Marquee speed={38}>
+          {Array.from({ length: 4 }).map((_, i) => (
+            <span key={i} className="flex items-center gap-8 pr-8">
+              <span className="f-display whitespace-nowrap text-[13vw] sm:text-[7vw]">Let&apos;s talk</span>
+              <Spark size={56} color="#FFD23F" className="spin-slow shrink-0" />
+              <span
+                className="f-display whitespace-nowrap text-[13vw] text-transparent sm:text-[7vw]"
+                style={{ WebkitTextStroke: "2px #F3EFE6" }}
+              >
+                Build loud
+              </span>
+              <Spark size={56} color="#34D399" className="spin-slow shrink-0" />
+            </span>
+          ))}
+        </Marquee>
+      </div>
+
+      <div className="mx-auto max-w-[1400px] px-5 pt-12 sm:px-8 sm:pt-16">
+        <div className="grid gap-14 lg:grid-cols-12">
+          <div className="lg:col-span-6">
+            <p className="label text-[var(--yolk)]">Got an idea?</p>
+            <h2 className="f-display mt-5 text-5xl sm:text-6xl lg:text-7xl">
+              Bring it.
+              <br />
+              <span className="f-serif text-[1.08em] font-normal tracking-normal text-[var(--mint)]">we&apos;ll make it real.</span>
             </h2>
-            <p className="text-xl text-[var(--sub)]" style={{ fontFamily: "var(--font-body)" }}>
-              Ready to transform your idea into reality? We partner with ambitious teams to engineer products that scale.
+            <p className="mt-6 max-w-md text-lg text-white/75">
+              Two-minute brief, one real human on the other end, and a reply within 24 hours.
             </p>
+            <Magnetic className="mt-9 inline-block">
+              <Link href="/contact" className="btn btn-yolk !px-7 !py-5 !text-[13px]">
+                Start a project <Arrow size={15} />
+              </Link>
+            </Magnetic>
           </div>
-          <div>
-            <Link 
-              href="/contact" 
-              className="inline-flex items-center justify-center rounded-full bg-[var(--accent)] px-8 py-4 text-sm font-semibold tracking-[0.1em] text-white transition-transform hover:scale-105 uppercase"
-              style={{ fontFamily: "var(--font-mono)" }}
-            >
-              Start a project
-            </Link>
+
+          <div className="grid grid-cols-2 gap-10 sm:grid-cols-3 lg:col-span-6">
+            <div>
+              <p className="label text-white/50">Sitemap</p>
+              <ul className="mt-5 flex flex-col gap-3">
+                {SITEMAP.map((l) => (
+                  <li key={l.href}>
+                    <Link href={l.href} className="link-wipe text-lg font-semibold">
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <p className="label text-white/50">Say hi</p>
+              <ul className="mt-5 flex flex-col gap-3 text-[15px]">
+                <li>
+                  <a href="mailto:genzdevworks@gmail.com" className="link-wipe break-all font-semibold">
+                    genzdevworks@gmail.com
+                  </a>
+                </li>
+                <li>
+                  <a href="tel:+916202585952" className="link-wipe font-semibold">
+                    +91 6202 585 952
+                  </a>
+                </li>
+                <li>
+                  <a href="https://wa.me/916202585952" target="_blank" rel="noopener noreferrer" className="link-wipe font-semibold">
+                    WhatsApp
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div className="col-span-2 sm:col-span-1">
+              <p className="label text-white/50">Follow</p>
+              <div className="mt-5 flex gap-3">
+                <a
+                  href="https://instagram.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                  className="grid h-12 w-12 place-items-center border-2 border-white/80 transition-all duration-200 hover:-translate-y-1 hover:bg-[var(--bubblegum)] hover:shadow-[4px_4px_0_#0E0E10]"
+                >
+                  <InstagramIcon width={20} height={20} />
+                </a>
+                <a
+                  href="#"
+                  aria-label="LinkedIn"
+                  className="grid h-12 w-12 place-items-center border-2 border-white/80 transition-all duration-200 hover:-translate-y-1 hover:bg-[var(--sky)] hover:shadow-[4px_4px_0_#0E0E10]"
+                >
+                  <LinkedinIcon width={20} height={20} />
+                </a>
+              </div>
+              <p className="mt-6 text-sm text-white/60">Remote-first. Shipping worldwide from India.</p>
+            </div>
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="h-[1px] w-full bg-[var(--line)]"></div>
-
-        {/* Bottom Section: Links & Legal */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8">
-          
-          <div className="md:col-span-2 flex flex-col gap-4">
-            <div className="text-2xl font-bold tracking-tight text-[var(--ink)] flex items-center gap-2" style={{ fontFamily: "var(--font-display)" }}>
-              <Image src="/images/logo-modified.png" alt="GenZDevWorks Logo" width={112} height={112} className="w-8 h-8 shrink-0 transition-transform duration-300 hover:scale-[3.5] hover:z-50 relative origin-bottom-left" />
-              GenZDevWorks
-            </div>
-            <p className="text-sm text-[var(--sub)] max-w-sm" style={{ fontFamily: "var(--font-body)" }}>
-              A technology-driven software development agency for forward-thinking enterprises.
-            </p>
+        {/* Giant wordmark */}
+        <div className="mt-12 select-none overflow-hidden" aria-hidden>
+          <div className="flex justify-between">
+            {WORDMARK.map((c, i) => (
+              <motion.span
+                key={i}
+                initial={{ y: "100%" }}
+                whileInView={{ y: "0%" }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.9, delay: i * 0.035, ease: EASE }}
+                className="f-display inline-block text-[8.2vw] leading-[0.8] text-[#F3EFE6] transition-colors duration-200 hover:text-[var(--yolk)] 2xl:text-[118px]"
+              >
+                {c}
+              </motion.span>
+            ))}
           </div>
-
-          <div className="flex flex-col gap-4">
-            <h4 className="text-xs uppercase tracking-[0.2em] font-semibold text-[var(--sub)]" style={{ fontFamily: "var(--font-mono)" }}>Company</h4>
-            <Link href="#about" className="text-sm font-medium text-[var(--ink)] hover:text-[var(--accent)] transition-colors" style={{ fontFamily: "var(--font-body)" }}>About Us</Link>
-            <Link href="/services" className="text-sm font-medium text-[var(--ink)] hover:text-[var(--accent)] transition-colors" style={{ fontFamily: "var(--font-body)" }}>Services</Link>
-            <Link href="/projects" className="text-sm font-medium text-[var(--ink)] hover:text-[var(--accent)] transition-colors" style={{ fontFamily: "var(--font-body)" }}>Projects</Link>
-          </div>
-
-          <div className="flex flex-col gap-4">
-            <h4 className="text-xs uppercase tracking-[0.2em] font-semibold text-[var(--sub)]" style={{ fontFamily: "var(--font-mono)" }}>Connect</h4>
-            <div className="flex flex-wrap gap-3">
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="group flex h-12 w-12 items-center justify-center rounded-xl border border-[var(--line)] transition-all hover:border-[var(--accent)] hover:bg-[var(--accent)]/5">
-                <InstagramIcon width={20} height={20} className="text-[var(--sub)] transition-colors group-hover:text-[var(--accent)]" />
-              </a>
-              <a href="#" aria-label="LinkedIn" className="group flex h-12 w-12 items-center justify-center rounded-xl border border-[var(--line)] transition-all hover:border-[var(--accent)] hover:bg-[var(--accent)]/5">
-                <LinkedinIcon width={20} height={20} className="text-[var(--sub)] transition-colors group-hover:text-[var(--accent)]" />
-              </a>
-            </div>
-            
-            <div className="mt-2 flex flex-col gap-3">
-              <a href="mailto:genzdevworks@gmail.com" className="flex items-center gap-3 text-sm font-medium text-[var(--ink)] transition-colors hover:text-[var(--accent)]" style={{ fontFamily: "var(--font-body)" }}>
-                <Mail size={16} className="text-[var(--sub)]" />
-                genzdevworks@gmail.com
-              </a>
-              <a href="tel:+916202585952" className="flex items-center gap-3 text-sm font-medium text-[var(--ink)] transition-colors hover:text-[var(--accent)]" style={{ fontFamily: "var(--font-body)" }}>
-                <Phone size={16} className="text-[var(--sub)]" />
-                +91 6202 585 952
-              </a>
-            </div>
-          </div>
-
         </div>
 
-        {/* Very Bottom: Copyright */}
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 text-xs text-[var(--sub)]" style={{ fontFamily: "var(--font-mono)" }}>
-          <p>© {new Date().getFullYear()} GenZDevWorks Agency. All rights reserved.</p>
-          <div className="flex gap-6">
-            <a href="#" className="hover:text-[var(--ink)] transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-[var(--ink)] transition-colors">Terms of Service</a>
+        <div className="flex flex-col items-start justify-between gap-3 border-t border-white/20 py-6 text-[13px] text-white/60 sm:flex-row sm:items-center">
+          <p className="f-mono">© {new Date().getFullYear()} GenZDevWorks — built by hand, not by template.</p>
+          <div className="f-mono flex gap-6">
+            <a href="#" className="hover:text-white">Privacy</a>
+            <a href="#" className="hover:text-white">Terms</a>
           </div>
         </div>
       </div>

@@ -1,95 +1,51 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { Arrow, Reveal } from "@/components/ui/motion";
 
 const SOCIALS = [
-  {
-    name: "Instagram",
-    icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-      </svg>
-    ),
-    link: "#",
-  },
-  {
-    name: "Gmail",
-    icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-        <polyline points="22,6 12,13 2,6"></polyline>
-      </svg>
-    ),
-    link: "mailto:genzdevworks@gmail.com",
-  },
-  {
-    name: "WhatsApp",
-    icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-      </svg>
-    ),
-    link: "#",
-  },
-  {
-    name: "LinkedIn",
-    icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-        <rect x="2" y="9" width="4" height="12"></rect>
-        <circle cx="4" cy="4" r="2"></circle>
-      </svg>
-    ),
-    link: "#",
-  },
+  { name: "Instagram", handle: "@genzdevworks", link: "#", color: "#FF3D7F" },
+  { name: "Email", handle: "genzdevworks@gmail.com", link: "mailto:genzdevworks@gmail.com", color: "#FFD23F" },
+  { name: "WhatsApp", handle: "+91 6202 585 952", link: "https://wa.me/916202585952", color: "#34D399" },
+  { name: "LinkedIn", handle: "GenZDevWorks", link: "#", color: "#60A5FA" },
 ];
 
 export default function SocialMarquee() {
-  // Duplicate array to create a seamless infinite loop
-  const duplicateSocials = [...SOCIALS, ...SOCIALS, ...SOCIALS, ...SOCIALS, ...SOCIALS, ...SOCIALS];
-
   return (
-    <section className="border-b border-[var(--line)] bg-[var(--bg)] py-12 overflow-hidden">
-      <div className="flex flex-col items-center gap-8">
-        
-        <h3 
-          className="text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-[var(--sub)]" 
-          style={{ fontFamily: "var(--font-mono)" }}
-        >
-          Connect with us
-        </h3>
-
-        <div className="relative w-full flex overflow-hidden group">
-          {/* Fading Edges */}
-          <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-20 bg-gradient-to-r from-[var(--bg)] to-transparent sm:w-40" />
-          <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-20 bg-gradient-to-l from-[var(--bg)] to-transparent sm:w-40" />
-          
-          <motion.div
-            animate={{ x: ["0%", "-50%"] }}
-            transition={{
-              repeat: Infinity,
-              ease: "linear",
-              duration: 20,
-            }}
-            className="flex w-max items-center gap-12 sm:gap-24 px-6"
-          >
-            {duplicateSocials.map((social, idx) => (
+    <section className="border-t-2 border-[var(--edge)] bg-[var(--bg)] px-5 py-14 sm:px-8 sm:py-20">
+      <div className="mx-auto max-w-[1400px]">
+        <Reveal>
+          <p className="label flex items-center gap-2 text-[var(--sub)]">
+            <span className="inline-block h-3 w-3 bg-[var(--mint)]" /> (07) Find us
+          </p>
+        </Reveal>
+        <ul className="mt-8 border-t-2 border-[var(--edge)]">
+          {SOCIALS.map((s, i) => (
+            <Reveal as="li" key={s.name} delay={i * 0.06} className="border-b-2 border-[var(--edge)]">
               <a
-                key={idx}
-                href={social.link}
-                className="flex items-center gap-3 text-[var(--ink)] opacity-70 transition-all hover:opacity-100 hover:text-[var(--accent)]"
+                href={s.link}
+                target={s.link.startsWith("http") ? "_blank" : undefined}
+                rel="noopener noreferrer"
+                className="group relative flex items-center justify-between gap-4 overflow-hidden px-2 py-4 sm:py-5"
               >
-                {social.icon}
-                <span className="text-xl sm:text-2xl font-bold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
-                  {social.name}
+                <span
+                  aria-hidden
+                  className="absolute inset-0 origin-left scale-x-0 transition-transform duration-500 ease-[var(--ease-out)] group-hover:scale-x-100"
+                  style={{ backgroundColor: s.color }}
+                />
+                <span className="relative flex items-baseline gap-4 transition-[transform,color] duration-500 ease-[var(--ease-out)] group-hover:translate-x-4 group-hover:text-[#0E0E10] sm:gap-8">
+                  <span className="label opacity-50">0{i + 1}</span>
+                  <span className="f-display text-[10vw] text-[var(--ink)] transition-colors group-hover:text-[#0E0E10] sm:text-6xl lg:text-7xl">{s.name}</span>
+                </span>
+                <span className="relative flex items-center gap-4 transition-colors group-hover:text-[#0E0E10]">
+                  <span className="f-mono hidden text-sm text-[var(--sub)] transition-colors group-hover:text-[#0E0E10] md:block">{s.handle}</span>
+                  <span className="grid h-12 w-12 place-items-center border-2 border-[var(--edge)] text-[var(--ink)] transition-transform duration-500 group-hover:rotate-45 group-hover:border-[#0E0E10] group-hover:bg-[#0E0E10] group-hover:text-[#FFFDF8] sm:h-16 sm:w-16">
+                    <Arrow size={22} />
+                  </span>
                 </span>
               </a>
-            ))}
-          </motion.div>
-        </div>
-
+            </Reveal>
+          ))}
+        </ul>
       </div>
     </section>
   );

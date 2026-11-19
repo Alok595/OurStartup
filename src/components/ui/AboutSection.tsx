@@ -1,184 +1,162 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { Zap, Code, Shield, Cpu, ChevronRight } from "lucide-react";
+import { Cpu, Shield, Zap } from "lucide-react";
+import { Arrow, EASE, Reveal, Spark, SplitWords } from "@/components/ui/motion";
+
+const PILLARS = [
+  { label: "System design", icon: Cpu, bg: "#34D399", rot: -5 },
+  { label: "Security first", icon: Shield, bg: "#60A5FA", rot: 4 },
+  { label: "Extreme performance", icon: Zap, bg: "#FFD23F", rot: -2 },
+];
+
+const ADVANTAGES = [
+  {
+    title: "Scalable architecture",
+    desc: "We don't hack things together. We architect distributed systems with Next.js, Docker and AWS that scale to millions of users.",
+    color: "#34D399",
+  },
+  {
+    title: "Algorithmic precision",
+    desc: "Complex logic, deep integrations and AI pipelines handled with academic rigour. Hard maths and tricky routing are where we're at home.",
+    color: "#FF8FB4",
+  },
+  {
+    title: "Future-proof stacks",
+    desc: "Modern, robust technology only — MERN, Next.js, React Native and PostgreSQL — so your product isn't legacy on day one.",
+    color: "#60A5FA",
+  },
+];
 
 export default function AboutSection() {
   return (
-    <section className="relative min-h-screen w-full bg-[var(--bg)] pt-32 pb-24 overflow-hidden">
-      {/* Background Grid */}
-      <div className="pointer-events-none absolute inset-0 opacity-[0.03] [background-image:linear-gradient(var(--line)_1px,transparent_1px),linear-gradient(90deg,var(--line)_1px,transparent_1px)] [background-size:64px_64px]" />
-      
-      {/* Accent Glows */}
-      <div
-        className="pointer-events-none absolute left-[-10%] top-[10%] h-[500px] w-[500px] rounded-full blur-[120px]"
-        style={{ backgroundColor: "#5B45CF", opacity: 0.12 }}
-      />
-      <div
-        className="pointer-events-none absolute right-[-10%] bottom-[10%] h-[400px] w-[400px] rounded-full blur-[100px]"
-        style={{ backgroundColor: "#0C9C89", opacity: 0.1 }}
-      />
-
-      <div className="relative z-10 mx-auto max-w-7xl px-6 sm:px-10">
-        
-        {/* HERO SECTION */}
-        <div className="flex flex-col items-center text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-6 inline-flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--bg)]/50 px-3 py-1.5 text-[11px] font-semibold tracking-[0.16em] text-[var(--sub)] backdrop-blur-sm sm:text-[12px]"
-            style={{ fontFamily: "var(--font-mono)" }}
-          >
-            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#5B45CF]" />
-            ABOUT US
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-            className="max-w-4xl text-4xl font-bold leading-[1.1] tracking-tight text-[var(--ink)] sm:text-5xl lg:text-[4.5rem]"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            Engineering at the core.<br className="hidden sm:block" />
-            <span className="text-[var(--sub)]">Built by IIT minds.</span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="mx-auto mt-6 max-w-2xl text-[15px] leading-relaxed text-[var(--sub)] sm:text-lg"
-          >
-            We are a collective of engineers from the Indian Institutes of Technology (IIT). We don't just build websites; we architect scalable, high-performance digital infrastructure for startups and enterprises that refuse to compromise on quality.
-          </motion.p>
-        </div>
-
-        {/* VISION SECTION */}
-        <div className="mt-32 grid gap-16 lg:grid-cols-[1fr_1fr] lg:items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-          >
-            <h2
-              className="text-3xl font-bold tracking-tight text-[var(--ink)] sm:text-4xl"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              Our Vision
-            </h2>
-            <div className="mt-6 space-y-5 text-[15px] leading-relaxed text-[var(--sub)] sm:text-base">
-              <p>
-                The digital landscape is cluttered with disposable MVPs and fragile codebases that break under the first sign of real scale. Our vision is to replace that fragility with rigorous, production-grade engineering.
-              </p>
-              <p>
-                We believe software should be built right the first time. By applying our academic rigor and deep systems knowledge, we craft solutions that are not only visually stunning but are fundamentally architected to handle massive scale from day one.
-              </p>
-            </div>
-            
-            <div className="mt-10 flex flex-wrap gap-4">
-              <div className="flex items-center gap-2 text-sm font-semibold text-[var(--ink)]">
-                <Cpu className="text-[#0C9C89]" size={18} />
-                System Design
-              </div>
-              <div className="flex items-center gap-2 text-sm font-semibold text-[var(--ink)]">
-                <Shield className="text-[#5B45CF]" size={18} />
-                Security First
-              </div>
-              <div className="flex items-center gap-2 text-sm font-semibold text-[var(--ink)]">
-                <Zap className="text-[#D9600A]" size={18} />
-                Extreme Performance
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Abstract geometric visual representing scale/structure */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            className="relative flex aspect-square w-full max-w-md items-center justify-center rounded-3xl border border-[var(--line)] bg-[var(--bg)]/50 p-8 backdrop-blur-md mx-auto lg:ml-auto"
-          >
-            <div className="absolute inset-0 rounded-3xl [background-image:linear-gradient(var(--line)_1px,transparent_1px),linear-gradient(90deg,var(--line)_1px,transparent_1px)] [background-size:24px_24px] opacity-20" />
-            
-            <div className="relative z-10 grid h-full w-full grid-cols-2 grid-rows-2 gap-4">
-              <div className="rounded-2xl border border-[var(--line)] bg-[var(--bg)] transition-colors hover:border-[#5B45CF]" />
-              <div className="rounded-2xl border border-[var(--line)] bg-[#5B45CF]/10 transition-colors hover:border-[#5B45CF]" />
-              <div className="rounded-2xl border border-[var(--line)] bg-[#0C9C89]/10 transition-colors hover:border-[#0C9C89]" />
-              <div className="rounded-2xl border border-[var(--line)] bg-[var(--bg)] transition-colors hover:border-[#0C9C89]" />
-            </div>
-
-            <div className="absolute flex h-16 w-16 items-center justify-center rounded-2xl border border-[var(--line)] bg-[var(--bg)] shadow-xl">
-              <Code size={24} className="text-[var(--ink)]" />
-            </div>
-          </motion.div>
-        </div>
-
-        {/* TEAM EXPERTISE GRID */}
-        <div className="mt-32">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6 }}
-            className="mb-12 text-center"
-          >
-            <h2
-              className="text-3xl font-bold tracking-tight text-[var(--ink)] sm:text-4xl"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              The IIT Advantage
-            </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-[15px] text-[var(--sub)]">
-              We bring the problem-solving mentality drilled into us at IIT to every client project. Here’s what that means for your product.
+    <section className="relative w-full bg-[var(--bg)] pt-28 sm:pt-36">
+      {/* Hero */}
+      <div className="relative overflow-hidden px-5 pb-20 sm:px-8">
+        <div aria-hidden className="ruled pointer-events-none absolute inset-0 opacity-50 [mask-image:linear-gradient(to_bottom,#000,transparent)]" />
+        <div className="relative mx-auto max-w-[1400px]">
+          <Reveal>
+            <p className="label flex items-center gap-2 text-[var(--sub)]">
+              <span className="inline-block h-3 w-3 bg-[var(--grape)]" /> About us
             </p>
-          </motion.div>
-
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                title: "Scalable Architecture",
-                desc: "We don't hack things together. We architect distributed systems using Next.js, Docker, and AWS that scale to millions of users effortlessly.",
-                color: "#5B45CF"
-              },
-              {
-                title: "Algorithmic Precision",
-                desc: "Complex logic, deep integrations, and AI pipelines are handled with academic rigor. If it involves hard math or complex routing, we excel at it.",
-                color: "#0C9C89"
-              },
-              {
-                title: "Future-Proof Stacks",
-                desc: "We exclusively build on modern, robust technologies. MERN, Next.js, React Native, and PostgreSQL ensure your product isn't legacy on day one.",
-                color: "#D9600A"
-              }
-            ].map((feature, i) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.5, delay: i * 0.15 }}
-                className="group flex flex-col justify-between rounded-3xl border border-[var(--line)] bg-[var(--bg)]/30 p-8 transition-colors hover:bg-[var(--bg)]"
-              >
-                <div>
-                  <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-[var(--line)]" style={{ backgroundColor: `${feature.color}14` }}>
-                    <span className="block h-3 w-3 rounded-full" style={{ backgroundColor: feature.color }} />
-                  </div>
-                  <h3 className="mb-3 text-lg font-bold text-[var(--ink)]" style={{ fontFamily: "var(--font-display)" }}>
-                    {feature.title}
-                  </h3>
-                  <p className="text-[14px] leading-relaxed text-[var(--sub)]">
-                    {feature.desc}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
+          </Reveal>
+          <h1 className="f-display mt-6 text-[13vw] text-[var(--ink)] sm:text-[10vw] lg:text-[8.8rem]">
+            <SplitWords text="Engineering" onMount />
+            <br />
+            <SplitWords text="at the core." onMount delay={0.1} />
+            <br />
+            <span className="f-serif text-[var(--accent)]">
+              <SplitWords text="built by IIT minds." onMount delay={0.25} />
+            </span>
+          </h1>
+          <div className="mt-12 grid gap-8 lg:grid-cols-12">
+            <Reveal delay={0.35} className="lg:col-span-6 lg:col-start-7">
+              <p className="text-xl leading-relaxed text-[var(--sub)]">
+                We&apos;re a collective of engineers from the Indian Institutes of Technology. We don&apos;t just build websites — we architect
+                scalable, high-performance digital infrastructure for startups and enterprises that refuse to compromise on quality.
+              </p>
+            </Reveal>
           </div>
         </div>
+      </div>
 
+      {/* Vision */}
+      <div className="border-y-2 border-[var(--edge)] bg-[var(--paper)] px-5 py-24 sm:px-8 sm:py-32">
+        <div className="mx-auto grid max-w-[1400px] items-center gap-16 lg:grid-cols-2">
+          <div>
+            <Reveal>
+              <p className="label text-[var(--sub)]">(01) Our vision</p>
+              <h2 className="f-display-narrow mt-5 text-5xl leading-[1] text-[var(--ink)] sm:text-6xl">
+                Built right <span className="f-serif font-normal text-[var(--accent)]">the first time.</span>
+              </h2>
+            </Reveal>
+            <Reveal delay={0.1} className="mt-8 space-y-5 text-lg leading-relaxed text-[var(--sub)]">
+              <p>
+                The web is cluttered with disposable MVPs and fragile codebases that crack at the first sign of real scale. We want to
+                replace that fragility with rigorous, production-grade engineering.
+              </p>
+              <p>
+                Academic rigour plus deep systems knowledge means products that look great and are architected to handle serious load from
+                day one.
+              </p>
+            </Reveal>
+          </div>
+
+          <Reveal delay={0.15}>
+            <div className="panel-grape halftone relative aspect-square w-full overflow-hidden border-2 border-[var(--edge)] shadow-[10px_10px_0_var(--shadow)]">
+              <span aria-hidden className="f-display absolute -bottom-[0.12em] -left-[0.04em] select-none text-[42vw] leading-none text-white/10 lg:text-[22rem]">
+                IIT
+              </span>
+              <Spark size={90} color="#FFD23F" className="spin-slow absolute right-8 top-8" />
+              <div className="absolute inset-0 flex flex-col items-start justify-center gap-5 p-8 sm:p-12">
+                {PILLARS.map((p, i) => (
+                  <motion.span
+                    key={p.label}
+                    initial={{ opacity: 0, x: -40, rotate: 0 }}
+                    whileInView={{ opacity: 1, x: 0, rotate: p.rot }}
+                    whileHover={{ rotate: 0, scale: 1.05 }}
+                    viewport={{ once: true }}
+                    transition={{ type: "spring", stiffness: 200, damping: 16, delay: 0.2 + i * 0.12 }}
+                    className="flex items-center gap-3 border-2 border-[#0E0E10] px-5 py-4 text-[#0E0E10] shadow-[5px_5px_0_#0E0E10]"
+                    style={{ backgroundColor: p.bg, marginLeft: i * 28 }}
+                  >
+                    <p.icon size={22} strokeWidth={2.4} />
+                    <span className="f-display-narrow text-xl sm:text-2xl">{p.label}</span>
+                  </motion.span>
+                ))}
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </div>
+
+      {/* Advantage */}
+      <div className="px-5 py-24 sm:px-8 sm:py-32">
+        <div className="mx-auto max-w-[1400px]">
+          <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+            <Reveal>
+              <p className="label text-[var(--sub)]">(02) The IIT advantage</p>
+              <h2 className="f-display mt-5 text-6xl text-[var(--ink)] sm:text-8xl">
+                Why <span className="f-serif text-[var(--accent)]">us?</span>
+              </h2>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p className="max-w-md text-lg text-[var(--sub)]">The problem-solving habits drilled into us at IIT, applied to your product.</p>
+            </Reveal>
+          </div>
+
+          <div className="mt-14 grid gap-8 md:grid-cols-3">
+            {ADVANTAGES.map((a, i) => (
+              <motion.article
+                key={a.title}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.6, delay: i * 0.1, ease: EASE }}
+                className="card-pop flex flex-col"
+              >
+                <div className="relative flex h-40 items-end justify-between border-b-2 border-[var(--edge)] p-5" style={{ backgroundColor: a.color }}>
+                  <span className="f-display text-8xl leading-[0.75] text-[#0E0E10]">0{i + 1}</span>
+                  <Spark size={32} color="#0E0E10" />
+                </div>
+                <div className="p-6">
+                  <h3 className="f-display-narrow text-2xl text-[var(--ink)]">{a.title}</h3>
+                  <p className="mt-3 leading-relaxed text-[var(--sub)]">{a.desc}</p>
+                </div>
+              </motion.article>
+            ))}
+          </div>
+
+          <Reveal className="mt-16 flex flex-col items-start justify-between gap-6 border-2 border-[var(--edge)] bg-[var(--yolk)] p-8 text-[#0E0E10] shadow-[8px_8px_0_var(--shadow)] sm:flex-row sm:items-center sm:p-10">
+            <p className="f-display-narrow text-3xl leading-tight sm:text-4xl">
+              Got something hard to build? <span className="f-serif font-normal">Good.</span>
+            </p>
+            <Link href="/contact" className="btn btn-ink">
+              Talk to an engineer <Arrow size={14} />
+            </Link>
+          </Reveal>
+        </div>
       </div>
     </section>
   );

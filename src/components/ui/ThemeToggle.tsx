@@ -1,32 +1,53 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
-import { Moon, Sun } from "lucide-react";
+import { useSyncExternalStore } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function ThemeToggle() {
-  const [mounted, setMounted] = useState(false);
-  const { theme, setTheme } = useTheme();
+  // false on the server, true once hydrated — avoids a theme-icon mismatch
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+  const { resolvedTheme, setTheme } = useTheme();
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  if (!mounted) return <div className="h-10 w-10 border-2 border-[var(--edge)]" />;
 
-  if (!mounted) {
-    return <div className="w-9 h-9" />; // Placeholder to avoid layout shift
-  }
+  const dark = resolvedTheme === "dark";
 
   return (
     <button
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="p-2 rounded-full bg-black/5 dark:bg-white/10 text-gray-800 dark:text-white hover:scale-110 transition-all duration-300 backdrop-blur-md border border-black/10 dark:border-white/20"
-      aria-label="Toggle Theme"
+      onClick={() => setTheme(dark ? "light" : "dark")}
+      aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+      className="relative grid h-10 w-10 place-items-center overflow-hidden border-2 border-[var(--edge)] text-[var(--ink)] transition-colors hover:bg-[var(--yolk)] hover:text-[#0E0E10]"
     >
-      {theme === "dark" ? (
-        <Sun className="w-5 h-5" />
-      ) : (
-        <Moon className="w-5 h-5" />
-      )}
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.svg
+          key={dark ? "sun" : "moon"}
+          initial={{ y: 18, rotate: -90, opacity: 0 }}
+          animate={{ y: 0, rotate: 0, opacity: 1 }}
+          exit={{ y: -18, rotate: 90, opacity: 0 }}
+          transition={{ duration: 0.25 }}
+          width="17"
+          height="17"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinecap="square"
+        >
+          {dark ? (
+            <>
+              <rect x="8" y="8" width="8" height="8" fill="currentColor" />
+              <path d="M12 1v3M12 20v3M1 12h3M20 12h3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" />
+            </>
+          ) : (
+            <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" fill="currentColor" />
+          )}
+        </motion.svg>
+      </AnimatePresence>
     </button>
   );
 }

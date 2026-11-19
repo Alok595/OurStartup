@@ -43,7 +43,9 @@ export default function ServicesPage() {
         }}
       />
       <Services />
-      <FAQSection faqs={SERVICES_FAQS} />
+      <div className="border-t-2 border-[var(--edge)]">
+        <FAQSection faqs={SERVICES_FAQS} title="Before you pick one." />
+      </div>
     </main>
   );
 }

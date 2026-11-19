@@ -1,62 +1,10 @@
 "use client";
 
-/**
- * Services.tsx
- * ----------------------------------------------------------------------------
- * "Our Expertise" — v2. Completely different structure from the previous
- * full-screen snap-panel version.
- *
- * THE IDEA
- * A single section pins to the viewport while the user scrolls. While it's
- * pinned, a horizontal card track glides left underneath a sticky detail
- * panel on the left — think editorial/portfolio-site "scrollytelling"
- * rather than a slideshow. The left panel always shows the FULL detail
- * (description, what's included, tools/stack, process) for whichever card
- * currently sits centered in the viewport, so scrolling reads like flipping
- * through pages of a dossier rather than jumping between disconnected
- * screens.
- *
- * MOTION LAYERS
- * 1. GSAP ScrollTrigger pins the section and drives one master horizontal
- *    tween (`x` on the track) tied to normal vertical scroll distance.
- * 2. Each card gets its OWN ScrollTrigger using `containerAnimation` (the
- *    master tween) so it can fade/scale/rotate in as it enters the
- *    viewport and settle to full opacity/scale when centered — a classic
- *    "flip through a deck" effect.
- * 3. The left detail panel's content cross-fades via GSAP whenever the
- *    active index changes (driven by the master tween's onUpdate).
- * 4. Framer Motion handles micro-interactions: tap/hover lift on chips,
- *    the dot-nav, and the mobile accordion cards.
- *
- * MOBILE
- * Horizontal-scroll-pin is a poor fit for small screens (fighting native
- * scroll, awkward card widths). Below `lg` we swap to a plain vertical
- * accordion list — same data, same level of detail, native scroll,
- * Framer Motion height/opacity transitions on expand.
- *
- * Requires the same CSS custom properties as the rest of the page on an
- * ancestor: --bg, --ink, --sub, --line.
- * ----------------------------------------------------------------------------
- */
-
-import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ScrollToPlugin } from "gsap/ScrollToPlugin";
-import {
-  Globe,
-  Smartphone,
-  Sparkles,
-  Workflow,
-  PenTool,
-  Boxes,
-  ArrowUpRight,
-  Check,
-  ChevronDown,
-} from "lucide-react";
-
-gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+import Link from "next/link";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Globe, Smartphone, Sparkles, Workflow, PenTool, Boxes } from "lucide-react";
+import { Arrow, EASE, Marquee, Reveal, Spark, SplitWords } from "@/components/ui/motion";
 
 type ServiceItem = {
   id: string;
@@ -68,8 +16,15 @@ type ServiceItem = {
   included: string[];
   stack: string[];
   process: { label: string; detail: string }[];
-  accentLight: string;
-  accentDark: string;
+};
+
+const LOOK: Record<string, { panel: string; chip: string }> = {
+  web: { panel: "panel-emerald", chip: "#34D399" },
+  mobile: { panel: "panel-cobalt", chip: "#60A5FA" },
+  ai: { panel: "panel-grape", chip: "#C4B5FD" },
+  automation: { panel: "panel-flame", chip: "#FFD23F" },
+  branding: { panel: "panel-grape", chip: "#FF8FB4" },
+  custom: { panel: "panel-cobalt", chip: "#FFD23F" },
 };
 
 const SERVICES: ServiceItem[] = [
@@ -97,8 +52,6 @@ const SERVICES: ServiceItem[] = [
       { label: "Build", detail: "Component-driven build with staging previews." },
       { label: "Launch", detail: "Perf pass, SEO pass, then cutover." },
     ],
-    accentLight: "#D9600A",
-    accentDark: "#FF8A3D",
   },
   {
     id: "mobile",
@@ -124,8 +77,6 @@ const SERVICES: ServiceItem[] = [
       { label: "Build", detail: "Parallel iOS/Android or cross-platform build." },
       { label: "Ship", detail: "Store review, phased rollout, monitoring." },
     ],
-    accentLight: "#5B45CF",
-    accentDark: "#9C8CFF",
   },
   {
     id: "ai",
@@ -151,8 +102,6 @@ const SERVICES: ServiceItem[] = [
       { label: "Build", detail: "Retrieval, prompts, guardrails, eval suite." },
       { label: "Monitor", detail: "Track quality & cost once it's live." },
     ],
-    accentLight: "#0C9C89",
-    accentDark: "#4FE8D0",
   },
   {
     id: "automation",
@@ -178,8 +127,6 @@ const SERVICES: ServiceItem[] = [
       { label: "Automate", detail: "Build the pipeline with error handling." },
       { label: "Watch", detail: "Alerting so failures surface immediately." },
     ],
-    accentLight: "#0C9C89",
-    accentDark: "#4FE8D0",
   },
   {
     id: "branding",
@@ -205,8 +152,6 @@ const SERVICES: ServiceItem[] = [
       { label: "Design", detail: "Identity exploration, then system build-out." },
       { label: "Hand off", detail: "Guidelines + assets ready for every team." },
     ],
-    accentLight: "#5B45CF",
-    accentDark: "#9C8CFF",
   },
   {
     id: "custom",
@@ -232,240 +177,169 @@ const SERVICES: ServiceItem[] = [
       { label: "Build", detail: "Iterative delivery in reviewable increments." },
       { label: "Scale", detail: "Stay on as usage and complexity grow." },
     ],
-    accentLight: "#D9600A",
-    accentDark: "#FF8A3D",
   },
 ];
 
 export default function Services() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const progressFillRef = useRef<HTMLDivElement>(null);
-  const [active, setActive] = useState(0);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    const track = trackRef.current;
-    if (!container || !track) return;
-
-    let mm = gsap.matchMedia();
-
-    mm.add("(min-width: 1024px)", () => {
-      // Desktop: Pin and scroll track vertically
-      const getDistance = () => track.scrollHeight - window.innerHeight;
-
-      gsap.to(track, {
-        y: () => -getDistance(),
-        ease: "none",
-        scrollTrigger: {
-          trigger: container,
-          start: "top top",
-          end: () => `+=${getDistance()}`,
-          scrub: 1,
-          pin: true,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => {
-            const progress = self.progress;
-            const idx = Math.round(progress * (SERVICES.length - 1));
-            setActive((prev) => (prev === idx ? prev : idx));
-            if (progressFillRef.current) {
-              gsap.set(progressFillRef.current, { scaleX: progress });
-            }
-          },
-        },
-      });
-    });
-
-    return () => mm.revert();
-  }, []);
-
-  const jumpTo = (i: number) => {
-    const st = ScrollTrigger.getAll().find((t) => t.vars.trigger === containerRef.current);
-    if (!st) return;
-    const target = st.start + (i / (SERVICES.length - 1)) * (st.end - st.start);
-    gsap.to(window, { scrollTo: target, duration: 0.9, ease: "power2.inOut" });
-  };
+  const [open, setOpen] = useState<string | null>("web");
 
   return (
-    <section className="relative bg-[var(--bg)]">
-      <div ref={containerRef} className="relative lg:h-screen w-full lg:overflow-hidden">
-        
-        {/* sticky header: jump-dots, progress rail */}
-        <div className="absolute inset-x-0 top-0 z-30 bg-[var(--bg)]/80 backdrop-blur-md">
-          <div className="relative flex items-center justify-end px-6 py-5 sm:px-10">
-            <h2
-              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold tracking-tight text-[var(--ink)] sm:text-3xl"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              Our Expertise
-            </h2>
-
-            <div className="flex items-center gap-4">
-              <span className="text-[11px] tracking-[0.2em] text-[var(--sub)] sm:hidden" style={{ fontFamily: "var(--font-mono)" }}>
-                0{active + 1} / 06
-              </span>
-              <div className="hidden items-center gap-2.5 sm:flex">
-                {SERVICES.map((s, i) => (
-                  <button
-                    key={s.id}
-                    onClick={() => jumpTo(i)}
-                    type="button"
-                    aria-label={`Go to ${s.title}`}
-                    className="h-2 rounded-full border border-[var(--line)] transition-all duration-300"
-                    style={{
-                      width: i === active ? 22 : 8,
-                      backgroundColor: i === active ? s.accentLight : "transparent",
-                      borderColor: i === active ? s.accentLight : "var(--line)"
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-          <div className="relative h-px w-full bg-[var(--line)]">
-            <div ref={progressFillRef} className="h-full w-full origin-left scale-x-0 bg-[var(--ink)]" />
+    <section className="relative">
+      {/* Intro */}
+      <div className="relative overflow-hidden px-5 pb-16 pt-10 sm:px-8 sm:pb-24">
+        <div aria-hidden className="ruled pointer-events-none absolute inset-0 opacity-50 [mask-image:linear-gradient(to_bottom,#000,transparent)]" />
+        <div className="relative mx-auto max-w-[1400px]">
+          <Reveal>
+            <p className="label flex items-center gap-2 text-[var(--sub)]">
+              <span className="inline-block h-3 w-3 bg-[var(--accent)]" /> Services &amp; capabilities
+            </p>
+          </Reveal>
+          <h1 className="f-display mt-6 text-[15vw] text-[var(--ink)] sm:text-[11vw] lg:text-[9.5rem]">
+            <SplitWords text="Six ways" onMount />
+            <br />
+            <span className="f-serif text-[var(--accent)]">
+              <SplitWords text="we can help." onMount delay={0.15} />
+            </span>
+          </h1>
+          <div className="mt-10 grid gap-8 lg:grid-cols-12">
+            <Reveal delay={0.3} className="lg:col-span-6 lg:col-start-7">
+              <p className="text-xl leading-relaxed text-[var(--sub)]">
+                Pick one, or stack a few — most clients start with a website and come back for the app, the automation and the AI
+                layer on top. Open a row to see exactly what&apos;s included.
+              </p>
+            </Reveal>
           </div>
         </div>
+      </div>
 
-        {/* Scrolling track */}
-        <div ref={trackRef} className="relative w-full will-change-transform">
-          {SERVICES.map((service) => (
-            <ServicePanel key={service.id} service={service} />
+      {/* Index */}
+      <div className="mx-auto max-w-[1400px] px-5 pb-10 sm:px-8">
+        <div className="border-t-[3px] border-[var(--edge)]">
+          {SERVICES.map((s, i) => {
+            const isOpen = open === s.id;
+            const look = LOOK[s.id];
+            return (
+              <Reveal key={s.id} delay={i * 0.04} className="border-b-[3px] border-[var(--edge)]">
+                <button
+                  onClick={() => setOpen(isOpen ? null : s.id)}
+                  aria-expanded={isOpen}
+                  className="group relative flex w-full items-center gap-4 overflow-hidden py-6 text-left sm:gap-8 sm:py-8"
+                >
+                  {!isOpen && (
+                    <span
+                      aria-hidden
+                      className="absolute inset-0 origin-bottom scale-y-0 transition-transform duration-500 ease-[var(--ease-out)] group-hover:scale-y-100"
+                      style={{ backgroundColor: look.chip }}
+                    />
+                  )}
+                  <span className="label relative w-8 shrink-0 pl-1 text-[var(--sub)] transition-colors group-hover:text-[#0E0E10]">{s.index}</span>
+                  <span className="relative flex-1">
+                    <span
+                      className={`f-display block text-[9vw] transition-[color,transform] duration-500 ease-[var(--ease-out)] sm:text-6xl lg:text-7xl ${
+                        isOpen ? "text-[var(--accent)]" : "text-[var(--ink)] group-hover:translate-x-3 group-hover:text-[#0E0E10]"
+                      }`}
+                    >
+                      {s.title}
+                    </span>
+                    <span className={`mt-2 max-w-xl text-[var(--sub)] transition-colors group-hover:text-[#0E0E10] ${isOpen ? "hidden" : "hidden sm:block"}`}>
+                      {s.tagline}
+                    </span>
+                  </span>
+                  <span
+                    className={`relative grid h-12 w-12 shrink-0 place-items-center border-2 border-[var(--edge)] transition-all duration-300 sm:h-16 sm:w-16 ${
+                      isOpen ? "bg-[var(--yolk)] text-[#0E0E10]" : "text-[var(--ink)] group-hover:border-[#0E0E10] group-hover:text-[#0E0E10]"
+                    }`}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="square" className={`transition-transform duration-300 ${isOpen ? "rotate-45" : ""}`}>
+                      <path d="M12 4v16M4 12h16" />
+                    </svg>
+                  </span>
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ height: 0 }}
+                      animate={{ height: "auto" }}
+                      exit={{ height: 0 }}
+                      transition={{ duration: 0.55, ease: [0.7, 0, 0.2, 1] }}
+                      className="overflow-hidden"
+                    >
+                      <ServicePanel s={s} panel={look.panel} chip={look.chip} />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </Reveal>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Band */}
+      <div className="my-16 -rotate-[1.5deg] border-y-[3px] border-[var(--edge)] bg-[var(--yolk)] py-4 text-[#0E0E10]">
+        <Marquee speed={34}>
+          {SERVICES.map((s) => (
+            <span key={s.id} className="flex items-center gap-6 pr-6">
+              <span className="f-display whitespace-nowrap text-4xl sm:text-5xl">{s.title}</span>
+              <Spark size={24} color="#0E0E10" />
+            </span>
           ))}
-        </div>
+        </Marquee>
       </div>
     </section>
   );
 }
 
-// ---------------------------------------------------------------------------
-// SERVICE PANEL — one full-screen "chapter"
-// ---------------------------------------------------------------------------
-function ServicePanel({ service }: { service: ServiceItem }) {
+function ServicePanel({ s, panel, chip }: { s: ServiceItem; panel: string; chip: string }) {
+  const Icon = s.icon;
   return (
-    <section
-      className="relative flex min-h-screen py-24 w-full flex-col justify-center overflow-hidden border-b border-[var(--line)] px-6 sm:px-10 [--accent:var(--accent-light)] dark:[--accent:var(--accent-dark)]"
-      style={{ "--accent-light": service.accentLight, "--accent-dark": service.accentDark } as React.CSSProperties}
-    >
-      {/* parallax background numeral */}
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-end pr-4">
-        <motion.span
-          initial={{ y: -50 }}
-          whileInView={{ y: 50 }}
-          viewport={{ margin: "-100px" }}
-          transition={{ duration: 1.5, ease: "linear" }}
-          className="select-none text-[42vw] font-bold leading-none text-[var(--ink)] opacity-[0.035] sm:text-[24vw] lg:text-[20vw]"
-          style={{ fontFamily: "var(--font-display)" }}
-        >
-          {service.index}
-        </motion.span>
+    <div className={`${panel} halftone mb-8 grid gap-10 border-2 border-[var(--edge)] p-6 sm:p-10 lg:grid-cols-12`}>
+      <div className="lg:col-span-5">
+        <span className="grid h-16 w-16 place-items-center border-2 border-[#0E0E10] text-[#0E0E10] shadow-[4px_4px_0_#0E0E10]" style={{ backgroundColor: chip }}>
+          <Icon size={28} strokeWidth={2} />
+        </span>
+        <p className="f-serif mt-8 text-3xl leading-tight">{s.tagline}</p>
+        <p className="mt-5 text-[16px] leading-relaxed opacity-85">{s.description}</p>
+        <div className="mt-8 flex flex-wrap gap-2">
+          {s.stack.map((t) => (
+            <span key={t} className="label border border-white/50 px-2.5 py-1.5 !text-[10px]">
+              {t}
+            </span>
+          ))}
+        </div>
+        <Link href="/contact" className="btn btn-yolk mt-9">
+          Start a {s.title.toLowerCase()} project <Arrow size={14} />
+        </Link>
       </div>
 
-      <div className="pointer-events-none absolute inset-0 opacity-[0.04] [background-image:linear-gradient(var(--line)_1px,transparent_1px),linear-gradient(90deg,var(--line)_1px,transparent_1px)] [background-size:56px_56px]" />
-      <div
-        className="pointer-events-none absolute right-[-12%] top-1/2 h-[380px] w-[380px] -translate-y-1/2 rounded-full blur-[130px]"
-        style={{ backgroundColor: "var(--accent)", opacity: 0.15 }}
-      />
-
-      <div className="relative z-10 mx-auto grid w-full max-w-7xl gap-10 pt-16 sm:gap-14 lg:grid-cols-[1fr_0.9fr] lg:items-center lg:gap-20">
-        
-        {/* Left Column: Intro & Process */}
-        <div className="flex flex-col">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, margin: "-100px" }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <div className="mb-5 flex items-center gap-4">
-              <span
-                className="text-6xl font-bold leading-none opacity-90"
-                style={{ fontFamily: "var(--font-display)", color: "var(--accent)" }}
-              >
-                {service.index}
-              </span>
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--line)] bg-[var(--bg)]">
-                <service.icon size={20} color="var(--accent)" strokeWidth={1.75} />
-              </div>
-            </div>
-
-            <h3
-              className="text-[2.1rem] font-bold leading-[1.05] tracking-tight text-[var(--ink)] xl:text-[2.4rem]"
-              style={{ fontFamily: "var(--font-display)" }}
+      <div className="lg:col-span-7">
+        <p className="label opacity-70">What&apos;s included</p>
+        <ul className="mt-4 grid border-l border-t border-white/25 sm:grid-cols-2">
+          {s.included.map((item, i) => (
+            <motion.li
+              key={item}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 + i * 0.04, duration: 0.4, ease: EASE }}
+              className="flex items-center gap-3 border-b border-r border-white/25 px-4 py-3.5 text-[15px] font-medium"
             >
-              {service.title}
-            </h3>
-            <p className="mt-4 max-w-lg text-[15px] leading-relaxed text-[var(--sub)]">{service.description}</p>
-          </motion.div>
+              <span className="h-2.5 w-2.5 shrink-0" style={{ backgroundColor: chip }} />
+              {item}
+            </motion.li>
+          ))}
+        </ul>
 
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, margin: "-100px" }}
-            transition={{ duration: 0.6, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-8 flex flex-col gap-3 border-t border-[var(--line)] pt-6 sm:mt-12 sm:flex-row sm:gap-6 sm:pt-8"
-          >
-            {service.process.map((step, i) => (
-              <div key={step.label} className="flex-1">
-                <span
-                  className="text-[10.5px] tracking-[0.16em]"
-                  style={{ fontFamily: "var(--font-mono)", color: "var(--accent)" }}
-                >
-                  0{i + 1} · {step.label}
-                </span>
-                <p className="mt-1.5 text-[12px] leading-relaxed text-[var(--sub)]">{step.detail}</p>
-              </div>
-            ))}
-          </motion.div>
-        </div>
-
-        {/* Right Column: Included & Stack */}
-        <div className="flex flex-col gap-8 rounded-3xl border border-[var(--line)] bg-[var(--bg)]/50 p-6 backdrop-blur-md sm:p-10">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, margin: "-100px" }}
-            transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <h4 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--ink)]" style={{ fontFamily: "var(--font-mono)" }}>
-              What's Included
-            </h4>
-            <ul className="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
-              {service.included.map((item) => (
-                <li key={item} className="flex items-start gap-2.5 text-[13.5px] leading-snug text-[var(--sub)]">
-                  <Check size={14} className="mt-[3px] shrink-0" color="var(--accent)" strokeWidth={2.5} />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, margin: "-100px" }}
-            transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="border-t border-[var(--line)] pt-6"
-          >
-            <h4 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--ink)]" style={{ fontFamily: "var(--font-mono)" }}>
-              Tech Stack
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {service.stack.map((tool) => (
-                <span
-                  key={tool}
-                  className="rounded-full border border-[var(--line)] bg-[var(--bg)] px-3 py-1.5 text-[11px] tracking-wide text-[var(--sub)] transition-colors hover:border-[var(--accent)] hover:text-[var(--ink)]"
-                  style={{ fontFamily: "var(--font-mono)" }}
-                >
-                  {tool}
-                </span>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-
+        <p className="label mt-10 opacity-70">How it runs</p>
+        <ol className="mt-4 grid gap-3 sm:grid-cols-3">
+          {s.process.map((p, i) => (
+            <li key={p.label} className="border-2 border-[#0E0E10] bg-[#FFFDF8] p-4 text-[#0E0E10] shadow-[4px_4px_0_#0E0E10]">
+              <span className="label opacity-60">Step {i + 1}</span>
+              <span className="f-display-narrow mt-2 block text-xl">{p.label}</span>
+              <span className="mt-1 block text-sm leading-snug opacity-75">{p.detail}</span>
+            </li>
+          ))}
+        </ol>
       </div>
-    </section>
+    </div>
   );
 }

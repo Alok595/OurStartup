@@ -1,67 +1,26 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import {
-  Copy,
-  Check,
-  ArrowRight,
-  ArrowLeft,
-  Globe,
-  Smartphone,
-  Sparkles,
-  Workflow,
-  PenTool,
-  Boxes,
-  ChevronDown,
-  Clock,
-  MapPin,
-} from "lucide-react";
-
-const InstagramIcon = ({ size = 24, ...props }: any) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-  </svg>
-);
-
-const MailIcon = ({ size = 24, ...props }: any) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-    <polyline points="22,6 12,13 2,6"></polyline>
-  </svg>
-);
-
-const WhatsAppIcon = ({ size = 24, ...props }: any) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-  </svg>
-);
-
-const LinkedinIcon = ({ size = 24, ...props }: any) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-    <rect x="2" y="9" width="4" height="12"></rect>
-    <circle cx="4" cy="4" r="2"></circle>
-  </svg>
-);
+import { ArrowLeft, Boxes, Check, Copy, Globe, PenTool, Smartphone, Sparkles, Workflow } from "lucide-react";
+import FAQSection from "@/components/ui/FAQSection";
+import { Arrow, EASE, Spark, SplitWords } from "@/components/ui/motion";
 
 const SOCIALS = [
-  { name: "Instagram", icon: InstagramIcon, link: "#" },
-  { name: "Email Us", icon: MailIcon, link: "mailto:genzdevworks@gmail.com" },
-  { name: "WhatsApp", icon: WhatsAppIcon, link: "https://wa.me/916202585952" },
-  { name: "LinkedIn", icon: LinkedinIcon, link: "#" },
+  { name: "Instagram", link: "#", color: "#FF8FB4" },
+  { name: "Email", link: "mailto:genzdevworks@gmail.com", color: "#FFD23F" },
+  { name: "WhatsApp", link: "https://wa.me/916202585952", color: "#34D399" },
+  { name: "LinkedIn", link: "#", color: "#60A5FA" },
 ];
 
 const PROJECT_TYPES = [
-  { id: "web", label: "Web Development", icon: Globe },
-  { id: "mobile", label: "Mobile App", icon: Smartphone },
-  { id: "ai", label: "AI Solutions", icon: Sparkles },
-  { id: "automation", label: "Automation", icon: Workflow },
-  { id: "branding", label: "Branding", icon: PenTool },
-  { id: "custom", label: "Custom Software", icon: Boxes },
+  { id: "web", label: "Web Development", icon: Globe, color: "#34D399" },
+  { id: "mobile", label: "Mobile App", icon: Smartphone, color: "#60A5FA" },
+  { id: "ai", label: "AI Solutions", icon: Sparkles, color: "#C4B5FD" },
+  { id: "automation", label: "Automation", icon: Workflow, color: "#FF9A6B" },
+  { id: "branding", label: "Branding", icon: PenTool, color: "#FF8FB4" },
+  { id: "custom", label: "Custom Software", icon: Boxes, color: "#FFD23F" },
 ];
 
 const BUDGETS = ["$10k – $25k", "$25k – $50k", "$50k – $100k", "$100k+"];
@@ -90,6 +49,7 @@ const STEPS = ["Basics", "Project", "Scope", "Details"];
 
 export default function ContactClientForm() {
   const [step, setStep] = useState(0);
+  const [dir, setDir] = useState(1);
   const [copied, setCopied] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -101,20 +61,6 @@ export default function ContactClientForm() {
     timeline: "",
     details: "",
   });
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
-
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const blobX = useSpring(mouseX, { stiffness: 40, damping: 20 });
-  const blobY = useSpring(mouseY, { stiffness: 40, damping: 20 });
-  const heroRef = useRef<HTMLDivElement>(null);
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    const rect = heroRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    mouseX.set(e.clientX - rect.left - rect.width / 2);
-    mouseY.set(e.clientY - rect.top - rect.height / 2);
-  };
 
   const copy = (text: string, key: string) => {
     navigator.clipboard?.writeText(text);
@@ -128,10 +74,18 @@ export default function ContactClientForm() {
     (step === 2 && form.budget && form.timeline) ||
     step === 3;
 
+  const goTo = (n: number) => {
+    setDir(n > step ? 1 : -1);
+    setStep(n);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canAdvance) return;
-
+    if (step < STEPS.length - 1) {
+      goTo(step + 1);
+      return;
+    }
     setIsSubmitting(true);
     try {
       const res = await fetch("/api/leads", {
@@ -139,12 +93,8 @@ export default function ContactClientForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-
-      if (res.ok) {
-        setIsSuccess(true);
-      } else {
-        alert("Something went wrong. Please try again.");
-      }
+      if (res.ok) setIsSuccess(true);
+      else alert("Something went wrong. Please try again.");
     } catch (err) {
       console.error(err);
       alert("Something went wrong. Please try again.");
@@ -153,509 +103,328 @@ export default function ContactClientForm() {
     }
   };
 
-  const toggleType = (id: string) => {
-    setForm((f) => ({
-      ...f,
-      types: f.types.includes(id) ? f.types.filter((t) => t !== id) : [...f.types, id],
-    }));
-  };
+  const toggleType = (id: string) =>
+    setForm((f) => ({ ...f, types: f.types.includes(id) ? f.types.filter((t) => t !== id) : [...f.types, id] }));
 
   return (
-    <main className="relative min-h-screen bg-[var(--bg)] pb-24">
+    <main className="relative min-h-screen bg-[var(--bg)]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "FAQPage",
-            mainEntity: FAQS.map((faq) => ({
-              "@type": "Question",
-              name: faq.q,
-              acceptedAnswer: {
-                "@type": "Answer",
-                text: faq.a,
-              },
-            })),
+            mainEntity: FAQS.map((faq) => ({ "@type": "Question", name: faq.q, acceptedAnswer: { "@type": "Answer", text: faq.a } })),
           }),
         }}
       />
-      {/* ------------------------------------------------------------------ */}
-      {/* HERO — mouse-reactive blob + headline                             */}
-      {/* ------------------------------------------------------------------ */}
-      <div
-        ref={heroRef}
-        onMouseMove={handleMouseMove}
-        className="relative overflow-hidden border-b border-[var(--line)] px-6 pb-20 pt-32 sm:px-10 lg:pb-28 lg:pt-40"
-      >
-        <motion.div
-          style={{ x: blobX, y: blobY }}
-          className="pointer-events-none absolute left-1/2 top-1/2 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.16] blur-[110px]"
-        >
-          <div className="h-full w-full rounded-full" style={{ backgroundColor: "var(--accent)" }} />
-        </motion.div>
 
-        <div className="pointer-events-none absolute inset-0 opacity-[0.035] [background-image:linear-gradient(var(--line)_1px,transparent_1px),linear-gradient(90deg,var(--line)_1px,transparent_1px)] [background-size:64px_64px]" />
-
-        <div className="relative z-10 mx-auto max-w-5xl flex items-center justify-between">
-          <div className="max-w-lg flex-1">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="mb-8 flex w-fit items-center gap-3 rounded-full border border-[var(--line)] bg-[var(--bg)] px-4 py-2"
+      {/* Hero */}
+      <div className="relative overflow-hidden px-5 pb-16 pt-28 sm:px-8 sm:pt-36 lg:pb-24">
+        <div aria-hidden className="ruled pointer-events-none absolute inset-0 opacity-50 [mask-image:linear-gradient(to_bottom,#000,transparent)]" />
+        <div className="relative mx-auto flex max-w-[1400px] items-center justify-between gap-10">
+          <div className="max-w-3xl">
+            <motion.span
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="inline-flex items-center gap-2 border-2 border-[var(--edge)] bg-[var(--paper)] px-3 py-1.5"
             >
               <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent)] opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--accent)]" />
+                <span className="absolute inset-0 animate-ping bg-[var(--emerald)] opacity-70" />
+                <span className="relative h-2 w-2 bg-[var(--emerald)]" />
               </span>
-              <span
-                className="text-xs font-semibold uppercase tracking-widest text-[var(--ink)]"
-                style={{ fontFamily: "var(--font-mono)" }}
-              >
-                Accepting new projects
+              <span className="label text-[var(--ink)]">Accepting new projects</span>
+            </motion.span>
+            <h1 className="f-display mt-8 text-[16vw] text-[var(--ink)] sm:text-[11vw] lg:text-[9rem]">
+              <SplitWords text="Let's build" onMount />
+              <br />
+              <span className="f-serif text-[var(--accent)]">
+                <SplitWords text="the future." onMount delay={0.15} />
               </span>
-            </motion.div>
-
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="text-6xl font-bold leading-[0.95] tracking-tighter text-[var(--ink)] sm:text-8xl lg:text-[7rem]"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              Let&apos;s build <br className="hidden sm:block" />
-              <span className="text-[var(--sub)]">the future.</span>
-            </motion.h1>
-
+            </h1>
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25, duration: 0.7 }}
-              className="mt-6 text-[15px] leading-relaxed text-[var(--sub)]"
+              transition={{ delay: 0.4, duration: 0.6, ease: EASE }}
+              className="mt-8 max-w-lg text-xl text-[var(--sub)]"
             >
-              Tell us what you&apos;re building. A four-step brief, less than two minutes, straight to a real person on
-              the team.
+              Tell us what you&apos;re building. Four quick steps, under two minutes, straight to a real person on the team.
             </motion.p>
           </div>
 
-          {/* Floating Animated Logo (Right Side) */}
           <motion.div
-            className="hidden sm:block relative z-20 cursor-pointer pointer-events-auto shrink-0"
-            animate={{ 
-              y: [0, -30, 0],
-              rotateZ: [-2, 4, -2],
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-            whileHover={{
-              scale: 1.25,
-              rotateZ: 0,
-              filter: "drop-shadow(0px 0px 60px var(--accent))",
-              transition: { duration: 0.4, type: "spring", stiffness: 200 }
-            }}
+            initial={{ opacity: 0, scale: 0.6, rotate: -20 }}
+            animate={{ opacity: 1, scale: 1, rotate: 6 }}
+            whileHover={{ rotate: -4, scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 160, damping: 14, delay: 0.3 }}
+            className="relative hidden shrink-0 border-[3px] border-[#0E0E10] bg-[var(--yolk)] p-6 shadow-[10px_10px_0_var(--shadow)] md:block"
           >
-            <Image 
-              src="/images/logo-modified.png" 
-              alt="GenZDevWorks Logo" 
-              width={600} 
-              height={600} 
-              className="w-56 h-56 sm:w-72 sm:h-72 lg:w-[400px] lg:h-[400px] object-contain drop-shadow-2xl"
-              priority
-            />
+            <Spark size={46} color="#FF3D7F" className="spin-slow absolute -left-6 -top-6" />
+            <Image src="/images/logo-modified.png" alt="GenZDevWorks logo" width={320} height={320} priority className="h-52 w-52 object-contain lg:h-72 lg:w-72" />
           </motion.div>
         </div>
       </div>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* BODY — sticky info/live-brief panel + multi-step form              */}
-      {/* ------------------------------------------------------------------ */}
-      <div className="mx-auto mt-16 grid max-w-7xl grid-cols-1 gap-14 px-6 sm:px-10 lg:grid-cols-12 lg:gap-20">
-        {/* LEFT (Appears Second on Mobile, First on Desktop) */}
-        <div className="order-2 flex flex-col gap-12 lg:order-1 lg:sticky lg:top-28 lg:col-span-5 lg:h-fit">
-          {/* direct contact */}
-          <div className="flex flex-col gap-4">
-            <h3
-              className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--sub)]"
-              style={{ fontFamily: "var(--font-mono)" }}
-            >
-              Direct contact
-            </h3>
-            <button
-              onClick={() => copy("genzdevworks@gmail.com", "email")}
-              className="group flex items-center justify-between rounded-2xl border border-[var(--line)] px-5 py-4 text-left transition-colors hover:border-[var(--ink)]"
-            >
-              <span
-                className="text-xl font-medium text-[var(--ink)] sm:text-2xl"
-                style={{ fontFamily: "var(--font-display)" }}
+      {/* Body */}
+      <div className="border-t-2 border-[var(--edge)] bg-[var(--paper)] px-5 py-16 sm:px-8 sm:py-24">
+        <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-14 lg:grid-cols-12 lg:gap-16">
+          {/* Form */}
+          <div className="lg:col-span-7">
+            {isSuccess ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, rotate: -1 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                className="panel-emerald halftone flex min-h-[460px] flex-col items-start justify-end border-2 border-[var(--edge)] p-8 shadow-[10px_10px_0_var(--shadow)] sm:p-12"
               >
-                genzdevworks@gmail.com
-              </span>
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--line)] text-[var(--sub)] transition-colors group-hover:border-[var(--ink)] group-hover:text-[var(--ink)]">
-                {copied === "email" ? <Check size={14} /> : <Copy size={14} />}
-              </span>
-            </button>
-            <button
-              onClick={() => copy("+91 6202 585 952", "phone")}
-              className="group flex items-center justify-between rounded-2xl border border-[var(--line)] px-5 py-4 text-left transition-colors hover:border-[var(--ink)]"
-            >
-              <span className="text-lg font-medium text-[var(--ink)] sm:text-xl" style={{ fontFamily: "var(--font-display)" }}>
-                +91 6202 585 952
-              </span>
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--line)] text-[var(--sub)] transition-colors group-hover:border-[var(--ink)] group-hover:text-[var(--ink)]">
-                {copied === "phone" ? <Check size={14} /> : <Copy size={14} />}
-              </span>
-            </button>
+                <span className="grid h-16 w-16 place-items-center border-2 border-[#0E0E10] bg-[var(--yolk)] text-[#0E0E10]">
+                  <Check size={32} strokeWidth={3} />
+                </span>
+                <h2 className="f-display mt-8 text-5xl sm:text-6xl">Brief received.</h2>
+                <p className="mt-4 max-w-md text-lg text-white/85">
+                  Thanks, {form.name.split(" ")[0]}. We&apos;ll read it properly and get back to you within 24 hours.
+                </p>
+              </motion.div>
+            ) : (
+              <form onSubmit={handleSubmit} className="border-2 border-[var(--edge)] bg-[var(--bg)] shadow-[10px_10px_0_var(--shadow)]">
+                {/* step tabs */}
+                <div className="grid grid-cols-4 border-b-2 border-[var(--edge)]">
+                  {STEPS.map((label, i) => {
+                    const done = i < step;
+                    const current = i === step;
+                    return (
+                      <button
+                        key={label}
+                        type="button"
+                        disabled={i > step}
+                        onClick={() => goTo(i)}
+                        className={`relative flex flex-col items-start gap-1 px-3 py-3 text-left transition-colors sm:px-5 sm:py-4 ${i > 0 ? "border-l-2 border-[var(--edge)]" : ""} ${
+                          current ? "bg-[var(--yolk)] text-[#0E0E10]" : done ? "bg-[var(--ink)] text-[var(--bg)]" : "text-[var(--sub)]"
+                        }`}
+                      >
+                        <span className="label !text-[10px] opacity-70">{done ? "✓ done" : `Step ${i + 1}`}</span>
+                        <span className="f-display-narrow text-sm sm:text-lg">{label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="relative min-h-[340px] overflow-hidden p-6 sm:p-10">
+                  <AnimatePresence mode="wait" custom={dir}>
+                    <motion.div
+                      key={step}
+                      custom={dir}
+                      initial={{ opacity: 0, x: dir * 40 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: dir * -40 }}
+                      transition={{ duration: 0.3, ease: EASE }}
+                    >
+                      {step === 0 && (
+                        <div className="flex flex-col gap-8">
+                          <BigInput id="name" label="What's your name?" placeholder="Alex Rivera" value={form.name} onChange={(v) => setForm((f) => ({ ...f, name: v }))} />
+                          <BigInput
+                            id="email"
+                            type="email"
+                            label="Where can we reach you?"
+                            placeholder="alex@startup.com"
+                            value={form.email}
+                            onChange={(v) => setForm((f) => ({ ...f, email: v }))}
+                          />
+                        </div>
+                      )}
+
+                      {step === 1 && (
+                        <div>
+                          <p className="f-display-narrow text-2xl text-[var(--ink)] sm:text-3xl">What are we building?</p>
+                          <p className="label mt-2 text-[var(--sub)]">Pick all that apply</p>
+                          <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                            {PROJECT_TYPES.map((t) => {
+                              const active = form.types.includes(t.id);
+                              return (
+                                <motion.button
+                                  key={t.id}
+                                  type="button"
+                                  whileTap={{ scale: 0.95 }}
+                                  onClick={() => toggleType(t.id)}
+                                  aria-pressed={active}
+                                  className={`relative flex flex-col items-start gap-6 border-2 p-4 text-left transition-all duration-200 ${
+                                    active ? "-translate-x-0.5 -translate-y-0.5 border-[#0E0E10] text-[#0E0E10] shadow-[4px_4px_0_#0E0E10]" : "border-[var(--line)] text-[var(--ink)] hover:border-[var(--edge)]"
+                                  }`}
+                                  style={{ backgroundColor: active ? t.color : "transparent" }}
+                                >
+                                  <t.icon size={22} strokeWidth={2} />
+                                  <span className="text-[15px] font-semibold leading-tight">{t.label}</span>
+                                  {active && <Check size={16} strokeWidth={3} className="absolute right-3 top-3" />}
+                                </motion.button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {step === 2 && (
+                        <div className="flex flex-col gap-10">
+                          <ChipGroup label="Estimated budget" options={BUDGETS} value={form.budget} onPick={(b) => setForm((f) => ({ ...f, budget: b }))} />
+                          <ChipGroup label="Timeline" options={TIMELINES} value={form.timeline} onPick={(t) => setForm((f) => ({ ...f, timeline: t }))} />
+                        </div>
+                      )}
+
+                      {step === 3 && (
+                        <div className="flex flex-col gap-4">
+                          <label htmlFor="details" className="f-display-narrow text-2xl text-[var(--ink)] sm:text-3xl">
+                            Anything else we should know?
+                          </label>
+                          <textarea
+                            id="details"
+                            rows={6}
+                            value={form.details}
+                            onChange={(e) => setForm((f) => ({ ...f, details: e.target.value }))}
+                            placeholder="Links, references, constraints, existing tech stack…"
+                            className="field resize-none"
+                          />
+                          <p className="text-sm text-[var(--sub)]">By submitting, you agree to our Privacy Policy.</p>
+                        </div>
+                      )}
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+
+                <div className="flex items-center justify-between border-t-2 border-[var(--edge)] p-4 sm:px-10 sm:py-5">
+                  <button
+                    type="button"
+                    onClick={() => goTo(Math.max(0, step - 1))}
+                    disabled={step === 0}
+                    className="label flex items-center gap-2 text-[var(--sub)] transition-colors hover:text-[var(--ink)] disabled:invisible"
+                  >
+                    <ArrowLeft size={14} /> Back
+                  </button>
+                  {step < STEPS.length - 1 ? (
+                    <button type="submit" disabled={!canAdvance} className="btn btn-ink">
+                      Continue <Arrow size={14} />
+                    </button>
+                  ) : (
+                    <button type="submit" disabled={isSubmitting} className="btn btn-yolk">
+                      {isSubmitting ? "Sending…" : "Send brief"} {!isSubmitting && <Arrow size={14} />}
+                    </button>
+                  )}
+                </div>
+              </form>
+            )}
           </div>
 
-          {/* stat row */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-2xl border border-[var(--line)] px-4 py-4">
-              <Clock size={16} className="mb-2 text-[var(--accent)]" />
-              <span className="block text-lg font-bold text-[var(--ink)]" style={{ fontFamily: "var(--font-display)" }}>
-                &lt; 24h
-              </span>
-              <span className="text-[11px] text-[var(--sub)]">Avg. response time</span>
+          {/* Side */}
+          <aside className="flex flex-col gap-10 lg:sticky lg:top-28 lg:col-span-5 lg:h-fit">
+            {/* receipt */}
+            <div className="relative -rotate-1 bg-[#FFFDF8] px-6 pb-8 pt-6 text-[#0E0E10] shadow-[6px_6px_0_var(--shadow)] [clip-path:polygon(0_0,100%_0,100%_calc(100%-10px),95%_100%,90%_calc(100%-10px),85%_100%,80%_calc(100%-10px),75%_100%,70%_calc(100%-10px),65%_100%,60%_calc(100%-10px),55%_100%,50%_calc(100%-10px),45%_100%,40%_calc(100%-10px),35%_100%,30%_calc(100%-10px),25%_100%,20%_calc(100%-10px),15%_100%,10%_calc(100%-10px),5%_100%,0_calc(100%-10px))]">
+              <div className="flex items-center justify-between border-b-2 border-dashed border-[#0E0E10]/40 pb-3">
+                <span className="f-display-narrow text-lg">YOUR BRIEF</span>
+                <span className="f-mono text-xs opacity-60">GENZDEVWORKS</span>
+              </div>
+              <dl className="f-mono mt-3 flex flex-col gap-2.5 text-[13px]">
+                <ReceiptRow label="FROM" value={form.name} />
+                <ReceiptRow label="EMAIL" value={form.email} />
+                <ReceiptRow label="PROJECT" value={PROJECT_TYPES.filter((t) => form.types.includes(t.id)).map((t) => t.label).join(", ")} />
+                <ReceiptRow label="BUDGET" value={form.budget} />
+                <ReceiptRow label="TIMELINE" value={form.timeline} />
+              </dl>
+              <div className="mt-4 flex items-center justify-between border-t-2 border-dashed border-[#0E0E10]/40 pt-3">
+                <span className="f-mono text-xs">STATUS</span>
+                <span className="f-mono text-xs font-semibold">{isSuccess ? "SENT ✓" : `STEP ${step + 1}/4`}</span>
+              </div>
             </div>
-            <div className="rounded-2xl border border-[var(--line)] px-4 py-4">
-              <MapPin size={16} className="mb-2 text-[var(--accent)]" />
-              <span className="block text-lg font-bold text-[var(--ink)]" style={{ fontFamily: "var(--font-display)" }}>
-                Remote-first
-              </span>
-              <span className="text-[11px] text-[var(--sub)]">Working across time zones</span>
-            </div>
-          </div>
 
-          {/* socials */}
-          <div className="flex flex-col gap-4">
-            <h3
-              className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--sub)]"
-              style={{ fontFamily: "var(--font-mono)" }}
-            >
-              Social channels
-            </h3>
-            <div className="flex flex-wrap gap-3">
-              {SOCIALS.map((social) => (
-                <a
-                  key={social.name}
-                  href={social.link}
-                  className="group flex items-center gap-2.5 rounded-full border border-[var(--line)] px-5 py-3 text-[var(--ink)] transition-all hover:-translate-y-0.5 hover:border-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--bg)]"
+            <div className="flex flex-col gap-3">
+              <p className="label text-[var(--sub)]">Rather skip the form?</p>
+              {[
+                { v: "genzdevworks@gmail.com", k: "email" },
+                { v: "+91 6202 585 952", k: "phone" },
+              ].map((c) => (
+                <button
+                  key={c.k}
+                  onClick={() => copy(c.v, c.k)}
+                  className="group flex items-center justify-between gap-4 border-2 border-[var(--edge)] bg-[var(--bg)] px-5 py-4 text-left transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_var(--shadow)]"
                 >
-                  <social.icon size={17} strokeWidth={1.75} />
-                  <span className="text-[13px] font-semibold tracking-wide" style={{ fontFamily: "var(--font-mono)" }}>
-                    {social.name}
+                  <span className="f-display-narrow truncate text-lg text-[var(--ink)] sm:text-xl">{c.v}</span>
+                  <span className={`label flex shrink-0 items-center gap-1.5 ${copied === c.k ? "text-[var(--accent)]" : "text-[var(--sub)]"}`}>
+                    {copied === c.k ? <Check size={14} /> : <Copy size={14} />}
+                    {copied === c.k ? "Copied" : "Copy"}
                   </span>
+                </button>
+              ))}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="border-2 border-[var(--edge)] p-4">
+                  <span className="f-display text-3xl text-[var(--ink)]">&lt;24h</span>
+                  <span className="label mt-1 block text-[var(--sub)]">Avg. reply</span>
+                </div>
+                <div className="border-2 border-[var(--edge)] p-4">
+                  <span className="f-display text-3xl text-[var(--ink)]">Remote</span>
+                  <span className="label mt-1 block text-[var(--sub)]">All time zones</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {SOCIALS.map((s) => (
+                <a
+                  key={s.name}
+                  href={s.link}
+                  target={s.link.startsWith("http") ? "_blank" : undefined}
+                  rel="noopener noreferrer"
+                  className="label border-2 border-[var(--edge)] px-4 py-2.5 text-[var(--ink)] transition-all hover:-translate-y-0.5 hover:border-[#0E0E10] hover:text-[#0E0E10]"
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = s.color)}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "")}
+                >
+                  {s.name} ↗
                 </a>
               ))}
             </div>
-          </div>
-
-          {/* live brief */}
-          <div className="rounded-3xl border border-[var(--line)] bg-[var(--bg)] p-6">
-            <h3
-              className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-[var(--sub)]"
-              style={{ fontFamily: "var(--font-mono)" }}
-            >
-              Your brief, so far
-            </h3>
-            <div className="flex flex-col gap-3 text-[13.5px]">
-              <BriefRow label="From" value={form.name || "—"} />
-              <BriefRow label="Email" value={form.email || "—"} />
-              <BriefRow
-                label="Project"
-                value={
-                  form.types.length
-                    ? PROJECT_TYPES.filter((t) => form.types.includes(t.id))
-                        .map((t) => t.label)
-                        .join(", ")
-                    : "—"
-                }
-              />
-              <BriefRow label="Budget" value={form.budget || "—"} />
-              <BriefRow label="Timeline" value={form.timeline || "—"} />
-            </div>
-          </div>
+          </aside>
         </div>
-
-        {/* RIGHT — multi-step form */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="order-1 lg:order-2 lg:col-span-7"
-        >
-          {isSuccess ? (
-            <div className="rounded-3xl border border-[var(--line)] bg-[var(--bg)] p-8 shadow-2xl sm:p-12 lg:p-14 text-center flex flex-col items-center justify-center min-h-[400px]">
-              <div className="h-20 w-20 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500 mb-6">
-                <Check size={40} />
-              </div>
-              <h2 className="text-3xl font-bold text-[var(--ink)] tracking-tight mb-4" style={{ fontFamily: "var(--font-display)" }}>
-                Brief Submitted!
-              </h2>
-              <p className="text-[var(--sub)]" style={{ fontFamily: "var(--font-body)" }}>
-                Thanks for reaching out, {form.name.split(" ")[0]}. We&apos;ll review your project and get back to you within 24 hours.
-              </p>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="rounded-3xl border border-[var(--line)] bg-[var(--bg)] p-8 shadow-2xl sm:p-12 lg:p-14">
-              <div className="mb-10 flex items-center gap-2">
-                {STEPS.map((label, i) => (
-                  <div key={label} className="flex flex-1 flex-col gap-2">
-                    <div className="h-[3px] w-full overflow-hidden rounded-full bg-[var(--line)]">
-                      <motion.div
-                        className="h-full rounded-full bg-[var(--accent)]"
-                        initial={false}
-                        animate={{ scaleX: i <= step ? 1 : 0 }}
-                        style={{ transformOrigin: "left" }}
-                        transition={{ duration: 0.4, ease: "easeOut" }}
-                      />
-                    </div>
-                    <span
-                      className="hidden text-[10px] uppercase tracking-widest sm:block"
-                      style={{
-                        fontFamily: "var(--font-mono)",
-                        color: i <= step ? "var(--ink)" : "var(--sub)",
-                      }}
-                    >
-                      {label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={step}
-                  initial={{ opacity: 0, x: 24 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -24 }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="min-h-[280px]"
-                >
-                  {step === 0 && (
-                    <div className="flex flex-col gap-9">
-                      <FormInput
-                        id="name"
-                        label="What's your name?"
-                        placeholder="e.g. Alex Rivera"
-                        value={form.name}
-                        onChange={(v) => setForm((f) => ({ ...f, name: v }))}
-                      />
-                      <FormInput
-                        id="email"
-                        label="Email address"
-                        placeholder="e.g. alex@startup.com"
-                        type="email"
-                        value={form.email}
-                        onChange={(v) => setForm((f) => ({ ...f, email: v }))}
-                      />
-                    </div>
-                  )}
-
-                  {step === 1 && (
-                    <div>
-                      <p className="mb-5 text-[13px] uppercase tracking-widest text-[var(--sub)]" style={{ fontFamily: "var(--font-mono)" }}>
-                        What are we building? Pick all that apply.
-                      </p>
-                      <div className="grid grid-cols-2 gap-3">
-                        {PROJECT_TYPES.map((t) => {
-                          const active = form.types.includes(t.id);
-                          return (
-                            <button
-                              key={t.id}
-                              type="button"
-                              onClick={() => toggleType(t.id)}
-                              className="flex flex-col items-start gap-3 rounded-2xl border px-4 py-4 text-left transition-colors"
-                              style={{
-                                borderColor: active ? "var(--accent)" : "var(--line)",
-                                backgroundColor: active ? "var(--line)" : "transparent",
-                              }}
-                            >
-                              <t.icon size={18} color={active ? "var(--accent)" : "var(--sub)"} strokeWidth={1.75} />
-                              <span className="text-[13.5px] font-medium text-[var(--ink)]">{t.label}</span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  {step === 2 && (
-                    <div className="flex flex-col gap-9">
-                      <div>
-                        <p className="mb-4 text-[13px] uppercase tracking-widest text-[var(--sub)]" style={{ fontFamily: "var(--font-mono)" }}>
-                          Estimated budget
-                        </p>
-                        <div className="flex flex-wrap gap-2.5">
-                          {BUDGETS.map((b) => (
-                            <Chip key={b} active={form.budget === b} onClick={() => setForm((f) => ({ ...f, budget: b }))}>
-                              {b}
-                            </Chip>
-                          ))}
-                        </div>
-                      </div>
-                      <div>
-                        <p className="mb-4 text-[13px] uppercase tracking-widest text-[var(--sub)]" style={{ fontFamily: "var(--font-mono)" }}>
-                          Timeline
-                        </p>
-                        <div className="flex flex-wrap gap-2.5">
-                          {TIMELINES.map((t) => (
-                            <Chip key={t} active={form.timeline === t} onClick={() => setForm((f) => ({ ...f, timeline: t }))}>
-                              {t}
-                            </Chip>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {step === 3 && (
-                    <div className="flex flex-col gap-4">
-                      <label
-                        htmlFor="details"
-                        className="text-[13px] uppercase tracking-widest text-[var(--sub)]"
-                        style={{ fontFamily: "var(--font-mono)" }}
-                      >
-                        Anything else we should know?
-                      </label>
-                      <textarea
-                        id="details"
-                        rows={6}
-                        value={form.details}
-                        onChange={(e) => setForm((f) => ({ ...f, details: e.target.value }))}
-                        placeholder="Links, references, constraints, existing tech stack…"
-                        className="w-full resize-none rounded-2xl border border-[var(--line)] bg-transparent p-4 text-[15px] text-[var(--ink)] placeholder-[var(--sub)] outline-none transition-colors focus:border-[var(--accent)]"
-                        style={{ fontFamily: "var(--font-body)" }}
-                      />
-                      <p className="text-xs text-[var(--sub)]">By submitting, you agree to our Privacy Policy.</p>
-                    </div>
-                  )}
-                </motion.div>
-              </AnimatePresence>
-
-              {/* nav */}
-              <div className="mt-10 flex items-center justify-between border-t border-[var(--line)]/15 pt-6">
-                <button
-                  type="button"
-                  onClick={() => setStep((s) => Math.max(0, s - 1))}
-                  className="flex items-center gap-2 text-[13px] font-semibold text-[var(--sub)] transition-colors hover:text-[var(--ink)] disabled:opacity-0"
-                  disabled={step === 0}
-                  style={{ fontFamily: "var(--font-mono)" }}
-                >
-                  <ArrowLeft size={15} />
-                  Back
-                </button>
-
-                {step < STEPS.length - 1 ? (
-                  <motion.button
-                    type="button"
-                    whileHover={{ scale: canAdvance ? 1.04 : 1 }}
-                    whileTap={{ scale: canAdvance ? 0.97 : 1 }}
-                    disabled={!canAdvance}
-                    onClick={() => setStep((s) => Math.min(STEPS.length - 1, s + 1))}
-                    className="flex items-center gap-2 rounded-full bg-[var(--accent)] px-6 py-3 text-[13px] font-semibold text-white transition-opacity disabled:opacity-30"
-                    style={{ fontFamily: "var(--font-mono)" }}
-                  >
-                    Continue
-                    <ArrowRight size={15} />
-                  </motion.button>
-                ) : (
-                  <motion.button
-                    type="submit"
-                    disabled={isSubmitting}
-                    whileHover={{ scale: isSubmitting ? 1 : 1.04 }}
-                    whileTap={{ scale: isSubmitting ? 1 : 0.97 }}
-                    className="flex items-center gap-2 rounded-full bg-[var(--accent)] px-7 py-3 text-[13px] font-semibold text-white shadow-lg shadow-[var(--accent)]/25 disabled:opacity-50"
-                    style={{ fontFamily: "var(--font-mono)" }}
-                  >
-                    {isSubmitting ? "Sending..." : "Send brief"}
-                    {!isSubmitting && <ArrowRight size={15} />}
-                  </motion.button>
-                )}
-              </div>
-            </form>
-          )}
-        </motion.div>
       </div>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* FAQ                                                                */}
-      {/* ------------------------------------------------------------------ */}
-      <div className="mx-auto mt-28 max-w-3xl px-6 sm:px-10">
-        <h3
-          className="mb-8 text-sm font-semibold uppercase tracking-[0.2em] text-[var(--sub)]"
-          style={{ fontFamily: "var(--font-mono)" }}
-        >
-          Before you send it
-        </h3>
-        <div className="flex flex-col divide-y divide-[var(--line)] border-t border-[var(--line)]">
-          {FAQS.map((faq, i) => (
-            <div key={faq.q}>
-              <button
-                type="button"
-                onClick={() => setOpenFaq((o) => (o === i ? null : i))}
-                className="flex w-full items-center justify-between gap-4 py-5 text-left"
-              >
-                <span className="text-[15px] font-medium text-[var(--ink)] sm:text-base" style={{ fontFamily: "var(--font-display)" }}>
-                  {faq.q}
-                </span>
-                <motion.span animate={{ rotate: openFaq === i ? 180 : 0 }} transition={{ duration: 0.25 }}>
-                  <ChevronDown size={18} className="shrink-0 text-[var(--sub)]" />
-                </motion.span>
-              </button>
-              <AnimatePresence initial={false}>
-                {openFaq === i && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.25, ease: "easeInOut" }}
-                    className="overflow-hidden"
-                  >
-                    <p className="pb-5 text-[13.5px] leading-relaxed text-[var(--sub)]">{faq.a}</p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          ))}
-        </div>
+      <div className="border-t-2 border-[var(--edge)]">
+        <FAQSection faqs={FAQS} title="Before you send it." />
       </div>
     </main>
   );
 }
 
-function BriefRow({ label, value }: { label: string; value: string }) {
+function ReceiptRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-baseline justify-between gap-3 border-b border-[var(--line)] pb-2.5 last:border-b-0 last:pb-0">
-      <span className="text-[11px] uppercase tracking-widest text-[var(--sub)]" style={{ fontFamily: "var(--font-mono)" }}>
-        {label}
-      </span>
-      <span className="truncate text-right text-[13px] font-medium text-[var(--ink)]">{value}</span>
+    <div className="flex items-baseline gap-2">
+      <dt className="shrink-0 opacity-60">{label}</dt>
+      <span aria-hidden className="mb-1 flex-1 border-b border-dotted border-[#0E0E10]/40" />
+      <dd className="max-w-[60%] truncate text-right font-medium">{value || "—"}</dd>
     </div>
   );
 }
 
-function Chip({ children, active, onClick }: { children: React.ReactNode; active: boolean; onClick: () => void }) {
+function ChipGroup({ label, options, value, onPick }: { label: string; options: string[]; value: string; onPick: (v: string) => void }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="rounded-full border px-4 py-2 text-[13px] font-medium transition-colors"
-      style={{
-        borderColor: active ? "var(--accent)" : "var(--line)",
-        backgroundColor: active ? "var(--line)" : "transparent",
-        color: active ? "var(--accent)" : "var(--ink)",
-        fontFamily: "var(--font-mono)",
-      }}
-    >
-      {children}
-    </button>
+    <div>
+      <p className="f-display-narrow text-2xl text-[var(--ink)]">{label}</p>
+      <div className="mt-4 flex flex-wrap gap-2.5">
+        {options.map((o) => {
+          const active = value === o;
+          return (
+            <button
+              key={o}
+              type="button"
+              onClick={() => onPick(o)}
+              aria-pressed={active}
+              className={`f-mono border-2 px-4 py-2.5 text-[14px] font-medium transition-all duration-200 ${
+                active ? "-translate-y-0.5 border-[#0E0E10] bg-[var(--yolk)] text-[#0E0E10] shadow-[3px_3px_0_#0E0E10]" : "border-[var(--line)] text-[var(--ink)] hover:border-[var(--edge)]"
+              }`}
+            >
+              {o}
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
-function FormInput({
+function BigInput({
   id,
   label,
   placeholder,
@@ -671,12 +440,8 @@ function FormInput({
   type?: string;
 }) {
   return (
-    <div className="group flex flex-col gap-2 border-b border-[var(--line)] pb-2 transition-colors focus-within:border-[var(--accent)]">
-      <label
-        htmlFor={id}
-        className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--sub)] transition-colors group-focus-within:text-[var(--accent)]"
-        style={{ fontFamily: "var(--font-mono)" }}
-      >
+    <div className="group flex flex-col gap-2">
+      <label htmlFor={id} className="label text-[var(--sub)] transition-colors group-focus-within:text-[var(--accent)]">
         {label}
       </label>
       <input
@@ -685,8 +450,8 @@ function FormInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full bg-transparent py-1 text-xl font-medium text-[var(--ink)] placeholder-[var(--sub)]/35 outline-none transition-colors"
-        style={{ fontFamily: "var(--font-body)" }}
+        autoComplete={type === "email" ? "email" : "name"}
+        className="f-display-narrow w-full border-b-[3px] border-[var(--edge)] bg-transparent pb-2 text-3xl text-[var(--ink)] outline-none transition-colors placeholder:text-[var(--sub)]/30 focus:border-[var(--accent)] sm:text-4xl"
       />
     </div>
   );
