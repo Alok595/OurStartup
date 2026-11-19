@@ -4,12 +4,8 @@ import GoogleProvider from "next-auth/providers/google";
 import connectToDatabase from "@/lib/mongodb";
 import AdminUser from "@/models/AdminUser";
 
-const adminEmail = process.env.ADMIN_EMAIL;
-const adminPassword = process.env.ADMIN_PASSWORD;
-
-if (!adminEmail || !adminPassword) {
-  throw new Error("Missing ADMIN_EMAIL or ADMIN_PASSWORD environment variable");
-}
+const getAdminEmail = () => process.env.ADMIN_EMAIL || "";
+const getAdminPassword = () => process.env.ADMIN_PASSWORD || "";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -22,12 +18,16 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
         
-        // Strict verification against environment variables
+        const adminEmail = getAdminEmail();
+        const adminPassword = getAdminPassword();
+
+        // 1. Strict verification against environment variables (if set)
         if (
-          credentials.email === adminEmail &&
+          adminEmail &&
+          adminPassword &&
+          credentials.email.toLowerCase() === adminEmail.toLowerCase() &&
           credentials.password === adminPassword
         ) {
-          // Return a mock user object for the session
           return {
             id: "1",
             name: "Admin User",
@@ -35,6 +35,26 @@ export const authOptions: NextAuthOptions = {
             role: "admin",
           };
         }
+
+        // 2. Also check database for registered admins
+        try {
+          await connectToDatabase();
+          const existingAdmin = await AdminUser.findOne({ 
+            email: credentials.email.toLowerCase() 
+          });
+
+          if (existingAdmin && existingAdmin.password === credentials.password) {
+            return {
+              id: existingAdmin._id.toString(),
+              name: existingAdmin.name || "Admin",
+              email: existingAdmin.email,
+              role: "admin",
+            };
+          }
+        } catch (error) {
+          console.error("Authorize Admin DB Error:", error);
+        }
+
         return null;
       }
     }),
@@ -45,9 +65,11 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
+      const adminEmail = getAdminEmail();
+
       // If signing in via Google, ensure the email exactly matches ADMIN_EMAIL or is in the AdminUser database
       if (account?.provider === "google") {
-        if (user.email === adminEmail) {
+        if (adminEmail && user.email?.toLowerCase() === adminEmail.toLowerCase()) {
           return true;
         } else {
           try {
@@ -86,5 +108,5 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET || "genzdevworks_secure_auth_secret_key_2026",
 };
