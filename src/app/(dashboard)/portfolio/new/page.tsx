@@ -9,8 +9,10 @@ import Link from "next/link";
 export default function AddProjectPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
     router.prefetch("/portfolio");
   }, [router]);
   
@@ -223,9 +225,9 @@ export default function AddProjectPage() {
                   <X size={16} />
                 </button>
               </div>
-            ) : (
+            ) : isMounted ? (
               <CldUploadWidget 
-                uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "default"} 
+                uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "ourstartup"} 
                 onSuccess={(result: any) => setFormData(prev => ({...prev, heroImage: result.info.secure_url}))}
               >
                 {({ open }) => (
@@ -235,6 +237,11 @@ export default function AddProjectPage() {
                   </button>
                 )}
               </CldUploadWidget>
+            ) : (
+              <button type="button" disabled className="h-32 max-w-sm border-2 border-dashed border-[var(--line)] rounded-2xl flex flex-col items-center justify-center text-[var(--sub)]">
+                <ImageIcon size={24} className="mb-2" />
+                <span className="text-sm font-medium">Upload Hero Image</span>
+              </button>
             )}
           </div>
 
@@ -250,17 +257,24 @@ export default function AddProjectPage() {
                   </button>
                 </div>
               ))}
-              <CldUploadWidget 
-                uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "default"} 
-                onSuccess={(result: any) => setFormData(prev => ({...prev, gallery: [...prev.gallery, result.info.secure_url]}))}
-              >
-                {({ open }) => (
-                  <button type="button" onClick={() => open()} className="h-24 w-24 border-2 border-dashed border-[var(--line)] rounded-xl flex flex-col items-center justify-center text-[var(--sub)] hover:text-[var(--accent)] hover:border-[var(--accent)] transition-colors">
-                    <Plus size={20} className="mb-1" />
-                    <span className="text-xs font-medium">Add</span>
-                  </button>
-                )}
-              </CldUploadWidget>
+              {isMounted ? (
+                <CldUploadWidget 
+                  uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "ourstartup"} 
+                  onSuccess={(result: any) => setFormData(prev => ({...prev, gallery: [...prev.gallery, result.info.secure_url]}))}
+                >
+                  {({ open }) => (
+                    <button type="button" onClick={() => open()} className="h-24 w-24 border-2 border-dashed border-[var(--line)] rounded-xl flex flex-col items-center justify-center text-[var(--sub)] hover:text-[var(--accent)] hover:border-[var(--accent)] transition-colors">
+                      <Plus size={20} className="mb-1" />
+                      <span className="text-xs font-medium">Add</span>
+                    </button>
+                  )}
+                </CldUploadWidget>
+              ) : (
+                <button type="button" disabled className="h-24 w-24 border-2 border-dashed border-[var(--line)] rounded-xl flex flex-col items-center justify-center text-[var(--sub)]">
+                  <Plus size={20} className="mb-1" />
+                  <span className="text-xs font-medium">Add</span>
+                </button>
+              )}
             </div>
           </div>
         </div>

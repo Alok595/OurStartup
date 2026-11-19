@@ -15,6 +15,10 @@ async function connectToDatabase() {
   let MONGODB_URL = process.env.MONGODB_URL || process.env.MONGODB_URI;
 
   if (!MONGODB_URL) {
+    if (process.env.NEXT_PHASE === "phase-production-build") {
+      console.warn("Notice: MONGODB_URL / MONGODB_URI is not configured during static build. Database queries will execute dynamically at runtime.");
+      return mongoose;
+    }
     console.error("CRITICAL: MONGODB_URL / MONGODB_URI is not defined in environment variables!");
     throw new Error(
       "Please define the MONGODB_URL or MONGODB_URI environment variable in your deployment platform settings (e.g. Vercel) or .env.local"

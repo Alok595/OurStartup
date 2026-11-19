@@ -1,6 +1,9 @@
 import Sidebar from "@/components/layout/Sidebar";
 import AdminHeader from "@/components/layout/AdminHeader";
 
+// Admin dashboard pages are dynamic authenticated routes and must not be prerendered statically during build
+export const dynamic = "force-dynamic";
+
 export default function DashboardLayout({
   children,
 }: {
