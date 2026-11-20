@@ -35,7 +35,11 @@ export default function AddProjectPage() {
     impact: "", // Comma separated
     gallery: [] as string[],
     featured: false,
-    badge: ""
+    badge: "",
+    isErp: false,
+    erpFeatured: false,
+    freeTrial: false,
+    erpFeatures: "", // one per line
   });
 
   const handleAddProject = async (e: React.FormEvent) => {
@@ -47,6 +51,7 @@ export default function AddProjectPage() {
       ...formData,
       services: formData.services.split(",").map(s => s.trim()).filter(Boolean),
       impact: formData.impact.split(",").map(s => s.trim()).filter(Boolean),
+      erpFeatures: formData.erpFeatures.split(/\n|,/).map(s => s.trim()).filter(Boolean),
     };
 
     try {
@@ -155,6 +160,41 @@ export default function AddProjectPage() {
               <span className="block text-xs font-normal text-[var(--sub)] mt-0.5">Featured projects will appear in the "Selected Work" section on the home page.</span>
             </label>
           </div>
+        </div>
+
+        {/* ERP listing */}
+        <div className="flex flex-col gap-4 p-5 rounded-xl border border-[var(--line)] bg-black/[0.02] dark:bg-white/[0.02]">
+          <label htmlFor="erp-toggle" className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              id="erp-toggle"
+              checked={formData.isErp}
+              onChange={e => setFormData({...formData, isErp: e.target.checked})}
+              className="w-5 h-5 mt-0.5 rounded border border-[var(--line)] accent-[var(--accent)] cursor-pointer"
+            />
+            <span className="text-sm font-semibold text-[var(--ink)]">
+              Also show in ERP Systems
+              <span className="block text-xs font-normal text-[var(--sub)] mt-0.5">The project stays in Our Work and also gets an ERP card on /erp with its own detail page. Manage it later under ERP Systems.</span>
+            </span>
+          </label>
+          {formData.isErp && (
+            <div className="flex flex-col gap-4 pl-8">
+              <div className="flex flex-wrap gap-6">
+                <label className="flex items-center gap-2 text-sm font-medium text-[var(--ink)] cursor-pointer">
+                  <input type="checkbox" checked={formData.freeTrial} onChange={e => setFormData({...formData, freeTrial: e.target.checked})} className="w-4 h-4 accent-[var(--accent)]" />
+                  Free trial available (uses Live URL)
+                </label>
+                <label className="flex items-center gap-2 text-sm font-medium text-[var(--ink)] cursor-pointer">
+                  <input type="checkbox" checked={formData.erpFeatured} onChange={e => setFormData({...formData, erpFeatured: e.target.checked})} className="w-4 h-4 accent-[var(--accent)]" />
+                  Show in the home page ERP section
+                </label>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-[var(--ink)]">ERP Features / Modules (one per line)</label>
+                <textarea value={formData.erpFeatures} onChange={e => setFormData({...formData, erpFeatures: e.target.value})} className="min-h-[100px] rounded-xl border border-[var(--line)] bg-transparent p-4 text-sm outline-none focus:border-[var(--accent)] resize-y" placeholder={"Billing & GST invoices\nInventory\nReports"} />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Project Metadata */}

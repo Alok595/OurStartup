@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Globe, Smartphone, Sparkles, Workflow, PenTool, Boxes } from "lucide-react";
-import { Arrow, EASE, Marquee, Reveal, Spark, SplitWords } from "@/components/ui/motion";
+import { Arrow, EASE, Magnetic, Marquee, Reveal, Spark } from "@/components/ui/motion";
+import PageHero from "@/components/ui/PageHero";
 
 type ServiceItem = {
   id: string;
@@ -186,31 +187,29 @@ export default function Services() {
   return (
     <section className="relative">
       {/* Intro */}
-      <div className="relative overflow-hidden px-5 pb-16 pt-10 sm:px-8 sm:pb-24">
-        <div aria-hidden className="ruled pointer-events-none absolute inset-0 opacity-50 [mask-image:linear-gradient(to_bottom,#000,transparent)]" />
-        <div className="relative mx-auto max-w-[1400px]">
-          <Reveal>
-            <p className="label flex items-center gap-2 text-[var(--sub)]">
-              <span className="inline-block h-3 w-3 bg-[var(--accent)]" /> Services &amp; capabilities
-            </p>
-          </Reveal>
-          <h1 className="f-display mt-6 text-[15vw] text-[var(--ink)] sm:text-[11vw] lg:text-[9.5rem]">
-            <SplitWords text="Six ways" onMount />
-            <br />
-            <span className="f-serif text-[var(--accent)]">
-              <SplitWords text="we can help." onMount delay={0.15} />
-            </span>
-          </h1>
-          <div className="mt-10 grid gap-8 lg:grid-cols-12">
-            <Reveal delay={0.3} className="lg:col-span-6 lg:col-start-7">
-              <p className="text-xl leading-relaxed text-[var(--sub)]">
-                Pick one, or stack a few — most clients start with a website and come back for the app, the automation and the AI
-                layer on top. Open a row to see exactly what&apos;s included.
-              </p>
-            </Reveal>
-          </div>
-        </div>
-      </div>
+      <PageHero
+        label="Services & capabilities"
+        line1="Six ways"
+        line2="we can"
+        highlight="help."
+        highlightBg="var(--bubblegum)"
+        description="Pick one, or stack a few — most clients start with a website and come back for the app, the automation and the AI layer on top. Open a row to see exactly what's included."
+        chips={[{ text: "06 services" }, { text: "Free consultation", bg: "#FFD23F" }, { text: "Reply < 24h", bg: "#34D399" }]}
+        actions={
+          <>
+            <Magnetic>
+              <Link href="/contact" className="btn btn-yolk !px-7 !py-5">
+                Start a project <Arrow size={15} />
+              </Link>
+            </Magnetic>
+            <Magnetic>
+              <Link href="/projects" className="btn btn-paper !px-7 !py-5">
+                See the work
+              </Link>
+            </Magnetic>
+          </>
+        }
+      />
 
       {/* Index */}
       <div className="mx-auto max-w-[1400px] px-5 pb-10 sm:px-8">

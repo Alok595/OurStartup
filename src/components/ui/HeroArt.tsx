@@ -265,7 +265,59 @@ function Terminal() {
   );
 }
 
-const ART = [Website, Phone, Chip, Robot, Brand, Terminal];
+function Ledger() {
+  const bars = [34, 52, 40, 66, 58, 80];
+  return (
+    <>
+      {/* ERP dashboard window */}
+      <Shadow x={18} y={30} w={204} h={150} />
+      <rect x={18} y={30} width={204} height={150} fill={PAPER} {...S} />
+      <rect x={18} y={30} width={204} height={22} fill={INK} {...S} />
+      <text x={28} y={45} fontSize={10} fill={LIME} style={{ fontFamily: "var(--font-mono)" }}>
+        ERP / stock
+      </text>
+      {/* sidebar */}
+      <rect x={18} y={52} width={40} height={128} fill={YOLK} {...S} />
+      {[0, 1, 2, 3].map((k) => (
+        <rect key={k} x={26} y={62 + k * 16} width={24} height={7} fill={INK} opacity={k === 0 ? 1 : 0.35} />
+      ))}
+      {/* kpi tiles */}
+      {[MINT, SKY, GUM].map((c, k) => (
+        <motion.rect key={c} x={66 + k * 50} y={60} width={42} height={26} fill={c} stroke={INK} strokeWidth={2.5}
+          initial={{ y: -14, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.4, delay: 0.2 + k * 0.08 }} />
+      ))}
+      {/* sales bars */}
+      {bars.map((h, k) => (
+        <motion.rect key={k} x={70 + k * 24} y={170 - h} width={16} height={h} fill={k === bars.length - 1 ? FLAME : INK}
+          initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} style={{ originY: 1 }} transition={{ duration: 0.5, delay: 0.35 + k * 0.07 }} />
+      ))}
+
+      {/* phone in hand — the mobile shop module */}
+      <motion.g initial={{ x: 30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.5, delay: 0.5 }}>
+        <Shadow x={168} y={128} w={52} h={96} />
+        <rect x={168} y={128} width={52} height={96} fill={INK} {...S} />
+        <rect x={174} y={138} width={40} height={74} fill={LIME} />
+        <rect x={180} y={146} width={28} height={6} fill={INK} />
+        <rect x={180} y={158} width={20} height={4} fill={INK} opacity={0.5} />
+        <motion.rect x={180} y={170} width={28} height={14} fill={YOLK} stroke={INK} strokeWidth={2}
+          animate={{ fill: [YOLK, MINT, YOLK] }} transition={loop(1.6)} />
+        <rect x={186} y={216} width={16} height={3} fill={PAPER} opacity={0.5} />
+      </motion.g>
+
+      {/* "invoice paid" stamp */}
+      <motion.g initial={{ scale: 0, rotate: -20 }} animate={{ scale: 1, rotate: -8 }} transition={{ type: "spring", stiffness: 280, damping: 14, delay: 0.9 }}
+        style={{ originX: "70px", originY: "205px" }}>
+        <Shadow x={20} y={190} w={100} h={30} />
+        <rect x={20} y={190} width={100} height={30} fill={MINT} {...S} />
+        <text x={30} y={209} fontSize={11} fontWeight={700} fill={INK} style={{ fontFamily: "var(--font-mono)" }}>
+          ✓ INVOICED
+        </text>
+      </motion.g>
+    </>
+  );
+}
+
+const ART = [Ledger, Website, Phone, Chip, Robot, Brand, Terminal];
 
 export default function HeroArt({ index, bg, fg, tag }: { index: number; bg: string; fg: string; tag: string }) {
   const Art = ART[index % ART.length];

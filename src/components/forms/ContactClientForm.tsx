@@ -5,7 +5,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { ArrowLeft, Boxes, Check, Copy, Globe, PenTool, Smartphone, Sparkles, Workflow } from "lucide-react";
 import FAQSection from "@/components/ui/FAQSection";
-import { Arrow, EASE, Spark, SplitWords } from "@/components/ui/motion";
+import PageHero from "@/components/ui/PageHero";
+import { Arrow, EASE, Spark } from "@/components/ui/motion";
 
 const SOCIALS = [
   { name: "Instagram", link: "#", color: "#FF8FB4" },
@@ -120,53 +121,41 @@ export default function ContactClientForm() {
       />
 
       {/* Hero */}
-      <div className="relative overflow-hidden px-5 pb-16 pt-28 sm:px-8 sm:pt-36 lg:pb-24">
-        <div aria-hidden className="ruled pointer-events-none absolute inset-0 opacity-50 [mask-image:linear-gradient(to_bottom,#000,transparent)]" />
-        <div className="relative mx-auto flex max-w-[1400px] items-center justify-between gap-10">
-          <div className="max-w-3xl">
-            <motion.span
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-2 border-2 border-[var(--edge)] bg-[var(--paper)] px-3 py-1.5"
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inset-0 animate-ping bg-[var(--emerald)] opacity-70" />
-                <span className="relative h-2 w-2 bg-[var(--emerald)]" />
-              </span>
-              <span className="label text-[var(--ink)]">Accepting new projects</span>
-            </motion.span>
-            <h1 className="f-display mt-8 text-[16vw] text-[var(--ink)] sm:text-[11vw] lg:text-[9rem]">
-              <SplitWords text="Let's build" onMount />
-              <br />
-              <span className="f-serif text-[var(--accent)]">
-                <SplitWords text="the future." onMount delay={0.15} />
-              </span>
-            </h1>
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.6, ease: EASE }}
-              className="mt-8 max-w-lg text-xl text-[var(--sub)]"
-            >
-              Tell us what you&apos;re building. Four quick steps, under two minutes, straight to a real person on the team.
-            </motion.p>
-          </div>
-
+      <PageHero
+        label="Contact"
+        labelColor="var(--emerald)"
+        line1="Let's build"
+        line2="the"
+        highlight="future."
+        highlightBg="var(--yolk)"
+        description="Tell us what you're building. Four quick steps, under two minutes, straight to a real person on the team."
+        chips={[{ text: "Accepting new projects", bg: "#34D399" }, { text: "Reply < 24h", bg: "#FFD23F" }, { text: "NDA on request" }]}
+        actions={
+          <>
+            <a href="#brief" className="btn btn-yolk !px-7 !py-5">
+              Fill the brief <Arrow size={15} />
+            </a>
+            <a href="https://wa.me/916202585952" target="_blank" rel="noopener noreferrer" className="btn btn-paper !px-7 !py-5">
+              WhatsApp us
+            </a>
+          </>
+        }
+        aside={
           <motion.div
             initial={{ opacity: 0, scale: 0.6, rotate: -20 }}
             animate={{ opacity: 1, scale: 1, rotate: 6 }}
             whileHover={{ rotate: -4, scale: 1.05 }}
             transition={{ type: "spring", stiffness: 160, damping: 14, delay: 0.3 }}
-            className="relative hidden shrink-0 border-[3px] border-[#0E0E10] bg-[var(--yolk)] p-6 shadow-[10px_10px_0_var(--shadow)] md:block"
+            className="relative border-[3px] border-[#0E0E10] bg-[var(--yolk)] p-5 shadow-[10px_10px_0_var(--shadow)]"
           >
-            <Spark size={46} color="#FF3D7F" className="spin-slow absolute -left-6 -top-6" />
-            <Image src="/images/logo-modified.png" alt="GenZDevWorks logo" width={320} height={320} priority className="h-52 w-52 object-contain lg:h-72 lg:w-72" />
+            <Spark size={40} color="#FF3D7F" className="spin-slow absolute -left-5 -top-5" />
+            <Image src="/images/logo-modified.png" alt="GenZDevWorks logo" width={320} height={320} priority className="h-40 w-40 object-contain lg:h-56 lg:w-56" />
           </motion.div>
-        </div>
-      </div>
+        }
+      />
 
       {/* Body */}
-      <div className="border-t-2 border-[var(--edge)] bg-[var(--paper)] px-5 py-16 sm:px-8 sm:py-24">
+      <div id="brief" className="scroll-mt-20 border-t-2 border-[var(--edge)] bg-[var(--paper)] px-5 py-16 sm:px-8 sm:py-24">
         <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-14 lg:grid-cols-12 lg:gap-16">
           {/* Form */}
           <div className="lg:col-span-7">

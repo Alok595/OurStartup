@@ -24,7 +24,7 @@ const SERVICES_FAQS = [
 
 export default function ServicesPage() {
   return (
-    <main className="w-full min-h-screen pt-24 bg-[var(--bg)]">
+    <main className="w-full min-h-screen bg-[var(--bg)]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

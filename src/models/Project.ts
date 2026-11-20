@@ -27,8 +27,16 @@ export interface IProject extends Document {
   gallery?: string[];
   
   featured?: boolean;
+
+  // ERP listing
+  isErp?: boolean; // show on /erp
+  showInWork?: boolean; // show on /projects ("Work"); false = ERP-only
+  erpFeatured?: boolean; // show in the homepage ERP section
+  freeTrial?: boolean;
+  erpFeatures?: string[];
   
   createdAt: Date;
+  updatedAt?: Date;
 }
 
 const ProjectSchema = new Schema<IProject>({
@@ -68,8 +76,20 @@ const ProjectSchema = new Schema<IProject>({
   gallery: [{ type: String }],
   
   featured: { type: Boolean, default: false },
+
+  isErp: { type: Boolean, default: false },
+  showInWork: { type: Boolean, default: true },
+  erpFeatured: { type: Boolean, default: false },
+  freeTrial: { type: Boolean, default: false },
+  erpFeatures: [{ type: String }],
   
   createdAt: { type: Date, default: Date.now },
 });
 
-export default mongoose.models.Project || mongoose.model<IProject>("Project", ProjectSchema);
+// Drop any model compiled from an older schema (dev hot reload) — otherwise new fields
+// like isErp / showInWork are silently stripped on save.
+if (mongoose.models.Project) {
+  mongoose.deleteModel("Project");
+}
+
+export default mongoose.model<IProject>("Project", ProjectSchema);

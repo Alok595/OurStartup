@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import connectToDatabase from "@/lib/mongodb";
 import Project from "@/models/Project";
+import { getErpList } from "@/lib/portfolio";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://genzdevworks.ratnahomes.in'; // Change this to your actual production domain later
@@ -8,6 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Static core routes
   const staticRoutes = [
     '',
+    '/erp',
     '/about',
     '/services',
     '/projects',
@@ -38,6 +40,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("Failed to fetch projects for sitemap:", error);
   }
 
+  const erpRoutes: MetadataRoute.Sitemap = (await getErpList()).map((erp) => ({
+    url: `${baseUrl}/erp/${erp.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }));
+
   // Combine static and dynamic routes
-  return [...staticRoutes, ...projectRoutes];
+  return [...staticRoutes, ...erpRoutes, ...projectRoutes];
 }

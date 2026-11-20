@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/mongodb";
 import Project from "@/models/Project";
+import { revalidatePortfolio } from "@/lib/revalidate";
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -37,6 +38,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
       return NextResponse.json({ success: false, error: "Project not found" }, { status: 404 });
     }
     
+    revalidatePortfolio();
     return NextResponse.json({ success: true, data: project });
   } catch (error) {
     return NextResponse.json({ success: false, error: "Failed to delete project" }, { status: 500 });
@@ -58,6 +60,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       return NextResponse.json({ success: false, error: "Project not found" }, { status: 404 });
     }
     
+    revalidatePortfolio();
     return NextResponse.json({ success: true, data: project });
   } catch (error) {
     return NextResponse.json({ success: false, error: "Failed to update project" }, { status: 500 });

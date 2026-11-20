@@ -7,6 +7,7 @@ import { LinkedinIcon, InstagramIcon } from "@/components/ui/BrandIcons";
 import { Arrow, EASE, Magnetic, Marquee, Spark, isAdminRoute } from "@/components/ui/motion";
 
 const SITEMAP = [
+  { href: "/erp", label: "ERP Systems" },
   { href: "/projects", label: "Work" },
   { href: "/services", label: "Services" },
   { href: "/about", label: "About" },

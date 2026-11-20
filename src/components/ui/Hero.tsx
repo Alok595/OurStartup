@@ -16,6 +16,13 @@ type Slide = {
 
 const SLIDES: Slide[] = [
   {
+    word: "ERPs",
+    tag: "ERP Systems",
+    line: "Billing, stock, repairs and staff in one place — fully customisable ERPs like TechKhata for mobile shops and Star Pharma for pharmacies. Free trial available.",
+    bg: "#CCFF2E",
+    fg: "#0E0E10",
+  },
+  {
     word: "websites",
     tag: "Web Development",
     line: "Marketing sites, dashboards and web apps engineered for speed, SEO and clean handoffs — from first pixel to production.",
@@ -59,7 +66,7 @@ const SLIDES: Slide[] = [
   },
 ];
 
-const TICKER = ["Web Development", "Mobile Apps", "AI Solutions", "Automation", "Branding", "Custom Software", "SEO", "UI / UX"];
+const TICKER = ["ERP Systems", "Web Development", "Mobile Apps", "AI Solutions", "Automation", "Branding", "Custom Software", "SEO", "UI / UX"];
 
 const DURATION = 3200;
 
@@ -147,6 +154,14 @@ export default function Hero() {
             <span className="label text-[var(--ink)]">Booking new projects</span>
           </span>
           <span className="label text-[var(--sub)]">Software studio — India → everywhere</span>
+          <Link
+            href="/erp"
+            className="group flex items-center gap-2 border-2 border-[#0E0E10] bg-[var(--lime)] px-3 py-1.5 text-[#0E0E10] shadow-[3px_3px_0_var(--shadow)] transition-transform hover:-translate-y-0.5"
+          >
+            <span className="label !text-[10px] bg-[#0E0E10] px-1.5 py-0.5 text-[var(--lime)]">New</span>
+            <span className="label text-[#0E0E10]">ERP systems — free trial</span>
+            <Arrow size={12} />
+          </Link>
         </motion.div>
 
         <h1 className="f-display text-[13vw] text-[var(--ink)] sm:text-[11vw] lg:text-[8.6vw] 2xl:text-[124px]">
@@ -241,6 +256,11 @@ export default function Hero() {
             <Magnetic>
               <Link href="/projects" className="btn btn-paper !px-7 !py-5">
                 See the work
+              </Link>
+            </Magnetic>
+            <Magnetic>
+              <Link href="/erp" className="btn btn-ink !px-7 !py-5">
+                Explore ERP <Arrow size={15} />
               </Link>
             </Magnetic>
           </motion.div>

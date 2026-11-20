@@ -9,10 +9,11 @@ import ThemeToggle from "@/components/ui/ThemeToggle";
 import { Arrow, EASE, isAdminRoute } from "@/components/ui/motion";
 
 const links = [
-  { href: "/projects", label: "Work", n: "01" },
-  { href: "/services", label: "Services", n: "02" },
-  { href: "/about", label: "About", n: "03" },
-  { href: "/contact", label: "Contact", n: "04" },
+  { href: "/erp", label: "ERP", n: "01" },
+  { href: "/projects", label: "Work", n: "02" },
+  { href: "/services", label: "Services", n: "03" },
+  { href: "/about", label: "About", n: "04" },
+  { href: "/contact", label: "Contact", n: "05" },
 ];
 
 export default function Navbar() {

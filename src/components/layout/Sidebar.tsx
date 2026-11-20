@@ -12,7 +12,8 @@ import {
   ChevronRight,
   Star,
   Users,
-  UserCheck
+  UserCheck,
+  Boxes
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -21,6 +22,7 @@ const NAV_ITEMS = [
   { label: "Interested Clients", href: "/interested-clients", icon: UserCheck },
   { label: "Clients", href: "/clients", icon: Users },
   { label: "Projects", href: "/portfolio", icon: Briefcase },
+  { label: "ERP Systems", href: "/erp-manager", icon: Boxes },
   { label: "Stories", href: "/stories", icon: Star },
   { label: "Settings", href: "/settings", icon: Settings },
 ];
@@ -45,7 +47,7 @@ export default function Sidebar() {
       <div className="flex-1 overflow-y-auto py-6 px-3">
         <div className="flex flex-col gap-1">
           {NAV_ITEMS.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
             const Icon = item.icon;
 
             return (

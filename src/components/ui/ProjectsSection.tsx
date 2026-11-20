@@ -14,7 +14,7 @@ export default function ProjectsSection({ initialProjects = [] }: { initialProje
     if (initialProjects.length > 0) return;
     (async () => {
       try {
-        const res = await fetch("/api/portfolio?featured=true");
+        const res = await fetch("/api/portfolio?featured=true&work=true");
         if (res.ok) {
           const json = await res.json();
           setProjects(json.data?.slice(0, 4) || []);

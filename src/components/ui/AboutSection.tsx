@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Cpu, Shield, Zap } from "lucide-react";
-import { Arrow, EASE, Reveal, Spark, SplitWords } from "@/components/ui/motion";
+import { Arrow, EASE, Magnetic, Reveal, Spark } from "@/components/ui/motion";
+import PageHero from "@/components/ui/PageHero";
 
 const PILLARS = [
   { label: "System design", icon: Cpu, bg: "#34D399", rot: -5 },
@@ -31,35 +32,32 @@ const ADVANTAGES = [
 
 export default function AboutSection() {
   return (
-    <section className="relative w-full bg-[var(--bg)] pt-28 sm:pt-36">
+    <section className="relative w-full bg-[var(--bg)]">
       {/* Hero */}
-      <div className="relative overflow-hidden px-5 pb-20 sm:px-8">
-        <div aria-hidden className="ruled pointer-events-none absolute inset-0 opacity-50 [mask-image:linear-gradient(to_bottom,#000,transparent)]" />
-        <div className="relative mx-auto max-w-[1400px]">
-          <Reveal>
-            <p className="label flex items-center gap-2 text-[var(--sub)]">
-              <span className="inline-block h-3 w-3 bg-[var(--grape)]" /> About us
-            </p>
-          </Reveal>
-          <h1 className="f-display mt-6 text-[13vw] text-[var(--ink)] sm:text-[10vw] lg:text-[8.8rem]">
-            <SplitWords text="Engineering" onMount />
-            <br />
-            <SplitWords text="at the core." onMount delay={0.1} />
-            <br />
-            <span className="f-serif text-[var(--accent)]">
-              <SplitWords text="built by IIT minds." onMount delay={0.25} />
-            </span>
-          </h1>
-          <div className="mt-12 grid gap-8 lg:grid-cols-12">
-            <Reveal delay={0.35} className="lg:col-span-6 lg:col-start-7">
-              <p className="text-xl leading-relaxed text-[var(--sub)]">
-                We&apos;re a collective of engineers from the Indian Institutes of Technology. We don&apos;t just build websites — we architect
-                scalable, high-performance digital infrastructure for startups and enterprises that refuse to compromise on quality.
-              </p>
-            </Reveal>
-          </div>
-        </div>
-      </div>
+      <PageHero
+        label="About us"
+        labelColor="var(--grape)"
+        line1="Engineering"
+        line2="built by"
+        highlight="IIT minds."
+        highlightBg="var(--sky)"
+        description="We're a collective of engineers from the Indian Institutes of Technology. We don't just build websites — we architect scalable, high-performance digital infrastructure for startups and enterprises that refuse to compromise on quality."
+        chips={[{ text: "IIT engineers" }, { text: "100% hand-coded", bg: "#FFD23F" }, { text: "India → everywhere", bg: "#34D399" }]}
+        actions={
+          <>
+            <Magnetic>
+              <Link href="/contact" className="btn btn-yolk !px-7 !py-5">
+                Work with us <Arrow size={15} />
+              </Link>
+            </Magnetic>
+            <Magnetic>
+              <Link href="/projects" className="btn btn-paper !px-7 !py-5">
+                See the work
+              </Link>
+            </Magnetic>
+          </>
+        }
+      />
 
       {/* Vision */}
       <div className="border-y-2 border-[var(--edge)] bg-[var(--paper)] px-5 py-24 sm:px-8 sm:py-32">

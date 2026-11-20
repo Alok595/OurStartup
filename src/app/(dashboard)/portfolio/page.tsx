@@ -23,6 +23,8 @@ type Project = {
   solution?: string;
   impact?: string[];
   gallery?: string[];
+  isErp?: boolean;
+  showInWork?: boolean;
   createdAt: string;
 };
 
@@ -167,6 +169,12 @@ export default function PortfolioAdminPage() {
                 )}
                 {project.heroImage && (
                   <div className="absolute inset-0 bg-black/20" />
+                )}
+                {(project.isErp || project.showInWork === false) && (
+                  <div className="absolute left-3 top-3 flex gap-1.5">
+                    {project.isErp && <span className="rounded-full bg-[#CCFF2E] px-2 py-0.5 text-[10px] font-bold uppercase text-[#0E0E10]">ERP</span>}
+                    {project.showInWork === false && <span className="rounded-full bg-black/70 px-2 py-0.5 text-[10px] font-bold uppercase text-white">ERP only — hidden from Work</span>}
+                  </div>
                 )}
               </div>
               <div className="p-5 flex flex-col gap-2 flex-1 relative z-10">

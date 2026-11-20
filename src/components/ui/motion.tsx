@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 export const EASE = [0.16, 1, 0.3, 1] as const;
 
-const ADMIN_ROUTES = ["/login", "/dashboard", "/leads", "/portfolio", "/settings", "/stories", "/clients", "/interested-clients"];
+const ADMIN_ROUTES = ["/login", "/dashboard", "/leads", "/portfolio", "/erp-manager", "/settings", "/stories", "/clients", "/interested-clients"];
 export const isAdminRoute = (path?: string | null) => !!path && ADMIN_ROUTES.some((r) => path.startsWith(r));
 
 /** Fade + lift on scroll into view. */

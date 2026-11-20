@@ -3,7 +3,9 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 import FAQSection, { FAQItem } from "@/components/ui/FAQSection";
-import { Reveal, SplitWords } from "@/components/ui/motion";
+import Link from "next/link";
+import { Arrow, Magnetic } from "@/components/ui/motion";
+import PageHero from "@/components/ui/PageHero";
 import { ProjectCard, ProjectCardData, ProjectCardSkeleton } from "@/components/ui/ProjectCard";
 
 export type Project = ProjectCardData & { _id: string };
@@ -41,7 +43,7 @@ export default function ProjectsCatalog({ initialProjects = [] }: { initialProje
     if (initialProjects.length > 0) return;
     (async () => {
       try {
-        const res = await fetch("/api/portfolio");
+        const res = await fetch("/api/portfolio?work=true");
         if (res.ok) {
           const json = await res.json();
           setProjects(json.data || []);
@@ -63,7 +65,7 @@ export default function ProjectsCatalog({ initialProjects = [] }: { initialProje
   const filtered = useMemo(() => (filter === "All" ? projects : projects.filter((p) => p.category === filter)), [projects, filter]);
 
   return (
-    <main className="min-h-screen bg-[var(--bg)] pt-28 sm:pt-36">
+    <main className="min-h-screen bg-[var(--bg)]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -79,27 +81,34 @@ export default function ProjectsCatalog({ initialProjects = [] }: { initialProje
         }}
       />
 
-      <div className="relative overflow-hidden px-5 pb-14 sm:px-8">
-        <div aria-hidden className="ruled pointer-events-none absolute inset-0 opacity-50 [mask-image:linear-gradient(to_bottom,#000,transparent)]" />
-        <div className="relative mx-auto flex max-w-[1400px] flex-col justify-between gap-10 lg:flex-row lg:items-end">
-          <div>
-            <Reveal>
-              <p className="label flex items-center gap-2 text-[var(--sub)]">
-                <span className="inline-block h-3 w-3 bg-[var(--bubblegum)]" /> Portfolio
-              </p>
-            </Reveal>
-            <h1 className="f-display mt-6 text-[17vw] text-[var(--ink)] sm:text-[12vw] lg:text-[10rem]">
-              <SplitWords text="The work" onMount />
-              <span className="f-serif ml-3 align-top text-[0.32em] text-[var(--accent)]">({isLoading ? "…" : projects.length})</span>
-            </h1>
-          </div>
-          <Reveal delay={0.2}>
-            <p className="max-w-md text-lg text-[var(--sub)]">
-              Digital products, enterprise systems and high-performance apps — each one designed and engineered in-house.
-            </p>
-          </Reveal>
-        </div>
-      </div>
+      <PageHero
+        label="Portfolio"
+        labelColor="var(--bubblegum)"
+        line1="The work"
+        line2="that we"
+        highlight="shipped."
+        highlightBg="var(--yolk)"
+        description="Digital products, enterprise systems and high-performance apps — each one designed and engineered in-house."
+        chips={[
+          { text: `${isLoading ? "…" : String(projects.length).padStart(2, "0")} projects` },
+          ...(categories.length > 1 ? [{ text: `${categories.length - 1} categories`, bg: "#34D399" }] : []),
+          { text: "Built in-house", bg: "#FF8FB4" },
+        ]}
+        actions={
+          <>
+            <Magnetic>
+              <Link href="/contact" className="btn btn-yolk !px-7 !py-5">
+                Start a project <Arrow size={15} />
+              </Link>
+            </Magnetic>
+            <Magnetic>
+              <Link href="/erp" className="btn btn-paper !px-7 !py-5">
+                See ERP systems
+              </Link>
+            </Magnetic>
+          </>
+        }
+      />
 
       {/* Toolbar */}
       {!isLoading && projects.length > 0 && (
