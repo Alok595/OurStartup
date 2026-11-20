@@ -85,7 +85,7 @@ export default function PageHero({
             )}
           </Reveal>
           {actions && (
-            <Reveal delay={0.1} className="flex flex-wrap gap-4 lg:col-span-5 lg:justify-end">
+            <Reveal delay={0.1} className="hidden flex-wrap gap-4 lg:col-span-5 lg:flex lg:justify-end">
               {actions}
             </Reveal>
           )}

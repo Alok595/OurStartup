@@ -33,7 +33,7 @@ function ErpSpotlight({ erp, index }: { erp: ProjectItem; index: number }) {
             <span className="label border-2 border-[#0E0E10] bg-[#FF8FB4] px-2 py-1 !text-[10px] text-[#0E0E10]">Fully customisable</span>
           </div>
           {brand && <p className={`label mt-6 ${tinted ? "opacity-70" : "text-[var(--sub)]"}`}>{brand}</p>}
-          <h2 className={`f-display mt-2 text-5xl uppercase sm:text-6xl ${tinted ? "" : "text-[var(--ink)]"}`}>{name}</h2>
+          <h2 className={`f-display mt-2 text-[9vw] uppercase sm:text-6xl ${tinted ? "" : "text-[var(--ink)]"}`}>{name}</h2>
           <p className={`mt-5 text-lg leading-relaxed ${tinted ? "text-[#1F2A24]" : "text-[var(--sub)]"}`}>{erp.overview || erp.description}</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a href={cta.href} target="_blank" rel="noopener noreferrer" className={tinted ? "btn btn-ink" : "btn btn-yolk"}>
@@ -115,15 +115,18 @@ export default function ErpPage({ erps }: { erps: ProjectItem[] }) {
         }
       />
 
-      <div className="-mx-4 -rotate-[1.5deg] border-y-[3px] border-[var(--edge)] bg-[var(--yolk)] py-3 text-[#0E0E10]">
-        <Marquee speed={30}>
-          {["Free trial", "Fully customisable", "GST billing", "Inventory", "Accounts", "Staff & roles", "Multi-branch", "Reports"].map((t) => (
-            <span key={t} className="flex items-center gap-6 pr-6">
-              <span className="f-display-narrow whitespace-nowrap text-2xl uppercase sm:text-3xl">{t}</span>
-              <Spark size={20} color="#0E0E10" />
-            </span>
-          ))}
-        </Marquee>
+      {/* clip wrapper: the tilted band's corners would otherwise widen the page */}
+      <div className="overflow-x-clip py-2">
+        <div className="-mx-4 -rotate-[1.5deg] border-y-[3px] border-[var(--edge)] bg-[var(--yolk)] py-3 text-[#0E0E10]">
+          <Marquee speed={30}>
+            {["Free trial", "Fully customisable", "GST billing", "Inventory", "Accounts", "Staff & roles", "Multi-branch", "Reports"].map((t) => (
+              <span key={t} className="flex items-center gap-6 pr-6">
+                <span className="f-display-narrow whitespace-nowrap text-2xl uppercase sm:text-3xl">{t}</span>
+                <Spark size={20} color="#0E0E10" />
+              </span>
+            ))}
+          </Marquee>
+        </div>
       </div>
 
       {/* ---------------------------------------------------------- all ERPs */}
@@ -132,7 +135,7 @@ export default function ErpPage({ erps }: { erps: ProjectItem[] }) {
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
             <Reveal>
               <p className="label text-[var(--sub)]">The line-up</p>
-              <h2 className="f-display mt-4 text-5xl uppercase text-[var(--ink)] sm:text-7xl">
+              <h2 className="f-display mt-4 text-[11vw] uppercase text-[var(--ink)] sm:text-7xl">
                 Our <span className="f-serif normal-case text-[var(--accent)]">ERPs.</span>
               </h2>
             </Reveal>
@@ -158,7 +161,7 @@ export default function ErpPage({ erps }: { erps: ProjectItem[] }) {
         <div className="mx-auto grid max-w-[1400px] gap-10 lg:grid-cols-12">
           <Reveal className="lg:col-span-5">
             <p className="label text-[var(--lime)]">Fully customisable</p>
-            <h2 className="f-display mt-4 text-5xl uppercase leading-[0.9] sm:text-7xl">
+            <h2 className="f-display mt-4 text-[11vw] uppercase leading-[0.9] sm:text-7xl">
               Your rules. <span className="text-[var(--bubblegum)]">Your ERP.</span>
             </h2>
             <p className="mt-5 max-w-md text-lg text-white/75">
@@ -185,7 +188,7 @@ export default function ErpPage({ erps }: { erps: ProjectItem[] }) {
         <div className="mx-auto max-w-[1400px]">
           <Reveal>
             <p className="label text-[var(--sub)]">How it works</p>
-            <h2 className="f-display mt-4 text-5xl uppercase text-[var(--ink)] sm:text-7xl">
+            <h2 className="f-display mt-4 text-[11vw] uppercase text-[var(--ink)] sm:text-7xl">
               Trial to <span className="f-serif normal-case text-[var(--accent)]">live.</span>
             </h2>
           </Reveal>
@@ -207,7 +210,7 @@ export default function ErpPage({ erps }: { erps: ProjectItem[] }) {
           <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <Reveal>
               <p className="label text-[var(--sub)]">More ERPs we build</p>
-              <h2 className="f-display mt-4 text-5xl uppercase text-[var(--ink)] sm:text-7xl">Any industry.</h2>
+              <h2 className="f-display mt-4 text-[11vw] uppercase text-[var(--ink)] sm:text-7xl">Any industry.</h2>
             </Reveal>
             <Reveal delay={0.1}>
               <Link href="/contact" className="btn btn-ink">
@@ -215,13 +218,13 @@ export default function ErpPage({ erps }: { erps: ProjectItem[] }) {
               </Link>
             </Reveal>
           </div>
-          <ul className="mt-10 grid border-l-2 border-t-2 border-[var(--edge)] sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="mt-10 grid grid-cols-1 border-l-2 border-t-2 border-[var(--edge)] sm:grid-cols-2 lg:grid-cols-3">
             {ERP_VERTICALS.map((v, i) => (
               <li key={v.title} className="border-b-2 border-r-2 border-[var(--edge)]">
                 <Link href="/contact" className="group relative flex h-full flex-col p-6 sm:p-8">
                   <span aria-hidden className="absolute inset-0 origin-left scale-x-0 bg-[var(--yolk)] transition-transform duration-500 ease-[var(--ease-out)] group-hover:scale-x-100" />
                   <span className="f-mono relative text-sm text-[var(--sub)] group-hover:text-[#0E0E10]">{String(i + 1).padStart(2, "0")}</span>
-                  <h3 className="f-display relative mt-8 text-2xl uppercase text-[var(--ink)] group-hover:text-[#0E0E10] sm:text-3xl">{v.title}</h3>
+                  <h3 className="f-display relative mt-8 text-[7vw] uppercase text-[var(--ink)] group-hover:text-[#0E0E10] sm:text-2xl xl:text-3xl">{v.title}</h3>
                   <p className="relative mt-2 text-[var(--sub)] group-hover:text-[#0E0E10]">{v.body}</p>
                 </Link>
               </li>
@@ -234,7 +237,7 @@ export default function ErpPage({ erps }: { erps: ProjectItem[] }) {
       <section className="border-t-2 border-[var(--edge)] bg-[var(--lime)] px-5 py-16 text-[#0E0E10] sm:px-8 sm:py-20">
         <div className="mx-auto flex max-w-[1400px] flex-col items-start justify-between gap-8 md:flex-row md:items-center">
           <Reveal>
-            <h2 className="f-display text-5xl uppercase sm:text-7xl">Need your own ERP?</h2>
+            <h2 className="f-display text-[11vw] uppercase sm:text-7xl">Need your own ERP?</h2>
             <p className="mt-3 max-w-xl text-lg">Tell us how your business runs — we&apos;ll customise one of ours or build it from scratch.</p>
           </Reveal>
           <Reveal delay={0.1}>

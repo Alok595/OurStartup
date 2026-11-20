@@ -232,9 +232,9 @@ export default function Services() {
                     />
                   )}
                   <span className="label relative w-8 shrink-0 pl-1 text-[var(--sub)] transition-colors group-hover:text-[#0E0E10]">{s.index}</span>
-                  <span className="relative flex-1">
+                  <span className="relative min-w-0 flex-1">
                     <span
-                      className={`f-display block text-[9vw] transition-[color,transform] duration-500 ease-[var(--ease-out)] sm:text-6xl lg:text-7xl ${
+                      className={`f-display block text-[7.4vw] transition-[color,transform] duration-500 ease-[var(--ease-out)] sm:text-6xl lg:text-7xl ${
                         isOpen ? "text-[var(--accent)]" : "text-[var(--ink)] group-hover:translate-x-3 group-hover:text-[#0E0E10]"
                       }`}
                     >
@@ -275,15 +275,18 @@ export default function Services() {
       </div>
 
       {/* Band */}
-      <div className="my-16 -rotate-[1.5deg] border-y-[3px] border-[var(--edge)] bg-[var(--yolk)] py-4 text-[#0E0E10]">
-        <Marquee speed={34}>
-          {SERVICES.map((s) => (
-            <span key={s.id} className="flex items-center gap-6 pr-6">
-              <span className="f-display whitespace-nowrap text-4xl sm:text-5xl">{s.title}</span>
-              <Spark size={24} color="#0E0E10" />
-            </span>
-          ))}
-        </Marquee>
+      {/* clip wrapper: the tilted band's corners would otherwise widen the page */}
+      <div className="overflow-x-clip py-2">
+        <div className="-mx-4 my-14 -rotate-[1.5deg] border-y-[3px] border-[var(--edge)] bg-[var(--yolk)] py-4 text-[#0E0E10]">
+          <Marquee speed={34}>
+            {SERVICES.map((s) => (
+              <span key={s.id} className="flex items-center gap-6 pr-6">
+                <span className="f-display whitespace-nowrap text-3xl sm:text-5xl">{s.title}</span>
+                <Spark size={24} color="#0E0E10" />
+              </span>
+            ))}
+          </Marquee>
+        </div>
       </div>
     </section>
   );

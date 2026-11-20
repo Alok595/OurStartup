@@ -181,7 +181,7 @@ export default function ProjectDetailView({ project }: { project: ProjectData })
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: EASE }}
-            className="f-display text-5xl text-[var(--ink)] sm:text-6xl lg:text-[4.2rem]"
+            className="f-display text-[9.5vw] text-[var(--ink)] sm:text-6xl lg:text-[4.2rem]"
           >
             {project.title}
           </motion.h1>

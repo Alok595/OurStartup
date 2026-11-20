@@ -61,7 +61,7 @@ export default function Navbar() {
             </span>
           </Link>
 
-          <ul className="hidden items-stretch md:flex">
+          <ul className="hidden items-stretch lg:flex">
             {links.map((l) => {
               const active = pathname?.startsWith(l.href);
               return (
@@ -104,7 +104,7 @@ export default function Navbar() {
               onClick={() => setOpen((v) => !v)}
               aria-label="Toggle menu"
               aria-expanded={open}
-              className="grid h-10 w-10 place-items-center border-2 border-[var(--edge)] bg-[var(--ink)] text-[var(--bg)] md:hidden"
+              className="grid h-10 w-10 place-items-center border-2 border-[var(--edge)] bg-[var(--ink)] text-[var(--bg)] lg:hidden"
             >
               <span className="relative block h-3 w-4">
                 <span className={`absolute left-0 h-[2px] w-full bg-current transition-all duration-300 ${open ? "top-1/2 -translate-y-1/2 rotate-45" : "top-0"}`} />
@@ -124,7 +124,7 @@ export default function Navbar() {
             animate={{ clipPath: "inset(0 0 0% 0)" }}
             exit={{ clipPath: "inset(0 0 100% 0)" }}
             transition={{ duration: 0.55, ease: [0.7, 0, 0.2, 1] }}
-            className="panel-cobalt halftone fixed inset-0 z-[65] flex flex-col justify-between px-5 pb-8 pt-24 md:hidden"
+            className="panel-cobalt halftone fixed inset-0 z-[65] flex flex-col justify-between px-5 pb-8 pt-24 lg:hidden"
           >
             <ul className="flex flex-col">
               {links.map((l, i) => (
@@ -136,7 +136,7 @@ export default function Navbar() {
                   className="border-b border-white/20"
                 >
                   <Link href={l.href} onClick={() => setOpen(false)} className="flex items-baseline justify-between py-4">
-                    <span className="f-display text-[13vw] leading-[0.95]">{l.label}</span>
+                    <span className="f-display text-[13vw] leading-[0.95] md:text-[9vw]">{l.label}</span>
                     <span className="label opacity-60">{l.n}</span>
                   </Link>
                 </motion.li>

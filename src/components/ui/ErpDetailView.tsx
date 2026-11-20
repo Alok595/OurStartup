@@ -128,7 +128,7 @@ export default function ErpDetailView({ erp, others }: { erp: ProjectItem; other
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, ease: EASE }}
-                className="f-display mt-2 text-5xl text-[var(--ink)] sm:text-6xl lg:text-[5rem]"
+                className="f-display mt-2 text-[9.5vw] text-[var(--ink)] sm:text-6xl lg:text-[5rem]"
               >
                 {name}
               </motion.h1>
@@ -232,7 +232,7 @@ export default function ErpDetailView({ erp, others }: { erp: ProjectItem; other
           <div className="mx-auto max-w-[1400px]">
             <Reveal>
               <p className="label text-[var(--sub)]">What&apos;s inside</p>
-              <h2 className="f-display mt-4 text-5xl uppercase text-[var(--ink)] sm:text-7xl">
+              <h2 className="f-display mt-4 text-[11vw] uppercase text-[var(--ink)] sm:text-7xl">
                 Every <span className="f-serif normal-case" style={{ color }}>module.</span>
               </h2>
             </Reveal>

@@ -341,11 +341,11 @@ export default function ContactClientForm() {
               ))}
               <div className="grid grid-cols-2 gap-3">
                 <div className="border-2 border-[var(--edge)] p-4">
-                  <span className="f-display text-3xl text-[var(--ink)]">&lt;24h</span>
+                  <span className="f-display text-2xl text-[var(--ink)] sm:text-3xl">&lt;24h</span>
                   <span className="label mt-1 block text-[var(--sub)]">Avg. reply</span>
                 </div>
                 <div className="border-2 border-[var(--edge)] p-4">
-                  <span className="f-display text-3xl text-[var(--ink)]">Remote</span>
+                  <span className="f-display text-2xl text-[var(--ink)] sm:text-3xl">Remote</span>
                   <span className="label mt-1 block text-[var(--sub)]">All time zones</span>
                 </div>
               </div>

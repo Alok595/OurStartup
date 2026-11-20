@@ -246,7 +246,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.6, ease: EASE }}
-            className="flex flex-wrap gap-4 lg:col-span-6 lg:justify-end"
+            className="hidden flex-wrap gap-4 lg:col-span-6 lg:flex lg:justify-end"
           >
             <Magnetic>
               <Link href="/contact" prefetch className="btn btn-yolk !px-7 !py-5">

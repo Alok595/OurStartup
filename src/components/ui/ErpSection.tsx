@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRef } from "react";
 import { motion } from "framer-motion";
 import { Arrow, EASE, Marquee, Reveal, Spark } from "@/components/ui/motion";
 import { ErpCardCompact } from "@/components/ui/ErpCard";
@@ -12,7 +13,15 @@ import type { ProjectItem } from "@/lib/portfolio";
  * Left: every ERP as a small card in a vertically scrolling box (home-marked first). Right: customisation card.
  */
 export default function ErpSection({ erps }: { erps: ProjectItem[] }) {
+  const trackRef = useRef<HTMLDivElement>(null);
   if (erps.length === 0) return null;
+
+  const slide = (dir: 1 | -1) => {
+    const el = trackRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: "smooth" });
+  };
+
   const sorted = [...erps].sort((a, b) => Number(!!b.erpFeatured) - Number(!!a.erpFeatured));
 
   return (
@@ -35,23 +44,42 @@ export default function ErpSection({ erps }: { erps: ProjectItem[] }) {
           </Reveal>
         </div>
 
-        <div className="mt-10 grid gap-6 sm:mt-14 lg:grid-cols-12">
+        <div className="mt-10 grid grid-cols-1 gap-6 sm:mt-14 lg:grid-cols-12">
           {/* Scrolling list of ERPs */}
-          <Reveal className="lg:col-span-7">
+          <Reveal className="min-w-0 lg:col-span-7">
             <div className="flex h-full flex-col border-[3px] border-[#0E0E10] bg-[#F3EFE6] shadow-[8px_8px_0_#0E0E10]">
-              <div className="flex items-center justify-between border-b-[3px] border-[#0E0E10] bg-[#0E0E10] px-4 py-2.5 text-[#F3EFE6]">
+              <div className="flex items-center justify-between gap-3 border-b-[3px] border-[#0E0E10] bg-[#0E0E10] px-4 py-2.5 text-[#F3EFE6]">
                 <span className="label !text-[11px]">Our ERPs</span>
-                <span className="label !text-[10px] text-[var(--lime)]">
-                  {String(sorted.length).padStart(2, "0")} live {sorted.length > 2 && "· scroll ↓"}
+                <span className="flex items-center gap-3">
+                  <span className="label !text-[10px] text-[var(--lime)]">
+                    {String(sorted.length).padStart(2, "0")} live
+                    {sorted.length > 1 && <span className="lg:hidden"> · swipe →</span>}
+                  </span>
+                  {sorted.length > 1 && (
+                    <span className="hidden gap-1.5 sm:flex lg:hidden">
+                      <button type="button" onClick={() => slide(-1)} aria-label="Previous ERP" className="grid h-7 w-7 place-items-center border-2 border-[var(--lime)] text-[var(--lime)] transition-colors hover:bg-[var(--lime)] hover:text-[#0E0E10]">
+                        ←
+                      </button>
+                      <button type="button" onClick={() => slide(1)} aria-label="Next ERP" className="grid h-7 w-7 place-items-center border-2 border-[var(--lime)] bg-[var(--lime)] text-[#0E0E10] transition-[filter] hover:brightness-90">
+                        →
+                      </button>
+                    </span>
+                  )}
                 </span>
               </div>
+              {/* Phones/tablets: horizontal swipe row (vertical gestures still scroll the page).
+                  Desktop: a plain vertical stack that moves with the normal page scroll — no inner scroll box. */}
               <div
-                data-lenis-prevent
-                className="flex max-h-[460px] flex-col gap-4 overflow-y-auto overscroll-contain p-4 [scrollbar-color:#0E0E10_transparent] [scrollbar-width:thin] sm:p-5 lg:max-h-[520px]"
+                ref={trackRef}
+                className="no-scrollbar flex flex-1 snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain scroll-px-4 p-4 sm:scroll-px-5 sm:p-5 lg:snap-none lg:flex-col lg:overflow-visible"
               >
                 {sorted.map((erp, i) => (
-                  <ErpCardCompact key={erp._id} erp={erp} index={i} />
+                  <div key={erp._id} className="grid w-[86%] flex-none snap-start sm:w-[78%] lg:w-full">
+                    <ErpCardCompact erp={erp} index={i} />
+                  </div>
                 ))}
+                {/* trailing spacer so the last card can snap fully into view */}
+                <span aria-hidden className="w-px flex-none lg:hidden" />
               </div>
               <Link href="/erp" className="label flex items-center justify-center gap-2 border-t-[3px] border-[#0E0E10] bg-[var(--yolk)] py-3 !text-[11px] transition-[filter] hover:brightness-95">
                 Compare all ERPs <Arrow size={12} />
